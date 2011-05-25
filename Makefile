@@ -22,15 +22,21 @@ DEBUG           ?=
  
 INCLUDE         := -I.\
                    -I./include\
-                   -I./lpc23xx-pll/include
+                   -I./lpc23xx-pll/include\
+                   -I./lpc23xx-uart/include\
+                   -I./lpc23xx-i2c/include
 
 LIBS            = $(NAME).a
 
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex
 
-ASRCS           := $(wildcard lpc23xx-pll/*.s)
+ASRCS           := $(wildcard lpc23xx-pll/*.s)\
+		   $(wildcard lpc23xx-uart/*.s)\
+		   $(wildcard lpc23xx-i2c/*.s)
 
-CSRCS           := $(wildcard lpc23xx-pll/*.c)
+CSRCS           := $(wildcard lpc23xx-pll/*.c)\
+		   $(wildcard lpc23xx-uart/*.c)\
+		   $(wildcard lpc23xx-i2c/*.c)
 
 COBJS           = $(CSRCS:.c=.o)
 
