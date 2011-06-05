@@ -67,6 +67,8 @@ typedef enum Freqtype {
 
 #define         CCLK_IS_FCCODIV1           ( CCLKCFG = 0x0)
 #define         CCLK_IS_FCCODIV8           ( CCLKCFG = 0x7)
+#define         CCLK_IS_FCCODIV10          ( CCLKCFG = 0x9)
+#define         CCLK_IS_FCCODIV40          ( CCLKCFG = 0x39)
 
 #define         USB_IS_FCCODIV10           ( USBCLKCFG = 9)
 
