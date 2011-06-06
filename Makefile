@@ -22,21 +22,29 @@ DEBUG           ?=
  
 INCLUDE         := -I.\
                    -I./include\
+                   -I./lpc23xx-info/include\
                    -I./lpc23xx-pll/include\
                    -I./lpc23xx-uart/include\
                    -I./lpc23xx-i2c/include
+
+HS              :=  $(wildcard ./include/*.h)\
+                    $(wildcard ./lpc23xx-info/include/*.h)\
+                    $(wildcard ./lpc23xx-pll/include/*.h)\
+                    $(wildcard ./lpc23xx-uart/include/*.h)\
+                    $(wildcard ./lpc23xx-i2c/include/*.h)
 
 LIBS            = $(NAME).a
 
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex
 
 ASRCS           := $(wildcard lpc23xx-pll/*.s)\
-		   $(wildcard lpc23xx-uart/*.s)\
-		   $(wildcard lpc23xx-i2c/*.s)
+		   		   $(wildcard lpc23xx-uart/*.s)\
+		   	       $(wildcard lpc23xx-i2c/*.s)
 
-CSRCS           := $(wildcard lpc23xx-pll/*.c)\
-		   $(wildcard lpc23xx-uart/*.c)\
-		   $(wildcard lpc23xx-i2c/*.c)
+CSRCS           := $(wildcard lpc23xx-info/*.c)\
+		           $(wildcard lpc23xx-pll/*.c)\
+		   	       $(wildcard lpc23xx-uart/*.c)\
+		           $(wildcard lpc23xx-i2c/*.c)
 
 COBJS           = $(CSRCS:.c=.o)
 
@@ -69,7 +77,7 @@ ODFLAGS         := -x --syms
         
 all: $(LIBS) $(TESTS) Makefile
 
-$(COBJS): $(wildcard include/*.h) $(wildcard lpc23xx-pll/include/*.h)
+$(COBJS): $(HS)
 
 $(LIBS): $(AOBJS) $(COBJS)
 	@echo "========= Making Library $@ ========================"

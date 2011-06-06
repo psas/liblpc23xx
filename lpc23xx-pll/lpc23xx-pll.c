@@ -65,6 +65,7 @@ void pllstop(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz 
  */
 void pllstart_sixtymhz(void) { 
+    pllstat.cclk_mhz = 0;
 
     pllstop();
 
@@ -95,6 +96,7 @@ void pllstart_sixtymhz(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
  */
 void pllstart_fourtyeightmhz(void) {
+    pllstat.cclk_mhz = 0;
 
     pllstop();
 
@@ -116,7 +118,7 @@ void pllstart_fourtyeightmhz(void) {
 
     SET_PLLC;
     pllfeed();
-    pllstat.cclk_mhz = 40;
+    pllstat.cclk_mhz = 48;
 }
 
 /*
@@ -125,6 +127,7 @@ void pllstart_fourtyeightmhz(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
  */
 void pllstart_twelvemhz(void) {
+    pllstat.cclk_mhz = 0;
 
     pllstop();
 
@@ -146,5 +149,5 @@ void pllstart_twelvemhz(void) {
 
     SET_PLLC;
     pllfeed();
-    pllstat.cclk_mhz = 1;
+    pllstat.cclk_mhz = 12;
 }
