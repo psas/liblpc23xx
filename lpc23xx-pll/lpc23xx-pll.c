@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include "lpc23xx.h"
 
-#include "olimexlpcp2378reva.h"
+// #include "olimexlpcp2378reva.h"
 
 #include "lpc23xx-pll.h"
 
@@ -18,8 +18,8 @@
     #error ***** No board configuration defined. ******
 #endif
 
-uint32_t    query_cclk_mhz(void) {
-	return(pllstat.cclk_mhz);
+Freq    pllquery_cclk_mhz(void) {
+    return(pllstat.cclk_mhz);
 }
 
 /*
@@ -65,7 +65,7 @@ void pllstop(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz 
  */
 void pllstart_sixtymhz(void) { 
-    pllstat.cclk_mhz = 0;
+    pllstat.cclk_mhz = ZERO;
 
     pllstop();
 
@@ -87,7 +87,7 @@ void pllstart_sixtymhz(void) {
 
     SET_PLLC;
     pllfeed();
-    pllstat.cclk_mhz = 60;
+    pllstat.cclk_mhz = SIXTY_MHZ;
 }
 
 /*
@@ -96,7 +96,7 @@ void pllstart_sixtymhz(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
  */
 void pllstart_fourtyeightmhz(void) {
-    pllstat.cclk_mhz = 0;
+    pllstat.cclk_mhz = ZERO;
 
     pllstop();
 
@@ -118,7 +118,7 @@ void pllstart_fourtyeightmhz(void) {
 
     SET_PLLC;
     pllfeed();
-    pllstat.cclk_mhz = 48;
+    pllstat.cclk_mhz = FOURTY_EIGHT_MHZ;
 }
 
 /*
@@ -127,7 +127,7 @@ void pllstart_fourtyeightmhz(void) {
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
  */
 void pllstart_twelvemhz(void) {
-    pllstat.cclk_mhz = 0;
+    pllstat.cclk_mhz = ZERO;
 
     pllstop();
 
@@ -149,5 +149,6 @@ void pllstart_twelvemhz(void) {
 
     SET_PLLC;
     pllfeed();
-    pllstat.cclk_mhz = 12;
+    pllstat.cclk_mhz = TWELVE_MHZ;
 }
+

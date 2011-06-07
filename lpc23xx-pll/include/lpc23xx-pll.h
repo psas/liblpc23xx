@@ -11,11 +11,18 @@
 #define         FEEDBYTE_A                 ((unsigned) 0xAA)
 #define         FEEDBYTE_B                 ((unsigned) 0x55)
 
+typedef enum Freqtype { 
+    ZERO             = 0, 
+    TWELVE_MHZ       = 12000000, 
+    FOURTY_EIGHT_MHZ = 48000000, 
+    SIXTY_MHZ        = 60000000 
+} Freq;
+
 struct pll_status {
-	uint32_t cclk_mhz;
+    Freq cclk_mhz;
 } pllstat ;
 
-uint32_t    query_cclk_mhz(void);
+Freq        pllquery_cclk_mhz(void);
 
 void    	pllfeed(void) ;
 
