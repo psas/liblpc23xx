@@ -19,22 +19,28 @@ typedef enum Baudtype {
     ONE_FIFTEEN_TWO_H_B   = 115200
 } Baud;
 
-struct uart0_status {
+extern struct uart0_status {
     Baud    baudrate;
     uint8_t charlength;
     uint8_t stopbits;
-} ;
+} uart0stat ;
 
-static char uart0_linebuffer[UART_MAXBUFFER] ;
+//extern char uart0_linebuffer[UART_MAXBUFFER] ;
 
-void uart0_init_115200(void) ;
+Baud    uart0_query_baud(void) ;
 
-void uart0_putchar(int8_t ch) ;
+uint8_t uart0_query_charlength(void) ;
 
-void uart0_putstring(const int8_t *s) ;
+uint8_t uart0_query_stopbits(void) ;
 
-int8_t uart0_getchar (void) ;
+void    uart0_init_115200(void) ;
 
-void uart0_getstring (void) ;
+void    uart0_putchar(int8_t ch) ;
+
+void    uart0_putstring(const char *s) ;
+
+int8_t  uart0_getchar (void) ;
+
+char*    uart0_getstring (void) ;
 
 #endif

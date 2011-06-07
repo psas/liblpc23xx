@@ -84,7 +84,7 @@ $(LIBS): $(AOBJS) $(COBJS)
 	@echo "========= Making Library $@ ========================"
 	$(AR) $@ $(AOBJS) $(COBJS)
 
-$(TESTS): 
+$(TESTS): $(LIBS)
 	@echo "========= Recursive make: $(@D) ========================"
 	$(MAKE) TARGET=$(TARGET) -s -C $(@D) $(@F)
 
@@ -95,10 +95,11 @@ $(NAME).s: $(NAME).c
 clean:
 	$(RM)  $(LIBS) $(AOBJS) $(COBJS) $(COBJS) \
 	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
-
-allclean: clean
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
+
+allclean: clean
+	
 
 rebuild: allclean
 	$(MAKE)

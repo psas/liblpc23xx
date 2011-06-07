@@ -101,7 +101,7 @@
 #define         CLEAR_RXD1                ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) ) 
 
 #define         DLAB_MASK                 ( ~((0x1)<<7) )
-#define         SET_DLAB0                 ( U0LCR = (( U0LCR & DLAB_MASK)  | (1<<7)))
+#define         SET_DLAB0                 ( U0LCR = ( U0LCR  | (0x1<<7) ) )
 #define         CLEAR_DLAB0               ( U0LCR = (U0LCR & DLAB_MASK) )
 #define         SET_DLAB2                 ( U2LCR = (( U2LCR & DLAB_MASK)  | (1<<7)))
 #define         CLEAR_DLAB2               ( U2LCR = (U2LCR & DLAB_MASK) )
@@ -112,9 +112,9 @@
 #define         UART2_8N1                 ( U2LCR = 0x3 )
 #define         UART3_8N1                 ( U3LCR = 0x3 )
 
-#define         UART0_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
-#define         UART2_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
-#define         UART3_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
+#define         UART0_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 | 0x6 )
+#define         UART2_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 | 0x6 )
+#define         UART3_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 | 0x6 )
 
 #define         U0THR_THRE_MASK           ( (0x1 << 0x5) )
 #define         U0THR_EMPTY               ( (U0LSR & U0THR_THRE_MASK ) >> 0x5 )
@@ -139,8 +139,8 @@
 #define         PLLC                       ( ((unsigned)((0x1<<25) & PLLSTAT)) >> 25 )
 #define         PLLE                       ( ((unsigned)((0x1<<24) & PLLSTAT)) >> 24 )
 
-/* Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz */
-#define         FCCO_FOUR_EIGHTY_MHZ       (PLLCFG = (0x1 << 16) | 20)
+/* Fcco = 480Mhz, M=60, N=3, Fin = 12Mhz */
+#define         FCCO_FOUR_EIGHTY_MHZ       (PLLCFG = (0x0 << 16) | 19)
 
 #define         PLOCK                      (((unsigned) ((0x1<<26) & PLLSTAT)) >> 26)
 
