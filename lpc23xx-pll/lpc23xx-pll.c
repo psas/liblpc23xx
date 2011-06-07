@@ -18,6 +18,8 @@
     #error ***** No board configuration defined. ******
 #endif
 
+struct pll_status pllstat;
+
 Freq    pllquery_cclk_mhz(void) {
     return(pllstat.cclk_mhz);
 }

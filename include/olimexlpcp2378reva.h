@@ -47,11 +47,6 @@
 #define         PCLKSEL1_UART3_DIV4       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) )
 #define         PCLKSEL1_UART3_DIV8       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x11<<18) )
 
-
-
-
-
-
 /*
  * PCONP Peripheral Power control
  * p69 lpc23xx rev 3.
@@ -106,21 +101,32 @@
 #define         CLEAR_RXD1                ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) ) 
 
 #define         DLAB_MASK                 ( ~((0x1)<<7) )
-#define         SET_DLAB0                 ( U0LCR = (( U0LCR & DLAB_MASK)  | (1<<7))
+#define         SET_DLAB0                 ( U0LCR = (( U0LCR & DLAB_MASK)  | (1<<7)))
 #define         CLEAR_DLAB0               ( U0LCR = (U0LCR & DLAB_MASK) )
-#define         SET_DLAB2                 ( U2LCR = (( U2LCR & DLAB_MASK)  | (1<<7))
+#define         SET_DLAB2                 ( U2LCR = (( U2LCR & DLAB_MASK)  | (1<<7)))
 #define         CLEAR_DLAB2               ( U2LCR = (U2LCR & DLAB_MASK) )
-#define         SET_DLAB3                 ( U3LCR = (( U3LCR & DLAB_MASK)  | (1<<7))
+#define         SET_DLAB3                 ( U3LCR = (( U3LCR & DLAB_MASK)  | (1<<7)))
 #define         CLEAR_DLAB3               ( U3LCR = (U3LCR & DLAB_MASK) )
 
 #define         UART0_8N1                 ( U0LCR = 0x3 )
 #define         UART2_8N1                 ( U2LCR = 0x3 )
 #define         UART3_8N1                 ( U3LCR = 0x3 )
 
-
 #define         UART0_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
 #define         UART2_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
 #define         UART3_FCR_ONE_CHAR_EN     ( U0FCR = 0x1 )
+
+#define         U0THR_THRE_MASK           ( (0x1 << 0x5) )
+#define         U0THR_EMPTY               ( (U0LSR & U0THR_THRE_MASK ) >> 0x5 )
+
+#define         U0THR_THRE_MASK           ( (0x1 << 0x5) )
+#define         U0THR_EMPTY               ( (U0LSR & U0THR_THRE_MASK ) >> 0x5 )
+
+#define         U0LSR_RDR_MASK            ( ( 0x1 ) )
+#define         U0RDR_READY               ( (U0LSR & U0LSR_RDR_MASK ) )
+
+
+
 /*
  * pll
  */
@@ -148,11 +154,11 @@
 #define         mainOSC_READY              ( OSCSTAT )
 #define         mainOSC_SELECT             ( CLKSRCSEL = 0x1 )
 
-#define         CCLK_IS_FCCODIV1           ( CCLKCFG = 0x0)
-#define         CCLK_IS_FCCODIV8           ( CCLKCFG = 0x7)
-#define         CCLK_IS_FCCODIV10          ( CCLKCFG = 0x9)
-#define         CCLK_IS_FCCODIV40          ( CCLKCFG = 0x39)
+#define         CCLK_IS_FCCODIV1           ( CCLKCFG = 0x0   )
+#define         CCLK_IS_FCCODIV8           ( CCLKCFG = 0x7  )
+#define         CCLK_IS_FCCODIV10          ( CCLKCFG = 0x9  )
+#define         CCLK_IS_FCCODIV40          ( CCLKCFG = 0x39 )
 
-#define         USB_IS_FCCODIV10           ( USBCLKCFG = 9)
+#define         USB_IS_FCCODIV10           ( USBCLKCFG = 9 )
 
 #endif

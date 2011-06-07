@@ -35,16 +35,17 @@ HS              :=  $(wildcard ./include/*.h)\
 
 LIBS            = $(NAME).a
 
-TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex
+TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
+	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
 
 ASRCS           := $(wildcard lpc23xx-pll/*.s)\
-		   		   $(wildcard lpc23xx-uart/*.s)\
-		   	       $(wildcard lpc23xx-i2c/*.s)
+   		   $(wildcard lpc23xx-uart/*.s)\
+                   $(wildcard lpc23xx-i2c/*.s)
 
 CSRCS           := $(wildcard lpc23xx-info/*.c)\
-		           $(wildcard lpc23xx-pll/*.c)\
-		   	       $(wildcard lpc23xx-uart/*.c)\
-		           $(wildcard lpc23xx-i2c/*.c)
+		   $(wildcard lpc23xx-pll/*.c)\
+		   $(wildcard lpc23xx-uart/*.c)\
+		   $(wildcard lpc23xx-i2c/*.c)
 
 COBJS           = $(CSRCS:.c=.o)
 
@@ -97,6 +98,7 @@ clean:
 
 allclean: clean
 	$(MAKE) -s -C lpc23xx-pll/test clean
+	$(MAKE) -s -C lpc23xx-uart/test clean
 
 rebuild: allclean
 	$(MAKE)

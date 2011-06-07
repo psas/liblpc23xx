@@ -18,7 +18,7 @@ typedef enum Freqtype {
     SIXTY_MHZ        = 60000000 
 } Freq;
 
-struct pll_status {
+extern struct pll_status {
     Freq cclk_mhz;
 } pllstat ;
 
