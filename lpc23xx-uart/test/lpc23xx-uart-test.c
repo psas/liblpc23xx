@@ -10,15 +10,26 @@
 
 #include "lpc23xx-uart.h"
 
-#ifdef OLIMEXLPCP2378REVA
-    #include "olimexlpcp2378reva.h"
-#elif LPC2368PSASGFE 
-    #include "lpc2368-PSAS-GFE"
-#else
-    #error ***** No board configuration defined. ******
-#endif
-
 #include "lpc23xx-uart-test.h"
+
+/*
+
+ ***Starting UART test: uart0.***
+
+ 12
+ 3 4
+ Type a character.
+ a
+ You typed: a
+ Type a line.
+ This is a line of text.
+
+ You typed: This is a line of text.
+
+ ***End of UART test***
+
+*/
+
 
 int main (void) {
 
@@ -32,7 +43,7 @@ int main (void) {
 
     uart0_init_115200() ;
 
-   //  uart0_putstring("\n***Starting UART test: uart0.***\n\n");
+    uart0_putstring("\n***Starting UART test: uart0.***\n\n");
 
     uart0_putchar('1');
     uart0_putchar('2');
@@ -42,20 +53,20 @@ int main (void) {
     uart0_putchar('4');
     uart0_putchar('\n');
 
- //   uart0_putstring("Type a character.\n");
+    uart0_putstring("Type a character.\n");
 
- //   c = uart0_getchar();
+    c = uart0_getchar();
 
- //   uart0_putstring("\nYou typed: ");
- //   uart0_putchar(c);
+    uart0_putstring("\nYou typed: ");
+    uart0_putchar(c);
 
- //   uart0_putstring("\nType a line.\n");
- //   instring = uart0_getstring();
+    uart0_putstring("\nType a line.\n");
+    instring = uart0_getstring();
 
- //   uart0_putstring("\nYou typed: ");
- //   uart0_putstring(instring);
+    uart0_putstring("\nYou typed: ");
+    uart0_putstring(instring);
 
- //   uart0_putstring("\n\n***End of UART test***\n");
+    uart0_putstring("\n\n***End of UART test***\n");
 
     return(0);
 
