@@ -141,6 +141,7 @@
 
 /* Fcco = 480Mhz, M=60, N=3, Fin = 12Mhz */
 #define         FCCO_FOUR_EIGHTY_MHZ       (PLLCFG = (0x0 << 16) | 19)
+#define         FCCO_TWO_EIGHTY_EIGHT_MHZ  (PLLCFG = (0x0 << 16) | 11)
 
 #define         PLOCK                      (((unsigned) ((0x1<<26) & PLLSTAT)) >> 26)
 
@@ -155,10 +156,12 @@
 #define         mainOSC_SELECT             ( CLKSRCSEL = 0x1 )
 
 #define         CCLK_IS_FCCODIV1           ( CCLKCFG = 0x0   )
+#define         CCLK_IS_FCCODIV4           ( CCLKCFG = 0x3   )
 #define         CCLK_IS_FCCODIV8           ( CCLKCFG = 0x7  )
 #define         CCLK_IS_FCCODIV10          ( CCLKCFG = 0x9  )
 #define         CCLK_IS_FCCODIV40          ( CCLKCFG = 0x39 )
 
+#define         USB_IS_FCCODIV6            ( USBCLKCFG = 5 )
 #define         USB_IS_FCCODIV10           ( USBCLKCFG = 9 )
 
 #endif

@@ -62,6 +62,38 @@ void pllstop(void) {
 }
 
 /*
+ * pllstart_seventytwomhz
+ * lpc23xx rev03 p60
+ * Fcco = 288Mhz, M=12, N=1, Fin = 12Mhz 
+ */
+void pllstart_seventytwomhz(void) { 
+    pllstat.cclk_mhz = ZERO;
+
+    pllstop();
+
+    mainOSC_ENABLE;
+    while (!mainOSC_READY);
+
+    mainOSC_SELECT;
+
+    FCCO_TWO_EIGHTY_EIGHT_MHZ;
+    pllfeed();
+
+    SET_PLLE;
+    pllfeed();
+
+    CCLK_IS_FCCODIV4;
+    USB_IS_FCCODIV6;
+
+    while(!PLOCK);
+
+    SET_PLLC;
+    pllfeed();
+    pllstat.cclk_mhz = SEVENTY_TWO_MHZ;
+}
+
+
+/*
  * pllstart_sixtymhz
  * lpc23xx rev03 p60
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz 
@@ -123,34 +155,4 @@ void pllstart_fourtyeightmhz(void) {
     pllstat.cclk_mhz = FOURTY_EIGHT_MHZ;
 }
 
-/*
- * pllstart_twelvemhz
- * lpc23xx rev03 p60
- * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
- */
-void pllstart_twelvemhz(void) {
-    pllstat.cclk_mhz = ZERO;
-
-    pllstop();
-
-    mainOSC_ENABLE;
-    while (!mainOSC_READY);
-
-    mainOSC_SELECT;
-
-    FCCO_FOUR_EIGHTY_MHZ;
-    pllfeed();
-
-    SET_PLLE;
-    pllfeed();
-
-    CCLK_IS_FCCODIV40;
-    USB_IS_FCCODIV10;
-
-    while(!PLOCK);
-
-    SET_PLLC;
-    pllfeed();
-    pllstat.cclk_mhz = TWELVE_MHZ;
-}
 

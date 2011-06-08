@@ -36,10 +36,10 @@ int main (void) {
     int8_t c;
     char* instring;
 
-    pllstart_sixtymhz() ;
+    pllstart_seventytwomhz() ;
+    //pllstart_sixtymhz() ;
     //pllstart_fourtyeightmhz() ;
 
-    //pllstart_twelvemhz();
 
     uart0_init_115200() ;
 

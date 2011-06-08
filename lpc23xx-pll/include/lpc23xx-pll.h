@@ -13,9 +13,9 @@
 
 typedef enum Freqtype { 
     ZERO             = 0, 
-    TWELVE_MHZ       = 12000000, 
     FOURTY_EIGHT_MHZ = 48000000, 
-    SIXTY_MHZ        = 60000000 
+    SIXTY_MHZ        = 60000000, 
+    SEVENTY_TWO_MHZ  = 72000000 
 } Freq;
 
 extern struct pll_status {
@@ -28,8 +28,8 @@ void    	pllfeed(void) ;
 
 void    	pllstop(void) ;
 
+void    	pllstart_seventytwomhz(void) ;
 void    	pllstart_sixtymhz(void) ;
 void    	pllstart_fourtyeightmhz(void) ;
-void    	pllstart_twelvemhz(void) ;
 
 #endif

@@ -69,11 +69,6 @@ void uart0_init_115200(void) {
     cclk = pllquery_cclk_mhz();
 
     switch(cclk) {
-        case TWELVE_MHZ:
-            U0DLL = 4;
-            U0DLM = 0;
-            U0FDR = (8<<4) | 5; // MULVAL = 8, DIVADD = 5;
-            break;
         case FOURTY_EIGHT_MHZ:
             U0DLL = 17;
             U0DLM = 0;
@@ -83,6 +78,11 @@ void uart0_init_115200(void) {
             U0DLL = 21;
             U0DLM = 0;
             U0FDR = (11<<4) | 6; // MULVAL = 11, DIVADD = 6;
+            break;
+        case SEVENTY_TWO_MHZ:
+            U0DLL = 26;
+            U0DLM = 0;
+            U0FDR = (2<<4) | 1; // MULVAL = 11, DIVADD = 6;
             break;
         default:
             while(1);
