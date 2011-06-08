@@ -14,8 +14,7 @@ OD              := arm-elf-objdump
 
 TYPE            ?= lpc23xx
 
-TARGET          ?= OLIMEXLPCP2378REVA
-# TARGET          = -DLPC2368PSASGFE
+TARGET          ?=
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
@@ -51,7 +50,8 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) -D$(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
 
 AFLAGS          = -g  -ahls -mapcs-32
 
@@ -100,7 +100,6 @@ clean:
 
 allclean: clean
 	
-
 rebuild: allclean
 	$(MAKE)
 
