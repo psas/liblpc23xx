@@ -126,10 +126,9 @@ void uart0_putchar(int8_t ch) {
  */
 void uart0_putstring(const char *s) {
 
-    while(*s) {
+    while(*s ) {
         uart0_putchar(*s++); // put the char
     }
-    uart0_putchar('\n');
 }
 
 

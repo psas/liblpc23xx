@@ -41,6 +41,6 @@ void    uart0_putstring(const char *s) ;
 
 int8_t  uart0_getchar (void) ;
 
-char*    uart0_getstring (void) ;
+char*   uart0_getstring (void) ;
 
 #endif
