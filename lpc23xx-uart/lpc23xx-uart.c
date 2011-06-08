@@ -10,17 +10,6 @@
 
 #include "lpc23xx-uart.h"
 
-#include "olimexlpcp2378reva.h"
-
-#ifdef OLIMEXLPCP2378REVA
-    #include "olimexlpcp2378reva.h"
-#elif LPC2368PSASGFE
-    #include "lpc2368-PSAS-GFE"
-#else
-    #error ***** No board configuration defined. ******
-#endif
-
-
 struct uart0_status uart0stat;
 
 /*

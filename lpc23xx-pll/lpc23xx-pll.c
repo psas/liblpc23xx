@@ -4,22 +4,16 @@
  */
 
 #include <stdint.h>
-#include "lpc23xx.h"
 
-// #include "olimexlpcp2378reva.h"
+#include "lpc23xx.h"
 
 #include "lpc23xx-pll.h"
 
-#ifdef OLIMEXLPCP2378REVA
-    #include "olimexlpcp2378reva.h"
-#elif LPC2368PSASGFE
-    #include "lpc2368-PSAS-GFE"
-#else
-    #error ***** No board configuration defined. ******
-#endif
-
 struct pll_status pllstat;
 
+/*
+ * pllquery_clk_mhz
+ */
 Freq    pllquery_cclk_mhz(void) {
     return(pllstat.cclk_mhz);
 }
@@ -35,7 +29,7 @@ void pllfeed(void) {
 
     /* disable interrupts */
     savedInterrupts = VICIntEnable;
-    VIC_ENABLE_CLEAR;
+    VICIntEnClr     = (unsigned) 0xFFFFFFFF;
 
     PLLFEED         = FEEDBYTE_A;
     PLLFEED         = FEEDBYTE_B;

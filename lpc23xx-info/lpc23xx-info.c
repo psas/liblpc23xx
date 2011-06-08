@@ -9,10 +9,12 @@
 
 #include "lpc23xx-info.h"
 
-#ifdef OLIMEXLPCP2378REVA
-    #include "olimexlpcp2378reva.h"
-#elif LPC2368PSASGFE
-    #include "lpc2368-PSAS-GFE"
-#else
-    #error ***** No board configuration defined. ******
-#endif
+struct liblpc23xx_info brd;
+
+/*
+ * infoquery_board
+ */
+char*    infoquery_boardtag(void) {
+    return(brd.boardtag);
+}
+

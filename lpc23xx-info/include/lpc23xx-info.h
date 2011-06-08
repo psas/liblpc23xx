@@ -4,15 +4,16 @@
  * lpc23xx-info.h
  */
 
-
-struct liblpc23xx_info {
-	char*	target ;
+extern struct liblpc23xx_info {
+	char*	boardtag ;
 } ;
 
-#ifdef OLIMEXLPCP2378REVA
-   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .target = "olimexlpcp2378reva" };
-#elif LPC2368PSASGFE
-   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .target = "lpc2368-PSAS-GFE" };
+char*   infoquery_boardtag(void) ;
+
+#ifdef BOARDA
+   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .boardtag = "boarda" };
+#elif BOARDB
+   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .boardtag = "boardb" };
 #else
-   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .target = "undefined" };
+   static struct liblpc23xx_info lpc23xx_info __attribute__ ((unused)) = { .boardtag = "undefined" };
 #endif
