@@ -51,7 +51,7 @@ COBJS           = $(CSRCS:.c=.o)
 AOBJS           = $(ASRCS:.s=.o)
                   
 #CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -Werror -fno-common -O0 -g -mcpu=arm7tdmi-s
 
 AFLAGS          = -g  -ahls -mapcs-32
 
