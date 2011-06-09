@@ -2,6 +2,8 @@
 NAME            := lpc23xx-uart-test
 LIBDIR          := ../..
 
+CROSS           := /opt/cross
+
 CC              := arm-elf-gcc
 LD              := arm-elf-ld
 AR              := arm-elf-ar rvs
@@ -17,13 +19,12 @@ INCLUDE         := -I.\
 
 TYPE            ?= lpc23xx
 
-TARGET          ?= OLIMEXLPCP2378REVA
-# TARGET          = -DLPC2368PSASGFE
+TARGET          ?=
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) -D$(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
 
 AFLAGS          = -g  -ahls -mapcs-32
 
@@ -70,7 +71,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS)
+	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/4.2.1 -lgcc
 
 $(NAME).s: $(NAME).c
 	@echo "========= Combined Assembler and Source for $@ =================="

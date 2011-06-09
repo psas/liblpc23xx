@@ -43,32 +43,25 @@
 #define         USB_IS_FCCODIV6            ( USBCLKCFG = 5 )
 #define         USB_IS_FCCODIV10           ( USBCLKCFG = 9 )
 
-
-
-
-
-
-
-
 typedef enum Freqtype { 
-    ZERO             = 0, 
-    FOURTY_EIGHT_MHZ = 48000000, 
-    SIXTY_MHZ        = 60000000, 
-    SEVENTY_TWO_MHZ  = 72000000 
+    ZERO             = (uint32_t) 0, 
+    FOURTY_EIGHT_MHZ = (uint32_t) 48000000, 
+    SIXTY_MHZ        = (uint32_t) 60000000, 
+    SEVENTY_TWO_MHZ  = (uint32_t) 72000000 
 } Freq;
 
 extern struct pll_status {
     Freq cclk_mhz;
 } pllstat ;
 
-Freq        pllquery_cclk_mhz(void);
+Freq            pllquery_cclk_mhz(void);
 
-void    	pllfeed(void) ;
+void            pllfeed(void) ;
 
-void    	pllstop(void) ;
+void            pllstop(void) ;
 
-void    	pllstart_seventytwomhz(void) ;
-void    	pllstart_sixtymhz(void) ;
-void    	pllstart_fourtyeightmhz(void) ;
+void            pllstart_seventytwomhz(void) ;
+void            pllstart_sixtymhz(void) ;
+void            pllstart_fourtyeightmhz(void) ;
 
 #endif

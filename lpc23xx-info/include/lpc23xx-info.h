@@ -6,7 +6,7 @@
 
 extern struct liblpc23xx_info {
 	char*	boardtag ;
-} ;
+} brd;
 
 char*   infoquery_boardtag(void) ;
 
