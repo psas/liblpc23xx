@@ -34,6 +34,66 @@ uint8_t uart0_query_stopbits(void) {
 }
 
 /*
+ * uart_0_init_9600
+ * initialize uart0
+ */
+void uart0_init_9600(void) {
+
+    Freq     cclk;
+
+    uart0stat.baudrate = ZERO_H_B;
+
+    // Enable GPIO for TXD/RXD
+    SET_RXD0_TXD0;
+
+    // turn on power.
+    POWER_ON_UART0;
+
+    // divide cclk by one
+    PCLKSEL0_UART0_DIV1;
+
+    // enable divisor latch access
+    SET_DLAB0;
+
+    cclk = pllquery_cclk_mhz();
+
+    switch(cclk) {
+        case FOURTY_EIGHT_MHZ:
+            U0DLL = 208;
+            U0DLM = 0;
+            U0FDR = (2<<4) | 1; // MULVAL = 2, DIVADD = 1;
+            break;
+        case SIXTY_MHZ:
+            U0DLL = 4;
+            U0DLM = 1;
+            U0FDR = (2<<4) | 1; // MULVAL = 2, DIVADD = 1;
+            break;
+        case SEVENTY_TWO_MHZ:
+            U0DLL = 56;
+            U0DLM = 1;
+            U0FDR = (2<<4) | 1; // MULVAL = 2, DIVADD = 1;
+            break;
+        default:
+            while(1);
+            break;
+    }
+    // enable interrupt
+    UART0_FCR_ONE_CHAR_EN;
+
+    // set parameters
+    UART0_8N1;
+
+    uart0stat.charlength = 8;
+    uart0stat.stopbits   = 1;
+
+    CLEAR_DLAB0;
+
+    uart0stat.baudrate = NINETY_SIX_H_B;
+
+}
+
+
+/*
  * uart_0_init_115200
  * initialize uart0
  */

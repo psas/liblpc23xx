@@ -40,8 +40,8 @@ int main (void) {
     //pllstart_sixtymhz() ;
     //pllstart_fourtyeightmhz() ;
 
-
     uart0_init_115200() ;
+    //uart0_init_9600() ;
 
     uart0_putstring("\n***Starting UART test: uart0.***\n\n");
 

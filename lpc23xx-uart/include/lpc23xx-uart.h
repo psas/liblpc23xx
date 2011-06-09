@@ -142,6 +142,7 @@ uint8_t uart0_query_charlength(void) ;
 
 uint8_t uart0_query_stopbits(void) ;
 
+void    uart0_init_9600(void) ;
 void    uart0_init_115200(void) ;
 
 void    uart0_putchar(int8_t ch) ;
