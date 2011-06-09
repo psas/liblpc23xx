@@ -1,6 +1,6 @@
 
 NAME            := lpc23xx-uart-test
-LIBDIR          := ../../
+LIBDIR          := ../..
 
 CC              := arm-elf-gcc
 LD              := arm-elf-ld
