@@ -2,6 +2,7 @@
 NAME            := lpc23xx-pll-test
 LIBDIR          := ../../.
 CROSS           := /opt/cross
+GCC_VERSION     ?= 4.5.2
 
 CC              := arm-elf-gcc
 LD              := arm-elf-ld
@@ -69,7 +70,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/4.2.1 -lgcc
+	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).s: $(NAME).c
 	@echo "========= Combined Assembler and Source for $@ =================="
