@@ -5,12 +5,20 @@
 
 NAME            := liblpc23xx
 
-CC              := arm-elf-gcc
-LD              := arm-elf-ld -v
-AR              := arm-elf-ar rvs
-AS              := arm-elf-as
-CP              := arm-elf-objcopy
-OD              := arm-elf-objdump
+#CC              := arm-elf-gcc
+#LD              := arm-elf-ld -v
+#AR              := arm-elf-ar rvs
+#AS              := arm-elf-as
+#CP              := arm-elf-objcopy
+#OD              := arm-elf-objdump
+
+CC              := arm-linux-gnueabi-gcc
+LD              := arm-linux-gnueabi-ld -v
+AR              := arm-linux-gnueabi-ar rvs
+AS              := arm-linux-gnueabi-as
+CP              := arm-linux-gnueabi-objcopy
+OD              := arm-linux-gnueabi-objdump
+
 
 TYPE            ?= lpc23xx
 
