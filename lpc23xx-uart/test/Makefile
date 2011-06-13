@@ -5,12 +5,19 @@ GCC_VERSION     ?= 4.5.2
 
 CROSS           := /opt/cross
 
-CC              := arm-elf-gcc
-LD              := arm-elf-ld
-AR              := arm-elf-ar rvs
-AS              := arm-elf-as
-CP              := arm-elf-objcopy
-OD              := arm-elf-objdump
+#CC              := arm-elf-gcc
+#LD              := arm-elf-ld
+#AR              := arm-elf-ar rvs
+#AS              := arm-elf-as
+#CP              := arm-elf-objcopy
+#OD              := arm-elf-objdump
+
+CC              := arm-linux-gnueabi-gcc
+LD              := arm-linux-gnueabi-ld -v
+AR              := arm-linux-gnueabi-ar rvs
+AS              := arm-linux-gnueabi-as
+CP              := arm-linux-gnueabi-objcopy
+OD              := arm-linux-gnueabi-objdump
 
 INCLUDE         := -I.\
                    -I./include\
