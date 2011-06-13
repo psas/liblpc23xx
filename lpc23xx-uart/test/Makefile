@@ -1,15 +1,23 @@
 
 NAME            := lpc23xx-uart-test
 LIBDIR          := ../..
+GCC_VERSION     ?= 4.5.2
 
 CROSS           := /opt/cross
 
-CC              := arm-elf-gcc
-LD              := arm-elf-ld
-AR              := arm-elf-ar rvs
-AS              := arm-elf-as
-CP              := arm-elf-objcopy
-OD              := arm-elf-objdump
+#CC              := arm-elf-gcc
+#LD              := arm-elf-ld
+#AR              := arm-elf-ar rvs
+#AS              := arm-elf-as
+#CP              := arm-elf-objcopy
+#OD              := arm-elf-objdump
+
+CC              := arm-linux-gnueabi-gcc
+LD              := arm-linux-gnueabi-ld -v
+AR              := arm-linux-gnueabi-ar rvs
+AS              := arm-linux-gnueabi-as
+CP              := arm-linux-gnueabi-objcopy
+OD              := arm-linux-gnueabi-objdump
 
 INCLUDE         := -I.\
                    -I./include\
@@ -71,7 +79,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/4.2.1 -lgcc
+	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).s: $(NAME).c
 	@echo "========= Combined Assembler and Source for $@ =================="
