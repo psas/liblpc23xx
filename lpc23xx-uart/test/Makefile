@@ -33,7 +33,8 @@ TARGET          ?=
 DEBUG           ?=
 #DEBUG           = -DDEBUG
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -flto -fno-common -O0 -g -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -flto -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O2 -g -mcpu=arm7tdmi-s
 
 AFLAGS          = -g  -ahls -mapcs-32
 
