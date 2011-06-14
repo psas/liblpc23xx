@@ -2,6 +2,9 @@
 NAME            := lpc23xx-uart-test
 LIBDIR          := ../..
 
+#CROSS           := /opt/cross
+#GCC_VERSION     ?= 4.5.2
+
 #CC              := arm-elf-gcc
 #LD              := arm-elf-ld
 #AR              := arm-elf-ar rvs
@@ -29,13 +32,14 @@ TARGET          ?=
 DEBUG           ?=
 #DEBUG           = -DDEBUG
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -flto -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O2 -g -mcpu=arm7tdmi-s
 
 AFLAGS          = -g  -ahls -mapcs-32
 
 ASFLAGS         = -S -c -g $(INCLUDE)
 
-LDFLAGS          = -T $(TYPE).ld -nostartfiles -Map $(NAME).map
+LDFLAGS          = -T $(TYPE).ld -nostartfiles  -Map $(NAME).map
 
 CPFLAGS         := -O binary
 HEXFLAGS        := -O ihex
