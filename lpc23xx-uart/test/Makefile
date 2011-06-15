@@ -1,16 +1,10 @@
 
+#
+# Makefile for lpc23xx-uart-test
+#
+
 NAME            := lpc23xx-uart-test
 LIBDIR          := ../..
-
-#CROSS           := /opt/cross
-#GCC_VERSION     ?= 4.5.2
-
-#CC              := arm-elf-gcc
-#LD              := arm-elf-ld
-#AR              := arm-elf-ar rvs
-#AS              := arm-elf-as
-#CP              := arm-elf-objcopy
-#OD              := arm-elf-objdump
 
 CC              := arm-linux-gnueabi-gcc
 LD              := arm-linux-gnueabi-ld -v
@@ -27,33 +21,29 @@ INCLUDE         := -I.\
 
 TYPE            ?= lpc23xx
 
-TARGET          ?=
-
 DEBUG           ?=
-#DEBUG           = -DDEBUG
-                  
-#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -flto -fno-common -O0 -g -mcpu=arm7tdmi-s
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O2 -g -mcpu=arm7tdmi-s
+#DEBUG          = -DDEBUG
 
-AFLAGS          = -g  -ahls -mapcs-32
+#CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall       -fno-common -O2 -mcpu=arm7tdmi-s
 
-ASFLAGS         = -S -c -g $(INCLUDE)
+ASFLAGS         = -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
-LDFLAGS          = -T $(TYPE).ld -nostartfiles  -Map $(NAME).map
+LDFLAGS         = -T $(TYPE).ld -nostartfiles -Map $(NAME).map
 
 CPFLAGS         := -O binary
 HEXFLAGS        := -O ihex
 ODFLAGS         := -x --syms
 
 ASRCS           := boot.s
-                  
+
 CSRCS           := $(NAME).c hwsys.c
 
 COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
 
-EXLIBS          = $(LIBDIR)/liblpc23xx.a 
+EXLIBS          = $(LIBDIR)/liblpc23xx.a
 
 PROGS           = $(NAME).out
 
@@ -61,16 +51,15 @@ PROGS           = $(NAME).out
 
 .SUFFIXES : .c .cpp .s
 
-
 .c.o :
 	@echo "======== COMPILING $@ ========================"
 	$(CC) $(CFLAGS) -c $<
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(AFLAGS) -o $@ $< > $*.lst
+	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
-all:  $(PROGS) $(EXLIBS) $(NAME).hex Makefile
+all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).sdump Makefile
 
 $(COBJS): include/*.h
 
@@ -82,21 +71,21 @@ $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
 	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS)
 
-$(NAME).s: $(NAME).c
-	@echo "========= Combined Assembler and Source for $@ =================="
-	$(CC) $(ASFLAGS) -o $@ $(NAME).c
+$(NAME).sdump: $(NAME).c
+	@echo "========= Combined Assembler and Source for $< =================="
+	$(CC) -c -g $(INCLUDE) -Wa,-ahl=$@ $<
 
 $(NAME).hex: $(NAME).out
-	@echo "========= hex file for $@ =================="
-	$(CP) $(HEXFLAGS) $(NAME).out $(NAME).hex
-		
+	@echo "========= hex file for $< =================="
+	$(CP) $(HEXFLAGS) $< $@
+
 $(NAME).bin: $(NAME).out
-	@echo "========= bin file for $@ =================="
-	$(CP) $(CPFLAGS) $(NAME).out $(NAME).bin
-	$(OD) $(ODFLAGS) $(NAME).out > $(NAME).dmp
+	@echo "========= bin file for $< =================="
+	$(CP) $(CPFLAGS) $< $@
+	$(OD) $(ODFLAGS) $< > $(NAME).dmp
 
 clean:
-	$(RM) $(EXLIBS) $(PROGS) $(AOBJS) $(COBJS) \
+	$(RM) $(EXLIBS) $(PROGS) $(AOBJS) $(COBJS) $(NAME).sdump \
 	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 
 allclean: clean

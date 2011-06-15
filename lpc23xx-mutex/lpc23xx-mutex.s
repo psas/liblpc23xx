@@ -28,10 +28,10 @@
 
 .text
 
-.code        32
+.code           32
 
 # align on 4 byte (word) boundary
-.align       4
+.align          4
 
 # defining constants
 .equ LOCKED   , 0
@@ -39,6 +39,7 @@
 
 # renaming registers
 mutex_addr .req r0
+cycles     .req r1
 
 #inputb .req r1
 #inputc .req r2
@@ -49,7 +50,7 @@ mutex_addr .req r0
 
 .global init_mutex
 init_mutex:
-    # prolog
+    ### prolog ###
     # store multiple, decrement before. '!' says to write back new value to sp
     stmdb sp!, {r4-r11}
 
@@ -58,7 +59,7 @@ init_mutex:
 
     str r0, [r1]
 
-    # epilog
+    ### epilog ###
     # load multiple, increment after. '!' says to write back new value to sp
     ldmia sp!, {r4-r11}
 
@@ -68,11 +69,9 @@ init_mutex:
     # lr contains address of next instruction after function
     mov pc, lr
 
-
-# c call
 .global get_mutex
 get_mutex:
-    # prolog
+    ### prolog ###
     # store multiple, decrement before. '!' says to write back new value to sp
     stmdb sp!, {r4-r11}
 
@@ -88,7 +87,7 @@ spin_lock:
     cmp r0, #LOCKED
     beq spin_lock
 
-    # epilog
+    ### epilog ###
     # load multiple, increment after. '!' says to write back new value to sp
     ldmia sp!, {r4-r11}
 
@@ -98,5 +97,4 @@ spin_lock:
     # lr contains address of next instruction after function
     mov pc, lr
 .end
-
 

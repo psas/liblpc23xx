@@ -66,7 +66,7 @@ AOBJS           = $(ASRCS:.s=.o)
 #CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
 CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -Werror -fno-common -O2 -g -mcpu=arm7tdmi-s
 
-AFLAGS          =  -mapcs-32
+AFLAGS          = -mapcs-32
 
 ASFLAGS         = -g  -ahls -mfloat-abi=softfp $(INCLUDE) 
 
@@ -87,7 +87,7 @@ ODFLAGS         := -x --syms
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
+	$(AS) $(ASFLAGS) -o $@ $<
         
 all: $(LIBS) $(TESTS) Makefile
 
