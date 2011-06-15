@@ -1,0 +1,532 @@
+ARM GAS  /tmp/cc0S2JjI.s 			page 1
+
+
+   1              		.file	"lpc23xx-binsem-test.c"
+   2              		.section	.debug_abbrev,"",%progbits
+   3              	.Ldebug_abbrev0:
+   4              		.section	.debug_info,"",%progbits
+   5              	.Ldebug_info0:
+   6              		.section	.debug_line,"",%progbits
+   7              	.Ldebug_line0:
+   8 0000 9F000000 		.text
+   8      02007900 
+   8      00000201 
+   8      FB0E0D00 
+   8      01010101 
+   9              	.Ltext0:
+  10              		.section	.rodata
+  11              		.align	2
+  12              	.LC0:
+  13 0000 0A2A2A2A 		.ascii	"\012***Starting binsem test: uart0.***\012\012\000"
+  13      53746172 
+  13      74696E67 
+  13      2062696E 
+  13      73656D20 
+  14 0026 0000     		.align	2
+  15              	.LC1:
+  16 0028 0A2A2A2A 		.ascii	"\012***ERROR: is_binsem_locked: Semaphore should no"
+  16      4552524F 
+  16      523A2069 
+  16      735F6269 
+  16      6E73656D 
+  17 0058 74206265 		.ascii	"t be locked! ***\000"
+  17      206C6F63 
+  17      6B656421 
+  17      202A2A2A 
+  17      00
+  18 0069 000000   		.align	2
+  19              	.LC2:
+  20 006c 0A2A2A2A 		.ascii	"\012***ERROR: get_binsem: Failed! ***\000"
+  20      4552524F 
+  20      523A2067 
+  20      65745F62 
+  20      696E7365 
+  21 008f 00       		.align	2
+  22              	.LC3:
+  23 0090 0A2A2A2A 		.ascii	"\012***End of binsem test: uart0.***\012\012\000"
+  23      456E6420 
+  23      6F662062 
+  23      696E7365 
+  23      6D207465 
+  24              		.text
+  25              		.align	2
+  26              		.global	main
+  27              		.type	main, %function
+  28              	main:
+  29              	.LFB2:
+  30              		.file 1 "lpc23xx-binsem-test.c"
+   1:lpc23xx-binsem-test.c **** 
+   2:lpc23xx-binsem-test.c **** /*
+   3:lpc23xx-binsem-test.c ****  * lpc23xx-binsem-test.c
+ARM GAS  /tmp/cc0S2JjI.s 			page 2
+
+
+   4:lpc23xx-binsem-test.c ****  */
+   5:lpc23xx-binsem-test.c **** 
+   6:lpc23xx-binsem-test.c **** #include <stdint.h>
+   7:lpc23xx-binsem-test.c **** #include "lpc23xx.h"
+   8:lpc23xx-binsem-test.c **** 
+   9:lpc23xx-binsem-test.c **** #include "lpc23xx-pll.h"
+  10:lpc23xx-binsem-test.c **** 
+  11:lpc23xx-binsem-test.c **** #include "lpc23xx-uart.h"
+  12:lpc23xx-binsem-test.c **** 
+  13:lpc23xx-binsem-test.c **** #include "lpc23xx-binsem.h"
+  14:lpc23xx-binsem-test.c **** 
+  15:lpc23xx-binsem-test.c **** #include "lpc23xx-binsem-test.h"
+  16:lpc23xx-binsem-test.c **** 
+  17:lpc23xx-binsem-test.c **** int main (void) {
+  31              		.loc 1 17 0
+  32              		@ args = 0, pretend = 0, frame = 16
+  33              		@ frame_needed = 1, uses_anonymous_args = 0
+  34 0000 0DC0A0E1 		mov	ip, sp
+  35              	.LCFI0:
+  36 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+  37              	.LCFI1:
+  38 0008 04B04CE2 		sub	fp, ip, #4
+  39              	.LCFI2:
+  40 000c 10D04DE2 		sub	sp, sp, #16
+  41              	.LCFI3:
+  18:lpc23xx-binsem-test.c **** 
+  19:lpc23xx-binsem-test.c ****     uint32_t binsem      = 1;
+  42              		.loc 1 19 0
+  43 0010 0130A0E3 		mov	r3, #1
+  44 0014 1C300BE5 		str	r3, [fp, #-28]
+  20:lpc23xx-binsem-test.c ****     uint32_t wait_count  = 10;
+  45              		.loc 1 20 0
+  46 0018 0A30A0E3 		mov	r3, #10
+  47 001c 18300BE5 		str	r3, [fp, #-24]
+  21:lpc23xx-binsem-test.c **** 
+  22:lpc23xx-binsem-test.c ****     uint32_t getlock_bool = 0;
+  48              		.loc 1 22 0
+  49 0020 0030A0E3 		mov	r3, #0
+  50 0024 14300BE5 		str	r3, [fp, #-20]
+  23:lpc23xx-binsem-test.c ****     uint32_t lock_bool    = 0;
+  51              		.loc 1 23 0
+  52 0028 0030A0E3 		mov	r3, #0
+  53 002c 10300BE5 		str	r3, [fp, #-16]
+  24:lpc23xx-binsem-test.c **** 
+  25:lpc23xx-binsem-test.c ****     // init_binsem(binsem);
+  26:lpc23xx-binsem-test.c **** 
+  27:lpc23xx-binsem-test.c ****     pllstart_seventytwomhz() ;
+  54              		.loc 1 27 0
+  55 0030 FEFFFFEB 		bl	pllstart_seventytwomhz
+  28:lpc23xx-binsem-test.c **** 
+  29:lpc23xx-binsem-test.c ****     uart0_init_115200() ;
+  56              		.loc 1 29 0
+  57 0034 FEFFFFEB 		bl	uart0_init_115200
+  30:lpc23xx-binsem-test.c **** 
+  31:lpc23xx-binsem-test.c ****     init_binsem(&binsem);
+  58              		.loc 1 31 0
+  59 0038 1C304BE2 		sub	r3, fp, #28
+ARM GAS  /tmp/cc0S2JjI.s 			page 3
+
+
+  60 003c 0300A0E1 		mov	r0, r3
+  61 0040 FEFFFFEB 		bl	init_binsem
+  32:lpc23xx-binsem-test.c **** 
+  33:lpc23xx-binsem-test.c ****     uart0_putstring("\n***Starting binsem test: uart0.***\n\n");
+  62              		.loc 1 33 0
+  63 0044 6C009FE5 		ldr	r0, .L7
+  64 0048 FEFFFFEB 		bl	uart0_putstring
+  34:lpc23xx-binsem-test.c **** 
+  35:lpc23xx-binsem-test.c ****     lock_bool = is_binsem_locked(&binsem);
+  65              		.loc 1 35 0
+  66 004c 1C304BE2 		sub	r3, fp, #28
+  67 0050 0300A0E1 		mov	r0, r3
+  68 0054 FEFFFFEB 		bl	is_binsem_locked
+  69 0058 0030A0E1 		mov	r3, r0
+  70 005c 10300BE5 		str	r3, [fp, #-16]
+  36:lpc23xx-binsem-test.c **** 
+  37:lpc23xx-binsem-test.c ****     if(lock_bool) {
+  71              		.loc 1 37 0
+  72 0060 10301BE5 		ldr	r3, [fp, #-16]
+  73 0064 000053E3 		cmp	r3, #0
+  74 0068 0100000A 		beq	.L2
+  38:lpc23xx-binsem-test.c ****         uart0_putstring("\n***ERROR: is_binsem_locked: Semaphore should not be locked! ***");
+  75              		.loc 1 38 0
+  76 006c 48009FE5 		ldr	r0, .L7+4
+  77 0070 FEFFFFEB 		bl	uart0_putstring
+  78              	.L2:
+  39:lpc23xx-binsem-test.c ****     }
+  40:lpc23xx-binsem-test.c **** 
+  41:lpc23xx-binsem-test.c ****     getlock_bool = get_binsem(&binsem, wait_count);
+  79              		.loc 1 41 0
+  80 0074 1C304BE2 		sub	r3, fp, #28
+  81 0078 0300A0E1 		mov	r0, r3
+  82 007c 18101BE5 		ldr	r1, [fp, #-24]
+  83 0080 FEFFFFEB 		bl	get_binsem
+  84 0084 0030A0E1 		mov	r3, r0
+  85 0088 14300BE5 		str	r3, [fp, #-20]
+  42:lpc23xx-binsem-test.c ****     if(!getlock_bool) {
+  86              		.loc 1 42 0
+  87 008c 14301BE5 		ldr	r3, [fp, #-20]
+  88 0090 000053E3 		cmp	r3, #0
+  89 0094 0100001A 		bne	.L4
+  43:lpc23xx-binsem-test.c ****         uart0_putstring("\n***ERROR: get_binsem: Failed! ***");
+  90              		.loc 1 43 0
+  91 0098 20009FE5 		ldr	r0, .L7+8
+  92 009c FEFFFFEB 		bl	uart0_putstring
+  93              	.L4:
+  44:lpc23xx-binsem-test.c ****     }
+  45:lpc23xx-binsem-test.c **** 
+  46:lpc23xx-binsem-test.c ****     uart0_putstring("\n***End of binsem test: uart0.***\n\n");
+  94              		.loc 1 46 0
+  95 00a0 1C009FE5 		ldr	r0, .L7+12
+  96 00a4 FEFFFFEB 		bl	uart0_putstring
+  47:lpc23xx-binsem-test.c **** 
+  48:lpc23xx-binsem-test.c ****     return(0);
+  97              		.loc 1 48 0
+  98 00a8 0030A0E3 		mov	r3, #0
+  49:lpc23xx-binsem-test.c **** 
+ARM GAS  /tmp/cc0S2JjI.s 			page 4
+
+
+  50:lpc23xx-binsem-test.c **** }
+  99              		.loc 1 50 0
+ 100 00ac 0300A0E1 		mov	r0, r3
+ 101 00b0 0CD04BE2 		sub	sp, fp, #12
+ 102 00b4 00A89DE8 		ldmfd	sp, {fp, sp, pc}
+ 103              	.L8:
+ 104              		.align	2
+ 105              	.L7:
+ 106 00b8 00000000 		.word	.LC0
+ 107 00bc 28000000 		.word	.LC1
+ 108 00c0 6C000000 		.word	.LC2
+ 109 00c4 90000000 		.word	.LC3
+ 110              	.LFE2:
+ 111              		.size	main, .-main
+ 112              		.section	.debug_frame,"",%progbits
+ 113              	.Lframe0:
+ 114 0000 0C000000 		.4byte	.LECIE0-.LSCIE0
+ 115              	.LSCIE0:
+ 116 0004 FFFFFFFF 		.4byte	0xffffffff
+ 117 0008 01       		.byte	0x1
+ 118 0009 00       		.ascii	"\000"
+ 119 000a 01       		.uleb128 0x1
+ 120 000b 7C       		.sleb128 -4
+ 121 000c 0E       		.byte	0xe
+ 122 000d 0C       		.byte	0xc
+ 123 000e 0D       		.uleb128 0xd
+ 124 000f 00       		.uleb128 0x0
+ 125              		.align	2
+ 126              	.LECIE0:
+ 127              	.LSFDE0:
+ 128 0010 1C000000 		.4byte	.LEFDE0-.LASFDE0
+ 129              	.LASFDE0:
+ 130 0014 00000000 		.4byte	.Lframe0
+ 131 0018 00000000 		.4byte	.LFB2
+ 132 001c C8000000 		.4byte	.LFE2-.LFB2
+ 133 0020 44       		.byte	0x4
+ 134              		.4byte	.LCFI0-.LFB2
+ 135 0021 0D       		.byte	0xd
+ 136 0022 0C       		.uleb128 0xc
+ 137 0023 44       		.byte	0x4
+ 138              		.4byte	.LCFI1-.LCFI0
+ 139 0024 8E       		.byte	0x8e
+ 140 0025 02       		.uleb128 0x2
+ 141 0026 8D       		.byte	0x8d
+ 142 0027 03       		.uleb128 0x3
+ 143 0028 8B       		.byte	0x8b
+ 144 0029 04       		.uleb128 0x4
+ 145 002a 44       		.byte	0x4
+ 146              		.4byte	.LCFI2-.LCFI1
+ 147 002b 0C       		.byte	0xc
+ 148 002c 0B       		.uleb128 0xb
+ 149 002d 04       		.uleb128 0x4
+ 150 002e 0000     		.align	2
+ 151              	.LEFDE0:
+ 152              		.text
+ 153              	.Letext0:
+ 154              		.section	.debug_loc,"",%progbits
+ARM GAS  /tmp/cc0S2JjI.s 			page 5
+
+
+ 155              	.Ldebug_loc0:
+ 156              	.LLST0:
+ 157 0000 00000000 		.4byte	.LFB2-.Ltext0
+ 158 0004 04000000 		.4byte	.LCFI0-.Ltext0
+ 159 0008 0100     		.2byte	0x1
+ 160 000a 5D       		.byte	0x5d
+ 161 000b 04000000 		.4byte	.LCFI0-.Ltext0
+ 162 000f 0C000000 		.4byte	.LCFI2-.Ltext0
+ 163 0013 0100     		.2byte	0x1
+ 164 0015 5C       		.byte	0x5c
+ 165 0016 0C000000 		.4byte	.LCFI2-.Ltext0
+ 166 001a C8000000 		.4byte	.LFE2-.Ltext0
+ 167 001e 0200     		.2byte	0x2
+ 168 0020 7B       		.byte	0x7b
+ 169 0021 04       		.sleb128 4
+ 170 0022 00000000 		.4byte	0x0
+ 171 0026 00000000 		.4byte	0x0
+ 172              		.file 2 "/opt/cross/lib/gcc/arm-elf/4.2.1/../../../../arm-elf/sys-include/stdint.h"
+ 173              		.section	.debug_info
+ 174 0000 9C010000 		.4byte	0x19c
+ 175 0004 0200     		.2byte	0x2
+ 176 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 177 000a 04       		.byte	0x4
+ 178 000b 01       		.uleb128 0x1
+ 179 000c 474E5520 		.ascii	"GNU C 4.2.1\000"
+ 179      4320342E 
+ 179      322E3100 
+ 180 0018 01       		.byte	0x1
+ 181 0019 6C706332 		.ascii	"lpc23xx-binsem-test.c\000"
+ 181      3378782D 
+ 181      62696E73 
+ 181      656D2D74 
+ 181      6573742E 
+ 182 002f 2F776F72 		.ascii	"/work/kwilson/Projects/psaseclipse/liblpc23xx/lpc23"
+ 182      6B2F6B77 
+ 182      696C736F 
+ 182      6E2F5072 
+ 182      6F6A6563 
+ 183 0062 78782D62 		.ascii	"xx-binsem/test\000"
+ 183      696E7365 
+ 183      6D2F7465 
+ 183      737400
+ 184 0071 00000000 		.4byte	.Ltext0
+ 185 0075 C8000000 		.4byte	.Letext0
+ 186 0079 00000000 		.4byte	.Ldebug_line0
+ 187 007d 02       		.uleb128 0x2
+ 188 007e 01       		.byte	0x1
+ 189 007f 06       		.byte	0x6
+ 190 0080 7369676E 		.ascii	"signed char\000"
+ 190      65642063 
+ 190      68617200 
+ 191 008c 02       		.uleb128 0x2
+ 192 008d 01       		.byte	0x1
+ 193 008e 08       		.byte	0x8
+ 194 008f 756E7369 		.ascii	"unsigned char\000"
+ 194      676E6564 
+ 194      20636861 
+ARM GAS  /tmp/cc0S2JjI.s 			page 6
+
+
+ 194      7200
+ 195 009d 02       		.uleb128 0x2
+ 196 009e 02       		.byte	0x2
+ 197 009f 05       		.byte	0x5
+ 198 00a0 73686F72 		.ascii	"short int\000"
+ 198      7420696E 
+ 198      7400
+ 199 00aa 02       		.uleb128 0x2
+ 200 00ab 02       		.byte	0x2
+ 201 00ac 07       		.byte	0x7
+ 202 00ad 73686F72 		.ascii	"short unsigned int\000"
+ 202      7420756E 
+ 202      7369676E 
+ 202      65642069 
+ 202      6E7400
+ 203 00c0 02       		.uleb128 0x2
+ 204 00c1 04       		.byte	0x4
+ 205 00c2 05       		.byte	0x5
+ 206 00c3 6C6F6E67 		.ascii	"long int\000"
+ 206      20696E74 
+ 206      00
+ 207 00cc 03       		.uleb128 0x3
+ 208 00cd 75696E74 		.ascii	"uint32_t\000"
+ 208      33325F74 
+ 208      00
+ 209 00d6 02       		.byte	0x2
+ 210 00d7 50       		.byte	0x50
+ 211 00d8 DC000000 		.4byte	0xdc
+ 212 00dc 02       		.uleb128 0x2
+ 213 00dd 04       		.byte	0x4
+ 214 00de 07       		.byte	0x7
+ 215 00df 6C6F6E67 		.ascii	"long unsigned int\000"
+ 215      20756E73 
+ 215      69676E65 
+ 215      6420696E 
+ 215      7400
+ 216 00f1 02       		.uleb128 0x2
+ 217 00f2 08       		.byte	0x8
+ 218 00f3 05       		.byte	0x5
+ 219 00f4 6C6F6E67 		.ascii	"long long int\000"
+ 219      206C6F6E 
+ 219      6720696E 
+ 219      7400
+ 220 0102 02       		.uleb128 0x2
+ 221 0103 08       		.byte	0x8
+ 222 0104 07       		.byte	0x7
+ 223 0105 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 223      206C6F6E 
+ 223      6720756E 
+ 223      7369676E 
+ 223      65642069 
+ 224 011c 02       		.uleb128 0x2
+ 225 011d 04       		.byte	0x4
+ 226 011e 05       		.byte	0x5
+ 227 011f 696E7400 		.ascii	"int\000"
+ 228 0123 02       		.uleb128 0x2
+ 229 0124 04       		.byte	0x4
+ARM GAS  /tmp/cc0S2JjI.s 			page 7
+
+
+ 230 0125 07       		.byte	0x7
+ 231 0126 756E7369 		.ascii	"unsigned int\000"
+ 231      676E6564 
+ 231      20696E74 
+ 231      00
+ 232 0133 04       		.uleb128 0x4
+ 233 0134 01       		.byte	0x1
+ 234 0135 6D61696E 		.ascii	"main\000"
+ 234      00
+ 235 013a 01       		.byte	0x1
+ 236 013b 11       		.byte	0x11
+ 237 013c 01       		.byte	0x1
+ 238 013d 1C010000 		.4byte	0x11c
+ 239 0141 00000000 		.4byte	.LFB2
+ 240 0145 C8000000 		.4byte	.LFE2
+ 241 0149 00000000 		.4byte	.LLST0
+ 242 014d 05       		.uleb128 0x5
+ 243 014e 62696E73 		.ascii	"binsem\000"
+ 243      656D00
+ 244 0155 01       		.byte	0x1
+ 245 0156 13       		.byte	0x13
+ 246 0157 CC000000 		.4byte	0xcc
+ 247 015b 02       		.byte	0x2
+ 248 015c 91       		.byte	0x91
+ 249 015d 60       		.sleb128 -32
+ 250 015e 05       		.uleb128 0x5
+ 251 015f 77616974 		.ascii	"wait_count\000"
+ 251      5F636F75 
+ 251      6E7400
+ 252 016a 01       		.byte	0x1
+ 253 016b 14       		.byte	0x14
+ 254 016c CC000000 		.4byte	0xcc
+ 255 0170 02       		.byte	0x2
+ 256 0171 91       		.byte	0x91
+ 257 0172 64       		.sleb128 -28
+ 258 0173 05       		.uleb128 0x5
+ 259 0174 6765746C 		.ascii	"getlock_bool\000"
+ 259      6F636B5F 
+ 259      626F6F6C 
+ 259      00
+ 260 0181 01       		.byte	0x1
+ 261 0182 16       		.byte	0x16
+ 262 0183 CC000000 		.4byte	0xcc
+ 263 0187 02       		.byte	0x2
+ 264 0188 91       		.byte	0x91
+ 265 0189 68       		.sleb128 -24
+ 266 018a 05       		.uleb128 0x5
+ 267 018b 6C6F636B 		.ascii	"lock_bool\000"
+ 267      5F626F6F 
+ 267      6C00
+ 268 0195 01       		.byte	0x1
+ 269 0196 17       		.byte	0x17
+ 270 0197 CC000000 		.4byte	0xcc
+ 271 019b 02       		.byte	0x2
+ 272 019c 91       		.byte	0x91
+ 273 019d 6C       		.sleb128 -20
+ 274 019e 00       		.byte	0x0
+ARM GAS  /tmp/cc0S2JjI.s 			page 8
+
+
+ 275 019f 00       		.byte	0x0
+ 276              		.section	.debug_abbrev
+ 277 0000 01       		.uleb128 0x1
+ 278 0001 11       		.uleb128 0x11
+ 279 0002 01       		.byte	0x1
+ 280 0003 25       		.uleb128 0x25
+ 281 0004 08       		.uleb128 0x8
+ 282 0005 13       		.uleb128 0x13
+ 283 0006 0B       		.uleb128 0xb
+ 284 0007 03       		.uleb128 0x3
+ 285 0008 08       		.uleb128 0x8
+ 286 0009 1B       		.uleb128 0x1b
+ 287 000a 08       		.uleb128 0x8
+ 288 000b 11       		.uleb128 0x11
+ 289 000c 01       		.uleb128 0x1
+ 290 000d 12       		.uleb128 0x12
+ 291 000e 01       		.uleb128 0x1
+ 292 000f 10       		.uleb128 0x10
+ 293 0010 06       		.uleb128 0x6
+ 294 0011 00       		.byte	0x0
+ 295 0012 00       		.byte	0x0
+ 296 0013 02       		.uleb128 0x2
+ 297 0014 24       		.uleb128 0x24
+ 298 0015 00       		.byte	0x0
+ 299 0016 0B       		.uleb128 0xb
+ 300 0017 0B       		.uleb128 0xb
+ 301 0018 3E       		.uleb128 0x3e
+ 302 0019 0B       		.uleb128 0xb
+ 303 001a 03       		.uleb128 0x3
+ 304 001b 08       		.uleb128 0x8
+ 305 001c 00       		.byte	0x0
+ 306 001d 00       		.byte	0x0
+ 307 001e 03       		.uleb128 0x3
+ 308 001f 16       		.uleb128 0x16
+ 309 0020 00       		.byte	0x0
+ 310 0021 03       		.uleb128 0x3
+ 311 0022 08       		.uleb128 0x8
+ 312 0023 3A       		.uleb128 0x3a
+ 313 0024 0B       		.uleb128 0xb
+ 314 0025 3B       		.uleb128 0x3b
+ 315 0026 0B       		.uleb128 0xb
+ 316 0027 49       		.uleb128 0x49
+ 317 0028 13       		.uleb128 0x13
+ 318 0029 00       		.byte	0x0
+ 319 002a 00       		.byte	0x0
+ 320 002b 04       		.uleb128 0x4
+ 321 002c 2E       		.uleb128 0x2e
+ 322 002d 01       		.byte	0x1
+ 323 002e 3F       		.uleb128 0x3f
+ 324 002f 0C       		.uleb128 0xc
+ 325 0030 03       		.uleb128 0x3
+ 326 0031 08       		.uleb128 0x8
+ 327 0032 3A       		.uleb128 0x3a
+ 328 0033 0B       		.uleb128 0xb
+ 329 0034 3B       		.uleb128 0x3b
+ 330 0035 0B       		.uleb128 0xb
+ 331 0036 27       		.uleb128 0x27
+ARM GAS  /tmp/cc0S2JjI.s 			page 9
+
+
+ 332 0037 0C       		.uleb128 0xc
+ 333 0038 49       		.uleb128 0x49
+ 334 0039 13       		.uleb128 0x13
+ 335 003a 11       		.uleb128 0x11
+ 336 003b 01       		.uleb128 0x1
+ 337 003c 12       		.uleb128 0x12
+ 338 003d 01       		.uleb128 0x1
+ 339 003e 40       		.uleb128 0x40
+ 340 003f 06       		.uleb128 0x6
+ 341 0040 00       		.byte	0x0
+ 342 0041 00       		.byte	0x0
+ 343 0042 05       		.uleb128 0x5
+ 344 0043 34       		.uleb128 0x34
+ 345 0044 00       		.byte	0x0
+ 346 0045 03       		.uleb128 0x3
+ 347 0046 08       		.uleb128 0x8
+ 348 0047 3A       		.uleb128 0x3a
+ 349 0048 0B       		.uleb128 0xb
+ 350 0049 3B       		.uleb128 0x3b
+ 351 004a 0B       		.uleb128 0xb
+ 352 004b 49       		.uleb128 0x49
+ 353 004c 13       		.uleb128 0x13
+ 354 004d 02       		.uleb128 0x2
+ 355 004e 0A       		.uleb128 0xa
+ 356 004f 00       		.byte	0x0
+ 357 0050 00       		.byte	0x0
+ 358 0051 00       		.byte	0x0
+ 359              		.section	.debug_pubnames,"",%progbits
+ 360 0000 17000000 		.4byte	0x17
+ 361 0004 0200     		.2byte	0x2
+ 362 0006 00000000 		.4byte	.Ldebug_info0
+ 363 000a A0010000 		.4byte	0x1a0
+ 364 000e 33010000 		.4byte	0x133
+ 365 0012 6D61696E 		.ascii	"main\000"
+ 365      00
+ 366 0017 00000000 		.4byte	0x0
+ 367              		.section	.debug_aranges,"",%progbits
+ 368 0000 1C000000 		.4byte	0x1c
+ 369 0004 0200     		.2byte	0x2
+ 370 0006 00000000 		.4byte	.Ldebug_info0
+ 371 000a 04       		.byte	0x4
+ 372 000b 00       		.byte	0x0
+ 373 000c 0000     		.2byte	0x0
+ 374 000e 0000     		.2byte	0x0
+ 375 0010 00000000 		.4byte	.Ltext0
+ 376 0014 C8000000 		.4byte	.Letext0-.Ltext0
+ 377 0018 00000000 		.4byte	0x0
+ 378 001c 00000000 		.4byte	0x0
+ 379              		.ident	"GCC: (GNU) 4.2.1"
