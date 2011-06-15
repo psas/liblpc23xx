@@ -1,28 +1,16 @@
 
 #
-# Makefile for liblpc23xx 
+# Makefile for liblpc23xx.a
 #
 
 NAME            := liblpc23xx
 
-#CC              := arm-elf-gcc
-#LD              := arm-elf-ld -v
-#AR              := arm-elf-ar rvs
-#AS              := arm-elf-as
-#CP              := arm-elf-objcopy
-#OD              := arm-elf-objdump
-
 CC              := arm-linux-gnueabi-gcc
-LD              := arm-linux-gnueabi-ld -v
-AR              := arm-linux-gnueabi-ar rvs
+LD              := arm-linux-gnueabi-ld
+AR              := arm-linux-gnueabi-ar
 AS              := arm-linux-gnueabi-as
 CP              := arm-linux-gnueabi-objcopy
 OD              := arm-linux-gnueabi-objdump
-
-
-TYPE            ?= lpc23xx
-
-TARGET          ?=
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
@@ -63,19 +51,12 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -Werror -fno-common -O2 -g -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -O2 -mcpu=arm7tdmi-s
 
-AFLAGS          = -mapcs-32
+ARCHIVEFLAGS    = rvs
 
-ASFLAGS         = -g  -ahls -mfloat-abi=softfp $(INCLUDE) 
-
-LDFLAGS         = -T $(TYPE).ld -nostartfiles -Map $(NAME).map
-
-CPFLAGS         := -O binary
-HEXFLAGS        := -O ihex
-ODFLAGS         := -x --syms
-
+ASFLAGS         = -g -ahls -mfloat-abi=softfp $(INCLUDE) 
  
 .PHONY: clean allclean rebuild
 
@@ -87,7 +68,7 @@ ODFLAGS         := -x --syms
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
 all: $(LIBS) $(TESTS) Makefile
 
@@ -95,19 +76,15 @@ $(COBJS): $(HS)
 
 $(LIBS): $(AOBJS) $(COBJS)
 	@echo "========= Making Library $@ ========================"
-	$(AR) $@ $(AOBJS) $(COBJS)
+	$(AR) $(ARCHIVEFLAGS) $@ $(AOBJS) $(COBJS)
 
 $(TESTS): $(LIBS)
 	@echo "========= Recursive make: $(@D) ========================"
-	$(MAKE) TARGET=$(TARGET) -s -C $(@D) $(@F)
-
-$(NAME).s: $(NAME).c
-	@echo "========= Combined Assembler and Source for $@ =================="
-	$(CC) $(ASFLAGS) -o $@ $(NAME).c
+	$(MAKE) -s -C $(@D) $(@F)
 
 clean:
 	$(RM)  $(LIBS) $(AOBJS) $(COBJS) $(COBJS) \
-	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
+	lpc23xx*/*.lst *.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
 	$(MAKE) -s -C lpc23xx-mutex/test clean
@@ -116,8 +93,4 @@ allclean: clean
 	
 rebuild: allclean
 	$(MAKE)
-
-
-
-
 
