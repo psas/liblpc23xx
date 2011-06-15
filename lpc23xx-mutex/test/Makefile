@@ -1,8 +1,6 @@
 
-NAME            := lpc23xx-pll-test
-LIBDIR          := ../../.
-#CROSS           := /opt/cross
-#GCC_VERSION     ?= 4.5.2
+NAME            := lpc23xx-mutex-test
+LIBDIR          := ../..
 
 #CC              := arm-elf-gcc
 #LD              := arm-elf-ld
@@ -18,12 +16,13 @@ AS              := arm-linux-gnueabi-as
 CP              := arm-linux-gnueabi-objcopy
 OD              := arm-linux-gnueabi-objdump
 
-
-
 INCLUDE         := -I.\
                    -I./include\
                    -I../include\
-                   -I$(LIBDIR)/include
+                   -I$(LIBDIR)/include\
+                   -I$(LIBDIR)/lpc23xx-pll/include\
+                   -I$(LIBDIR)/lpc23xx-uart/include\
+                   -I$(LIBDIR)/lpc23xx-mutex/include
 
 TYPE            ?= lpc23xx
 
@@ -32,13 +31,14 @@ TARGET          ?=
 DEBUG           ?=
 #DEBUG           = -DDEBUG
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -flto -fno-common -O0 -g -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -fno-common -O2 -g -mcpu=arm7tdmi-s
 
-AFLAGS          = -g  -ahls -mapcs-32# -march=arm7tdmi-s
+AFLAGS          = -g  -ahls -mapcs-32
 
 ASFLAGS         = -S -c -g $(INCLUDE)
 
-LDFLAGS          = -T $(TYPE).ld -nostartfiles -Map $(NAME).map
+LDFLAGS          = -T $(TYPE).ld -nostartfiles  -Map $(NAME).map
 
 CPFLAGS         := -O binary
 HEXFLAGS        := -O ihex
@@ -79,8 +79,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-#	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib
+	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS)
 
 $(NAME).s: $(NAME).c
 	@echo "========= Combined Assembler and Source for $@ =================="

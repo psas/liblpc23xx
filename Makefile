@@ -32,27 +32,32 @@ INCLUDE         := -I.\
                    -I./lpc23xx-info/include\
                    -I./lpc23xx-pll/include\
                    -I./lpc23xx-uart/include\
-                   -I./lpc23xx-i2c/include
+                   -I./lpc23xx-mutex/include
+#                   -I./lpc23xx-i2c/include
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-info/include/*.h)\
                     $(wildcard ./lpc23xx-pll/include/*.h)\
-                    $(wildcard ./lpc23xx-uart/include/*.h)\
-                    $(wildcard ./lpc23xx-i2c/include/*.h)
+                    $(wildcard ./lpc23xx-mutex/include/*.h)\
+                    $(wildcard ./lpc23xx-uart/include/*.h)
+#                    $(wildcard ./lpc23xx-i2c/include/*.h)
 
 LIBS            = $(NAME).a
 
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
+	          ./lpc23xx-mutex/test/lpc23xx-mutex-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
 
 ASRCS           := $(wildcard lpc23xx-pll/*.s)\
    		   $(wildcard lpc23xx-uart/*.s)\
-                   $(wildcard lpc23xx-i2c/*.s)
+   		   $(wildcard lpc23xx-mutex/*.s)
+#                   $(wildcard lpc23xx-i2c/*.s)
 
 CSRCS           := $(wildcard lpc23xx-info/*.c)\
 		   $(wildcard lpc23xx-pll/*.c)\
 		   $(wildcard lpc23xx-uart/*.c)\
-		   $(wildcard lpc23xx-i2c/*.c)
+   		   $(wildcard lpc23xx-mutex/*.c)
+#		   $(wildcard lpc23xx-i2c/*.c)
 
 COBJS           = $(CSRCS:.c=.o)
 
@@ -61,9 +66,9 @@ AOBJS           = $(ASRCS:.s=.o)
 #CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
 CFLAGS          = $(INCLUDE) $(DEBUG) $(TARGET) -c -Wall -Werror -fno-common -O2 -g -mcpu=arm7tdmi-s
 
-AFLAGS          = -g  -ahls -mapcs-32
+AFLAGS          = -ahls -mapcs-32
 
-ASFLAGS         = -S -c -g $(INCLUDE)
+ASFLAGS         = -g -mfloat-abi=softfp $(INCLUDE) 
 
 LDFLAGS         = -T $(TYPE).ld -nostartfiles -Map $(NAME).map
 
@@ -82,7 +87,7 @@ ODFLAGS         := -x --syms
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(AFLAGS) -o $@ $< > $*.lst
+	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
 all: $(LIBS) $(TESTS) Makefile
 
@@ -105,6 +110,7 @@ clean:
 	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
+	$(MAKE) -s -C lpc23xx-mutex/test clean
 
 allclean: clean
 	
