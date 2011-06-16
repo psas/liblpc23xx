@@ -1,0 +1,91 @@
+liblpc23xx
+|-- include
+|   |-- common-test-make.mk
+|   `-- lpc23xx.h
+|-- lpc23xx-binsem
+|   |-- include
+|   |   `-- lpc23xx-binsem.h
+|   |-- lpc23xx-binsem.s
+|   |-- README
+|   `-- test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- lpc23xx-binsem-test.h
+|       |-- lpc23xx-binsem-test.c
+|       |-- lpc23xx.ld -> ../../startup/lpc23xx.ld
+|       |-- Makefile
+|       |-- oocd_flash_lpc2378.script
+|       `-- openocd_lpc2378.cfg -> ../../startup/openocd_lpc2378.cfg
+|-- lpc23xx-i2c
+|   |-- include
+|   |   `-- lpc23xx-i2c.h
+|   |-- lpc23xx-i2c.c
+|   `-- README
+|-- lpc23xx-info
+|   |-- include
+|   |   `-- lpc23xx-info.h
+|   `-- lpc23xx-info.c
+|-- lpc23xx-pll
+|   |-- include
+|   |   `-- lpc23xx-pll.h
+|   |-- lpc23xx-pll.c
+|   |-- README
+|   `-- test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- lpc23xx-pll-test.h
+|       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
+|       |-- lpc23xx-pll-test.c
+|       `-- Makefile
+|-- lpc23xx-uart
+|   |-- include
+|   |   `-- lpc23xx-uart.h
+|   |-- lpc23xx-uart.c
+|   |-- README
+|   `-- test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- lpc23xx-uart-test.h
+|       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
+|       |-- lpc23xx-uart-test.c
+|       |-- Makefile
+|       |-- oocd_flash_lpc2378.script
+|       `-- openocd_lpc2378.cfg
+|-- lpc23xx-vic
+|   |-- include
+|   |   `-- lpc23xx-vic.h
+|   |-- lpc23xx-vic.c
+|   `-- README
+|-- Makefile
+|-- README
+|-- README-dirtree
+|-- reference
+|   |-- lpc23xx-pll-clock-calc.ods
+|   |-- notes.crosscompile
+|   |-- notes.gdb-ocd
+|   `-- python
+|       |-- baudcalc.py
+|       `-- baudcalc.pyc
+|-- release
+|   `-- README
+`-- startup
+    |-- boot.s
+    |-- hwsys.c
+    |-- include
+    |   `-- hwsys.h
+    |-- lpc2368.ld
+    |-- lpc2378.ld
+    |-- lpc23xx.ld -> lpc2378.ld
+    |-- oocd_flash_lpc2378.script
+    |-- oocd_flash_v0.3.1-1.script
+    |-- oocd_flash_v0.3.script
+    |-- openocd_lpc2378.cfg
+    `-- README
+
+24 directories, 64 files
