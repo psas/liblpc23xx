@@ -8,6 +8,13 @@
 CROSS           ?= /opt/cross
 GCC_VERSION     ?= 4.5.2
 
+CC              := $(CROSS)/bin/arm-elf-gcc
+LD              := $(CROSS)/bin/arm-elf-ld -v
+AR              := $(CROSS)/bin/arm-elf-ar rvs
+AS              := $(CROSS)/bin/arm-elf-as
+CP              := $(CROSS)/bin/arm-elf-objcopy
+OD              := $(CROSS)/bin/arm-elf-objdump
+
 TYPE            ?= lpc23xx
 
 DEBUG           ?=

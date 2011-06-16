@@ -5,20 +5,14 @@
 
 NAME            := liblpc23xx
 
-CC              := arm-elf-gcc
-LD              := arm-elf-ld
-AR              := arm-elf-ar
-AS              := arm-elf-as
-CP              := arm-elf-objcopy
-OD              := arm-elf-objdump
+CROSS           := /opt/cross
 
-
-#CC              := arm-linux-gnueabi-gcc
-#LD              := arm-linux-gnueabi-ld
-#AR              := arm-linux-gnueabi-ar
-#AS              := arm-linux-gnueabi-as
-#CP              := arm-linux-gnueabi-objcopy
-#OD              := arm-linux-gnueabi-objdump
+CC              := $(CROSS)/bin/arm-elf-gcc
+LD              := $(CROSS)/bin/arm-elf-ld
+AR              := $(CROSS)/bin/arm-elf-ar
+AS              := $(CROSS)/bin/arm-elf-as
+CP              := $(CROSS)/bin/arm-elf-objcopy
+OD              := $(CROSS)/bin/arm-elf-objdump
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
