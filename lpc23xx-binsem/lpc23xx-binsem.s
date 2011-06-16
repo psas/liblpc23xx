@@ -34,7 +34,7 @@
 
 # renaming registers
 binsem_addr .req r0
-cycles      .req r1
+ticks       .req r1
 
 /*
  * init_binsem
@@ -108,7 +108,7 @@ end_is_binsem_locked:
  * in: binsem_addr is r0
  *      wait_count is r1
  * return: a '1' for successful lock
- *         a '0' if wait for cycles count and not successful
+ *         a '0' if wait for ticks count and not successful
  * In C define prototype: uint32_t get_binsem(uint32_t* binsem_addr, uint32_t wait_count);
  */ 
 .global get_binsem
@@ -118,7 +118,9 @@ get_binsem:
     stmdb sp!, {r4-r11}
 
     mov r4, binsem_addr
-    mov r5, cycles
+    mov r5, ticks
+    # minimum wait is one count.
+    add r5, #0x1
 
     ldr r6, =LOCKED
 

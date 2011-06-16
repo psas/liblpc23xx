@@ -4,39 +4,37 @@
 ARM Cross compiler for Debian 6 install
 ----------------
 
+add this line to /etc/apt/sources.list
+    deb http://www.emdebian.org/debian/ squeeze main
+
 aptitude install git-core
 
 aptitude install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
 libmpc-dev autoconf texinfo build-essential
 
-aptitude install libelf-dev
+aptitude install libelf-dev libc6-dev-armel-cross
 
 aptitude build-dep gcc-4.4 // latest version available..< summon arm GCC_VERSION.
 
-add this line to /etc/apt/sources.list
-    deb http://www.emdebian.org/debian/ squeeze main
-
-aptitude install libc6-dev-armel-cross
-
-sudo chmod ugo+rwx /opt
 
 git clone https://github.com/esden/summon-arm-toolchain.git
 
-CHange the summon-arm-toolchain script as follows:
+Change the summon-arm-toolchain script as follows:
+
 
 diff --git a/summon-arm-toolchain b/summon-arm-toolchain
-index b005afc..a62c2f9 100755
+index b005afc..d09b170 100755
 --- a/summon-arm-toolchain
 +++ b/summon-arm-toolchain
 @@ -19,21 +19,21 @@ set -e
  # You probably want to customize those
  # You can also pass them as parameters to the script
  ##############################################################################
--TARGET=arm-none-eabi           # Or: TARGET=arm-elf
--PREFIX=${HOME}/sat     # Install location of your final toolchain
-+TARGET=arm-elf         # Or: TARGET=arm-elf
-+PREFIX=/opt/cross      # Install location of your final toolchain
- DARWIN_OPT_PATH=/opt/local     # Path in which MacPorts or Fink is installed
+-TARGET=arm-none-eabi		# Or: TARGET=arm-elf
+-PREFIX=${HOME}/sat	# Install location of your final toolchain
++TARGET=arm-elf		# Or: TARGET=arm-elf
++PREFIX=/opt/cross	# Install location of your final toolchain
+ DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
  # Set to 'sudo' if you need superuser privileges while installing
  SUDO=
  # Set to 1 to be quieter while running
@@ -55,13 +53,21 @@ index b005afc..a62c2f9 100755
  # Make the gcc default to Cortex-M3
  DEFAULT_TO_CORTEX_M3=0
  # Override automatic detection of cpus to compile on
+@@ -147,7 +147,7 @@ GDBFLAGS=
+ BINUTILFLAGS=
+ 
+ if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+-	GCCFLAGS=
++	GCCFLAGS="--with-float=soft"
+ else
+ 	# To default to the Cortex-M3:
+ 	GCCFLAGS="--with-arch=armv7-m --with-mode=thumb --with-float=soft"
 
 make a directory /opt and change the owner and
 group to the same user as the one running the following
 script (summon-arm-toolchain).
 
 make a directory /opt/cross and repeat.
-
 
 cd .../summon-arm-toolchain
 ./summon-arm-toolchain

@@ -3,7 +3,7 @@
 # common-test-make.mk
 # Common test build flow for makefiles in test directories
 #
-# insert->  include $(LIBDIR)/include/common-test-make.mk
+# make syntax->  include $(LIBDIR)/include/common-test-make.mk
 
 CROSS           ?= /opt/cross
 GCC_VERSION     ?= 4.5.2
@@ -15,7 +15,7 @@ AS              := $(CROSS)/bin/arm-elf-as
 CP              := $(CROSS)/bin/arm-elf-objcopy
 OD              := $(CROSS)/bin/arm-elf-objdump
 
-TYPE            ?= lpc23xx
+TYPE            := lpc23xx
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
@@ -78,7 +78,6 @@ $(NAME).hex: $(NAME).out
 $(NAME).dump: $(NAME).out
 	@echo "========= dump file for $< =================="
 	$(OD) $(ODFLAGS) $< > $@
-
 
 $(NAME).bin: $(NAME).out
 	@echo "========= bin file for $< =================="
