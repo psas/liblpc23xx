@@ -61,7 +61,7 @@ $(COBJS): include/*.h
 
 $(EXLIBS):
 	@echo "========= Recursive make: $(@D)    ========================"
-	$(MAKE) TARGET=$(TARGET) -s -C $(@D) $(@F)
+	$(MAKE) -s -C $(@D) $(@F)
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
