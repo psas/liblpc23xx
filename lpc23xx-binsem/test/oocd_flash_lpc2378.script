@@ -43,8 +43,8 @@ sleep 100
 mdh 0x0 100
 #
 #lpc23xx-uart-test
-flash write_image ./lpc23xx-uart-test.hex
-flash write_image ./lpc23xx-uart-test.hex
+flash write_image ./lpc23xx-binsem-test.hex
+flash write_image ./lpc23xx-binsem-test.hex
 
 #
 mdh 0x0 100

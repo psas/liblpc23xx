@@ -5,13 +5,16 @@
 #
 # insert->  include $(LIBDIR)/include/common-test-make.mk
 
+CROSS           ?= /opt/cross
+GCC_VERSION     ?= 4.5.2
+
 TYPE            ?= lpc23xx
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
-CFLAGS          ?= $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -Os -mcpu=arm7tdmi-s
+CFLAGS          ?= $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -Os -mfloat-abi=softfp -mcpu=arm7tdmi-s
 
 ASFLAGS         ?= -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
@@ -55,7 +58,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS)
+	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).sdump: $(NAME).c
 	@echo "========= Combined Assembler and Source for $< =================="

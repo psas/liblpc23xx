@@ -197,20 +197,21 @@ ARM GAS  lpc23xx-binsem/lpc23xx-binsem.s 			page 1
 
 
 DEFINED SYMBOLS
-lpc23xx-binsem/lpc23xx-binsem.s:26     .text:0000000000000000 $a
-lpc23xx-binsem/lpc23xx-binsem.s:32     *ABS*:0000000000000000 LOCKED
-lpc23xx-binsem/lpc23xx-binsem.s:33     *ABS*:0000000000000001 UNLOCKED
-lpc23xx-binsem/lpc23xx-binsem.s:47     .text:0000000000000000 init_binsem
-lpc23xx-binsem/lpc23xx-binsem.s:71     .text:000000000000001c is_binsem_locked
-lpc23xx-binsem/lpc23xx-binsem.s:83     .text:0000000000000034 is_locked
-lpc23xx-binsem/lpc23xx-binsem.s:86     .text:0000000000000038 not_locked
-lpc23xx-binsem/lpc23xx-binsem.s:109    .text:0000000000000048 get_binsem
-lpc23xx-binsem/lpc23xx-binsem.s:119    .text:0000000000000058 spin_lock
-lpc23xx-binsem/lpc23xx-binsem.s:127    .text:0000000000000068 waitcount
-lpc23xx-binsem/lpc23xx-binsem.s:133    .text:0000000000000078 gotlock
-lpc23xx-binsem/lpc23xx-binsem.s:136    .text:000000000000007c timeout
-lpc23xx-binsem/lpc23xx-binsem.s:155    .text:000000000000008c release_binsem
-lpc23xx-binsem/lpc23xx-binsem.s:172    .text:00000000000000ac was_not_locked
-lpc23xx-binsem/lpc23xx-binsem.s:169    .text:00000000000000a8 released_lock
+lpc23xx-binsem/lpc23xx-binsem.s:29     .text:00000000 $a
+lpc23xx-binsem/lpc23xx-binsem.s:32     *ABS*:00000000 LOCKED
+lpc23xx-binsem/lpc23xx-binsem.s:33     *ABS*:00000001 UNLOCKED
+lpc23xx-binsem/lpc23xx-binsem.s:47     .text:00000000 init_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:71     .text:0000001c is_binsem_locked
+lpc23xx-binsem/lpc23xx-binsem.s:83     .text:00000034 is_locked
+lpc23xx-binsem/lpc23xx-binsem.s:86     .text:00000038 not_locked
+lpc23xx-binsem/lpc23xx-binsem.s:109    .text:00000048 get_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:119    .text:00000058 spin_lock
+lpc23xx-binsem/lpc23xx-binsem.s:127    .text:00000068 waitcount
+lpc23xx-binsem/lpc23xx-binsem.s:133    .text:00000078 gotlock
+lpc23xx-binsem/lpc23xx-binsem.s:136    .text:0000007c timeout
+lpc23xx-binsem/lpc23xx-binsem.s:155    .text:0000008c release_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:172    .text:000000ac was_not_locked
+lpc23xx-binsem/lpc23xx-binsem.s:169    .text:000000a8 released_lock
+                   .debug_aranges:0000000c $d
 
 NO UNDEFINED SYMBOLS

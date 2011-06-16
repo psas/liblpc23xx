@@ -5,12 +5,20 @@
 
 NAME            := liblpc23xx
 
-CC              := arm-linux-gnueabi-gcc
-LD              := arm-linux-gnueabi-ld
-AR              := arm-linux-gnueabi-ar
-AS              := arm-linux-gnueabi-as
-CP              := arm-linux-gnueabi-objcopy
-OD              := arm-linux-gnueabi-objdump
+CC              := arm-elf-gcc
+LD              := arm-elf-ld
+AR              := arm-elf-ar
+AS              := arm-elf-as
+CP              := arm-elf-objcopy
+OD              := arm-elf-objdump
+
+
+#CC              := arm-linux-gnueabi-gcc
+#LD              := arm-linux-gnueabi-ld
+#AR              := arm-linux-gnueabi-ar
+#AS              := arm-linux-gnueabi-as
+#CP              := arm-linux-gnueabi-objcopy
+#OD              := arm-linux-gnueabi-objdump
 
 DEBUG           ?=
 #DEBUG           = -DDEBUG
@@ -52,7 +60,7 @@ COBJS           = $(CSRCS:.c=.o)
 AOBJS           = $(ASRCS:.s=.o)
                   
 #CFLAGS          = $(INCLUDE) $(DEBUG) -fwhopr -flto -c -Wall -fno-common -O0 -g -mcpu=arm7tdmi-s
-CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -O2 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rvs
 
