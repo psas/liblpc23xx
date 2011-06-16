@@ -1,4 +1,10 @@
 
+
 PSAS utility library for NXP LPC23xx uControllers.
+
+Top level Makefile builds liblpc23xx.a.
+
+export GCC_VERSION=4.x.x to override default in makefile.
+
 
 
