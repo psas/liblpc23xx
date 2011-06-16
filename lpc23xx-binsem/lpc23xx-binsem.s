@@ -78,21 +78,27 @@ is_binsem_locked:
     ldr r5, [r4]
     cmp r5, #LOCKED
     beq is_locked
+    nop
+    nop
     b   not_locked
+    nop
+    nop
 
 is_locked:
-    mov r5, #1
+    mov r0, #1
+    b end_is_binsem_locked
+    nop
+    nop
 
 not_locked:
-    mov r5, #0
+    mov r0, #0
+
+end_is_binsem_locked:
 
     ### epilog ###
     # load multiple, increment after. '!' says to write back new value to sp
     ldmia sp!, {r4-r11}
 
-    # return value goes into r0, here it's zero
-    # return value into r0
-    mov r0, r5
     # lr contains address of next instruction after function
     mov pc, lr
 
@@ -122,25 +128,36 @@ spin_lock:
     # use immediate value of LOCKED constant
     cmp r6, #LOCKED
     beq waitcount
+    nop
+    nop
     b gotlock
+    nop
+    nop
 
 waitcount:
     sub r5, #0x1
     cmp r5, #0x0
     beq timeout
+    nop
+    nop
     b spin_lock
- 
+    nop
+    nop
+
 gotlock:
-    mov r5, #1
+    mov r0, #1
+    b end_get_binsem
+    nop
+    nop
 
 timeout:
-    mov r5, #0
+    mov r0, #0
+
+end_get_binsem:
 
     ### epilog ###
     ldmia sp!, {r4-r11}
 
-    # move return value into r0
-    mov r0, r5
     # lr contains address of next instruction after function
     mov pc, lr
 
@@ -164,19 +181,24 @@ release_binsem:
     
     cmp r5, #UNLOCKED
     beq was_not_locked
+    nop
+    nop
     b released_lock
+    nop
+    nop
  
 released_lock:
-    mov r5, #1
+    mov r0, #1
+    b end_release_binsem
+    nop
+    nop
 
 was_not_locked:
-    mov r5, #0
+    mov r0, #0
 
+end_release_binsem:
     ### epilog ###
     ldmia sp!, {r4-r11}
-
-    # move return value into r0
-    mov r0, r5
 
     mov pc, lr
 

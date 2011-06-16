@@ -83,116 +83,140 @@ ARM GAS  lpc23xx-binsem/lpc23xx-binsem.s 			page 1
   77              	
   78 0024 005094E5 	    ldr r5, [r4]
   79 0028 000055E3 	    cmp r5, #LOCKED
-  80 002c 0000000A 	    beq is_locked
-  81 0030 000000EA 	    b   not_locked
-  82              	
-  83              	is_locked:
-  84 0034 0150A0E3 	    mov r5, #1
-  85              	
-  86              	not_locked:
-  87 0038 0050A0E3 	    mov r5, #0
-  88              	
-  89              	    ### epilog ###
-  90              	    # load multiple, increment after. '!' says to write back new value to sp
-  91 003c F00FBDE8 	    ldmia sp!, {r4-r11}
+  80 002c 0400000A 	    beq is_locked
+  81 0030 0000A0E1 	    nop
+  82 0034 0000A0E1 	    nop
+  83 0038 050000EA 	    b   not_locked
+  84 003c 0000A0E1 	    nop
+  85 0040 0000A0E1 	    nop
+  86              	
+  87              	is_locked:
+  88 0044 0100A0E3 	    mov r0, #1
+  89 0048 020000EA 	    b end_is_binsem_locked
+  90 004c 0000A0E1 	    nop
+  91 0050 0000A0E1 	    nop
   92              	
-  93              	    # return value goes into r0, here it's zero
-  94              	    # return value into r0
-  95 0040 0500A0E1 	    mov r0, r5
-  96              	    # lr contains address of next instruction after function
-  97 0044 0EF0A0E1 	    mov pc, lr
-  98              	
-  99              	
- 100              	/*
- 101              	 * get_binsem
- 102              	 * in: binsem_addr is r0
- 103              	 *      wait_count is r1
- 104              	 * return: a '1' for successful lock
- 105              	 *         a '0' if wait for cycles count and not successful
- 106              	 * In C define prototype: uint32_t get_binsem(uint32_t* binsem_addr, uint32_t wait_count);
- 107              	 */ 
- 108              	.global get_binsem
- 109              	get_binsem:
- 110              	    ### prolog ###
- 111              	    # store multiple, decrement before. '!' says to write back new value to sp
- 112 0048 F00F2DE9 	    stmdb sp!, {r4-r11}
- 113              	
- 114 004c 0040A0E1 	    mov r4, binsem_addr
+  93              	not_locked:
+  94 0054 0000A0E3 	    mov r0, #0
+  95              	
+  96              	end_is_binsem_locked:
+  97              	
+  98              	    ### epilog ###
+  99              	    # load multiple, increment after. '!' says to write back new value to sp
+ 100 0058 F00FBDE8 	    ldmia sp!, {r4-r11}
+ 101              	
+ 102              	    # lr contains address of next instruction after function
+ 103 005c 0EF0A0E1 	    mov pc, lr
+ 104              	
+ 105              	
+ 106              	/*
+ 107              	 * get_binsem
+ 108              	 * in: binsem_addr is r0
+ 109              	 *      wait_count is r1
+ 110              	 * return: a '1' for successful lock
+ 111              	 *         a '0' if wait for cycles count and not successful
+ 112              	 * In C define prototype: uint32_t get_binsem(uint32_t* binsem_addr, uint32_t wait_count);
+ 113              	 */ 
+ 114              	.global get_binsem
 ARM GAS  lpc23xx-binsem/lpc23xx-binsem.s 			page 3
 
 
- 115 0050 0150A0E1 	    mov r5, cycles
- 116              	
- 117 0054 0060A0E3 	    ldr r6, =LOCKED
- 118              	
- 119              	spin_lock:
- 120              	    # r1 is an indirect address (note '[' and ']')
- 121 0058 966004E1 	    swp r6, r6, [r4]
- 122              	    # use immediate value of LOCKED constant
- 123 005c 000056E3 	    cmp r6, #LOCKED
- 124 0060 0000000A 	    beq waitcount
- 125 0064 030000EA 	    b gotlock
- 126              	
- 127              	waitcount:
- 128 0068 015045E2 	    sub r5, #0x1
- 129 006c 000055E3 	    cmp r5, #0x0
- 130 0070 0100000A 	    beq timeout
- 131 0074 F7FFFFEA 	    b spin_lock
- 132              	 
- 133              	gotlock:
- 134 0078 0150A0E3 	    mov r5, #1
- 135              	
- 136              	timeout:
- 137 007c 0050A0E3 	    mov r5, #0
- 138              	
- 139              	    ### epilog ###
- 140 0080 F00FBDE8 	    ldmia sp!, {r4-r11}
- 141              	
- 142              	    # move return value into r0
- 143 0084 0500A0E1 	    mov r0, r5
- 144              	    # lr contains address of next instruction after function
- 145 0088 0EF0A0E1 	    mov pc, lr
+ 115              	get_binsem:
+ 116              	    ### prolog ###
+ 117              	    # store multiple, decrement before. '!' says to write back new value to sp
+ 118 0060 F00F2DE9 	    stmdb sp!, {r4-r11}
+ 119              	
+ 120 0064 0040A0E1 	    mov r4, binsem_addr
+ 121 0068 0150A0E1 	    mov r5, cycles
+ 122              	
+ 123 006c 0060A0E3 	    ldr r6, =LOCKED
+ 124              	
+ 125              	spin_lock:
+ 126              	    # r1 is an indirect address (note '[' and ']')
+ 127 0070 966004E1 	    swp r6, r6, [r4]
+ 128              	    # use immediate value of LOCKED constant
+ 129 0074 000056E3 	    cmp r6, #LOCKED
+ 130 0078 0400000A 	    beq waitcount
+ 131 007c 0000A0E1 	    nop
+ 132 0080 0000A0E1 	    nop
+ 133 0084 090000EA 	    b gotlock
+ 134 0088 0000A0E1 	    nop
+ 135 008c 0000A0E1 	    nop
+ 136              	
+ 137              	waitcount:
+ 138 0090 015045E2 	    sub r5, #0x1
+ 139 0094 000055E3 	    cmp r5, #0x0
+ 140 0098 0800000A 	    beq timeout
+ 141 009c 0000A0E1 	    nop
+ 142 00a0 0000A0E1 	    nop
+ 143 00a4 F1FFFFEA 	    b spin_lock
+ 144 00a8 0000A0E1 	    nop
+ 145 00ac 0000A0E1 	    nop
  146              	
- 147              	/*
- 148              	 * release_binsem
- 149              	 * input: r0 is binsem_addr
- 150              	 * returns a '1' for release of locked binary semaphore
- 151              	 * returns a '0' for release of unlocked binary semaphore
- 152              	 * in C define prototype: uint32_t release_binsem(uint32_t* binsem_addr);
- 153              	 */ 
- 154              	.global release_binsem
- 155              	release_binsem:
- 156              	    ### prolog ###
- 157 008c F00F2DE9 	    stmdb sp!, {r4-r11}
- 158              	
- 159 0090 0040A0E1 	    mov r4, binsem_addr
- 160              	  
- 161 0094 0150A0E3 	    ldr r5, =UNLOCKED
- 162              	   
- 163 0098 955004E1 	    swp r5, r5, [r4]
- 164              	    
- 165 009c 010055E3 	    cmp r5, #UNLOCKED
- 166 00a0 0100000A 	    beq was_not_locked
- 167 00a4 FFFFFFEA 	    b released_lock
- 168              	 
- 169              	released_lock:
- 170 00a8 0150A0E3 	    mov r5, #1
- 171              	
+ 147              	gotlock:
+ 148 00b0 0100A0E3 	    mov r0, #1
+ 149 00b4 020000EA 	    b end_get_binsem
+ 150 00b8 0000A0E1 	    nop
+ 151 00bc 0000A0E1 	    nop
+ 152              	
+ 153              	timeout:
+ 154 00c0 0000A0E3 	    mov r0, #0
+ 155              	
+ 156              	end_get_binsem:
+ 157              	
+ 158              	    ### epilog ###
+ 159 00c4 F00FBDE8 	    ldmia sp!, {r4-r11}
+ 160              	
+ 161              	    # lr contains address of next instruction after function
+ 162 00c8 0EF0A0E1 	    mov pc, lr
+ 163              	
+ 164              	/*
+ 165              	 * release_binsem
+ 166              	 * input: r0 is binsem_addr
+ 167              	 * returns a '1' for release of locked binary semaphore
+ 168              	 * returns a '0' for release of unlocked binary semaphore
+ 169              	 * in C define prototype: uint32_t release_binsem(uint32_t* binsem_addr);
+ 170              	 */ 
+ 171              	.global release_binsem
 ARM GAS  lpc23xx-binsem/lpc23xx-binsem.s 			page 4
 
 
- 172              	was_not_locked:
- 173 00ac 0050A0E3 	    mov r5, #0
- 174              	
- 175              	    ### epilog ###
- 176 00b0 F00FBDE8 	    ldmia sp!, {r4-r11}
- 177              	
- 178              	    # move return value into r0
- 179 00b4 0500A0E1 	    mov r0, r5
- 180              	
- 181 00b8 0EF0A0E1 	    mov pc, lr
- 182              	
- 183 00bc 0000A0E1 	.end
+ 172              	release_binsem:
+ 173              	    ### prolog ###
+ 174 00cc F00F2DE9 	    stmdb sp!, {r4-r11}
+ 175              	
+ 176 00d0 0040A0E1 	    mov r4, binsem_addr
+ 177              	  
+ 178 00d4 0150A0E3 	    ldr r5, =UNLOCKED
+ 179              	   
+ 180 00d8 955004E1 	    swp r5, r5, [r4]
+ 181              	    
+ 182 00dc 010055E3 	    cmp r5, #UNLOCKED
+ 183 00e0 0800000A 	    beq was_not_locked
+ 184 00e4 0000A0E1 	    nop
+ 185 00e8 0000A0E1 	    nop
+ 186 00ec 010000EA 	    b released_lock
+ 187 00f0 0000A0E1 	    nop
+ 188 00f4 0000A0E1 	    nop
+ 189              	 
+ 190              	released_lock:
+ 191 00f8 0100A0E3 	    mov r0, #1
+ 192 00fc 020000EA 	    b end_release_binsem
+ 193 0100 0000A0E1 	    nop
+ 194 0104 0000A0E1 	    nop
+ 195              	
+ 196              	was_not_locked:
+ 197 0108 0000A0E3 	    mov r0, #0
+ 198              	
+ 199              	end_release_binsem:
+ 200              	    ### epilog ###
+ 201 010c F00FBDE8 	    ldmia sp!, {r4-r11}
+ 202              	
+ 203 0110 0EF0A0E1 	    mov pc, lr
+ 204              	
+ 205 0114 0000A0E1 	.end
+ 205      0000A0E1 
+ 205      0000A0E1 
 ARM GAS  lpc23xx-binsem/lpc23xx-binsem.s 			page 5
 
 
@@ -202,16 +226,19 @@ lpc23xx-binsem/lpc23xx-binsem.s:32     *ABS*:00000000 LOCKED
 lpc23xx-binsem/lpc23xx-binsem.s:33     *ABS*:00000001 UNLOCKED
 lpc23xx-binsem/lpc23xx-binsem.s:47     .text:00000000 init_binsem
 lpc23xx-binsem/lpc23xx-binsem.s:71     .text:0000001c is_binsem_locked
-lpc23xx-binsem/lpc23xx-binsem.s:83     .text:00000034 is_locked
-lpc23xx-binsem/lpc23xx-binsem.s:86     .text:00000038 not_locked
-lpc23xx-binsem/lpc23xx-binsem.s:109    .text:00000048 get_binsem
-lpc23xx-binsem/lpc23xx-binsem.s:119    .text:00000058 spin_lock
-lpc23xx-binsem/lpc23xx-binsem.s:127    .text:00000068 waitcount
-lpc23xx-binsem/lpc23xx-binsem.s:133    .text:00000078 gotlock
-lpc23xx-binsem/lpc23xx-binsem.s:136    .text:0000007c timeout
-lpc23xx-binsem/lpc23xx-binsem.s:155    .text:0000008c release_binsem
-lpc23xx-binsem/lpc23xx-binsem.s:172    .text:000000ac was_not_locked
-lpc23xx-binsem/lpc23xx-binsem.s:169    .text:000000a8 released_lock
+lpc23xx-binsem/lpc23xx-binsem.s:87     .text:00000044 is_locked
+lpc23xx-binsem/lpc23xx-binsem.s:93     .text:00000054 not_locked
+lpc23xx-binsem/lpc23xx-binsem.s:96     .text:00000058 end_is_binsem_locked
+lpc23xx-binsem/lpc23xx-binsem.s:115    .text:00000060 get_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:125    .text:00000070 spin_lock
+lpc23xx-binsem/lpc23xx-binsem.s:137    .text:00000090 waitcount
+lpc23xx-binsem/lpc23xx-binsem.s:147    .text:000000b0 gotlock
+lpc23xx-binsem/lpc23xx-binsem.s:153    .text:000000c0 timeout
+lpc23xx-binsem/lpc23xx-binsem.s:156    .text:000000c4 end_get_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:172    .text:000000cc release_binsem
+lpc23xx-binsem/lpc23xx-binsem.s:196    .text:00000108 was_not_locked
+lpc23xx-binsem/lpc23xx-binsem.s:190    .text:000000f8 released_lock
+lpc23xx-binsem/lpc23xx-binsem.s:199    .text:0000010c end_release_binsem
                    .debug_aranges:0000000c $d
 
 NO UNDEFINED SYMBOLS

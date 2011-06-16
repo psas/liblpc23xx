@@ -29,7 +29,7 @@ LDFLAGS         ?= -T $(TYPE).ld -nostartfiles -Map $(NAME).map
 
 CPFLAGS         := -O binary
 HEXFLAGS        := -O ihex
-ODFLAGS         := -x --syms
+ODFLAGS         := --syms -S -l 
 
 ASRCS           := $(ASRCS) boot.s
 
@@ -55,7 +55,7 @@ PROGS           = $(NAME).out
 	@echo "======== COMPILING $@ ========================"
 	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
 
-all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).sdump Makefile
+all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).dump Makefile
 
 $(COBJS): include/*.h
 
@@ -75,13 +75,18 @@ $(NAME).hex: $(NAME).out
 	@echo "========= hex file for $< =================="
 	$(CP) $(HEXFLAGS) $< $@
 
+$(NAME).dump: $(NAME).out
+	@echo "========= dump file for $< =================="
+	$(OD) $(ODFLAGS) $< > $@
+
+
 $(NAME).bin: $(NAME).out
 	@echo "========= bin file for $< =================="
 	$(CP) $(CPFLAGS) $< $@
 	$(OD) $(ODFLAGS) $< > $(NAME).dmp
 
 clean:
-	$(RM) $(EXLIBS) $(PROGS) $(AOBJS) $(COBJS) $(NAME).sdump \
+	$(RM) $(EXLIBS) $(PROGS) $(AOBJS) $(COBJS) $(NAME).*dump \
 	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 
 allclean: clean

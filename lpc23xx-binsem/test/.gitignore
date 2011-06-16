@@ -3,5 +3,5 @@
 *.map
 *.lst
 *.out
-*.sdump
+*.*dump
 

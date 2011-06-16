@@ -1,0 +1,12 @@
+http://fun-tech.se/stm32/OpenOCD/gdb.php
+
+
+
+Using gdb with openocd
+
+arm-elf-gdbtui --eval-command="target remote localhost:3333" lpc23xx-binsem-test.out
+
+
+or using ddd
+
+ddd --eval-command="target remote localhost:3333" --debugger arm-none-eabi-gdb  main.out 
