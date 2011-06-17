@@ -20,6 +20,7 @@ DEBUG           ?=
 INCLUDE         := -I.\
                    -I./include\
                    -I./lpc23xx-info/include\
+                   -I./lpc23xx-util/include\
                    -I./lpc23xx-pll/include\
                    -I./lpc23xx-uart/include\
                    -I./lpc23xx-binsem/include
@@ -27,6 +28,7 @@ INCLUDE         := -I.\
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-info/include/*.h)\
+                    $(wildcard ./lpc23xx-util/include/*.h)\
                     $(wildcard ./lpc23xx-pll/include/*.h)\
                     $(wildcard ./lpc23xx-binsem/include/*.h)\
                     $(wildcard ./lpc23xx-uart/include/*.h)
@@ -39,11 +41,13 @@ TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
 
 ASRCS           := $(wildcard lpc23xx-pll/*.s)\
+   		   $(wildcard lpc23xx-util/*.s)\
    		   $(wildcard lpc23xx-uart/*.s)\
    		   $(wildcard lpc23xx-binsem/*.s)
 #                   $(wildcard lpc23xx-i2c/*.s)
 
 CSRCS           := $(wildcard lpc23xx-info/*.c)\
+   		   $(wildcard lpc23xx-util/*.c)\
 		   $(wildcard lpc23xx-pll/*.c)\
 		   $(wildcard lpc23xx-uart/*.c)\
    		   $(wildcard lpc23xx-binsem/*.c)

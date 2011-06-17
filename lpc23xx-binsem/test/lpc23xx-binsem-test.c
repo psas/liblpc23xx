@@ -7,9 +7,7 @@
 #include <string.h>
 
 #include "lpc23xx.h"
-
 #include "lpc23xx-pll.h"
-
 #include "lpc23xx-uart.h"
 
 #include "lpc23xx-binsem.h"
@@ -17,28 +15,6 @@
 #include "lpc23xx-binsem-test.h"
 
 #define MAX_I2ASTRING 34
-
-/*
- * uitoa
- */
-char* uitoa(uint32_t val, uint32_t base) {
-
-    static char ibuf[MAX_I2ASTRING];
-
-    int         i = MAX_I2ASTRING-2;
-
-    memset(ibuf,'\0',MAX_I2ASTRING);
-
-    if(val == 0) {
-        ibuf[0] = '0';
-        return &ibuf[0];
-    } else {
-        for(; val && i ; --i, val /= base) {
-            ibuf[i] = "0123456789abcdef"[val % base];
-        }
-        return &ibuf[i+1];
-    }
-}
 
 int main (void) {
 
