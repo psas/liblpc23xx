@@ -9,27 +9,6 @@
 #include "lpc23xx.h"
 
 #include "lpc23xx-util.h"
-
-/*
- * __get_cpsr
- * ---------------------------------------
- * Reads and returns the value of the cpsr
- */
-static inline uint32_t __get_cpsr(void) {
-    uint32_t retval;
-    asm volatile (" mrs  %0, cpsr" : "=r" (retval) : /* no inputs */  );
-    return retval;
-}
-
-/*
- * __set_cpsr
- * ---------------------------------------
- * Set the value of the cpsr
- */
-static inline void __set_cpsr(uint32_t val) {
-    asm volatile (" msr  cpsr, %0" : /* no outputs */ : "r" (val)  );
-}
-
 /*
  * util_itoa
  * convert a signed int to a string...
