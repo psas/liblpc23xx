@@ -6,100 +6,125 @@
 #ifndef _LPC23XX_I2C_H
 #define _LPC23XX_I2C_H
 
-// Debug flags
-#define DEBUG_ISR        1
-#define DEBUG_INIT       0
-#define DEBUG_TX         0
-#define DEBUG_RX         0
+#include <stdint.h>
+
+#include "lpc23xx-binsem.h"
 
 // MAX values 
-#define I2C_MAX_BUFFER   64          // uint8_t
+#define I2C_MAX_BUFFER      64
 
 // VIC table page 94 lpc23xx manual
-#define VICI2C0EN        9
-#define VICI2C1EN        19
-#define VICI2C2EN        30
+#define VIC_I2C0_BIT        9
+#define VIC_I2C1_BIT        19
+#define VIC_I2C2_BIT        30
+
+#define ENABLE_I2C0_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C0_BIT)))
+#define ENABLE_I2C1_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C0_BIT)))
+#define ENABLE_I2C2_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C0_BIT)))
+
+#define DISABLE_I2C0_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C0_BIT)))
+#define DISABLE_I2C1_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C0_BIT)))
+#define DISABLE_I2C2_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C0_BIT)))
+
+// PCONP
+#define PCI2C0_BIT          7
+#define PCI2C1_BIT          19
+#define PCI2C2_BIT          26
+
+#define POWER_I2C0_ON       (PCONP = (PCONP | (1<<PCI2C0_BIT)))
+#define POWER_I2C1_ON       (PCONP = (PCONP | (1<<PCI2C1_BIT)))
+#define POWER_I2C2_ON       (PCONP = (PCONP | (1<<PCI2C2_BIT)))
+
+#define POWER_I2C0_OFF      (PCONP = (PCONP & ~(1<<PCI2C0_BIT)))
+#define POWER_I2C1_OFF      (PCONP = (PCONP & ~(1<<PCI2C1_BIT)))
+#define POWER_I2C2_OFF      (PCONP = (PCONP & ~(1<<PCI2C2_BIT)))
+
 
 // I2C CONSET and CONCLR Bits
 // SET
-#define I2C_I2EN           0x40
-#define I2C_AA             0x04
-#define I2C_SI             0x08
-#define I2C_STO            0x10
-#define I2C_STA            0x20
+#define I2C_AA              (1<<2)
+#define I2C_SI              (1<<3)
+#define I2C_STO             (1<<4)
+#define I2C_STA             (1<<5)
+#define I2C_I2EN            (1<<6)
         
 // CLEAR
-#define I2C_I2ENC          0x40
-#define I2C_AAC            0x04 
-#define I2C_SIC            0x08
-#define I2C_STAC           0x20
-
-// PCONP
-#define PCI2C0           7
-#define PCI2C1           19
-#define PCI2C2           26
-
+#define I2C_AAC             (1<<2)
+#define I2C_SIC             (1<<3)
+#define I2C_STAC            (1<<5)
+#define I2C_I2ENC           (1<<6)
+                           
 // I2C clock
 // Table 435 p496 lpc23xx
 //
-// Here are some values I've verified trying to understand
-// the clock speed on the i2c:
-//
-// For our setup right now:
-// XTAL/oscillator input: 12Mhz
-//
-// Fcco = 288,000,000 Hz
-// CCLK  = 57,600,000 Hz
-// PCLK  = 14,400,000 Hz
-//
-//
 // ( i2c clock speed ref: lpc23xx user manual p516)
-//
 // i2c standard clock speed goes to 100kHz
-//
-// This is about 30Khz
-// #define I2SCLHIGH        200
-// #define I2SCLLOW         200
-//
-// This is about 62Khz
-#define I2SCLHIGH        100
-#define I2SCLLOW         100
 
-//
-// This is about 120khz 
-// #define I2SCLHIGH        50
-// #define I2SCLLOW         50
+#define I2C0_IS_CCLK_DIV1   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x01 << 14)))
+#define I2C0_IS_CCLK_DIV2   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x10 << 14)))
+#define I2C0_IS_CCLK_DIV4   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x00 << 14)))
+#define I2C0_IS_CCLK_DIV8   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x11 << 14)))
 
+#define I2C1_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x01 << 6)))
+#define I2C1_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x10 << 6)))
+#define I2C1_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x00 << 6)))
+#define I2C1_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x11 << 6)))
+
+#define I2C2_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x01 << 20)))
+#define I2C2_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x10 << 20)))
+#define I2C2_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x00 << 20)))
+#define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x11 << 20)))
+
+// p516: Max rate is 400kHz according to lpc23xx manual.
+// at CCLK=72Mhz, this is 400khz i2c clock.
+//#define I2SCLHIGH           90
+//#define I2SCLLOW            90
+// at CCLK=72Mhz, this is 90khz i2c clock.
+#define I2SCLHIGH           400
+#define I2SCLLOW            400
 
 // Pinsel0 has builtin pullup. 
 // Pinsel1&2 do not. 
-#define PULLUP           0x0
+#define I2C1_SDA1_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<6))) // P0.19
+#define I2C1_SCL1_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<8))) // P0.20
+
+#define I2C2_SDA2_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<20))) // P0.10
+#define I2C2_SCL2_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<22))) // P0.11
+
 
 // PINSEL0
-#define SDA2             (0x2<<20)
-#define SDA2MASK         ~(0x3<<20)
+#define SDA2_SEL           (0x2<<20)
+#define SDA2MASK           ~(0x3<<20)
 
-#define SCL2             0x2<<20
-#define SCL2MASK         ~(0x3<<22)
-
+#define SCL2_SEL           0x2<<22
+#define SCL2MASK           ~(0x3<<22)
 
 // PINSEL1
-#define SDA1             (0x3<<6)
-#define SDA1MASK         ~(0x3<<6)
+#define SDA1_SEL           (0x3<<6)
+#define SDA1MASK           ~(0x3<<6)
 
-#define SCL1             0x3<<8
-#define SCL1MASK         ~(0x3<<8)
+#define SCL1_SEL           0x3<<8
+#define SCL1MASK           ~(0x3<<8)
 
-#define SDA0             0x1<<22
-#define SDA0MASK         ~(0x3<<22)
+#define SDA0_SEL            0x1<<22
+#define SDA0MASK           ~(0x3<<22)
 
-#define SCL0             0x1<<24
-#define SCL0MASK         ~(0x3<<24)
+#define SCL0_SEL            0x1<<24
+#define SCL0MASK           ~(0x3<<24)
 
-#define I2C_BINSEM_WAIT   ( ( portTickType ) 3000 / portTICK_RATE_MS )
+#define I2C0_ENABLE_SDA0_PIN   (PINSEL1 = ((PINSEL1 & SDA0MASK) | SDA0_SEL))
+#define I2C0_ENABLE_SCL0_PIN   (PINSEL1 = ((PINSEL1 & SCL0MASK) | SCL0_SEL))
+
+#define I2C1_ENABLE_SDA1_PIN   (PINSEL1 = ((PINSEL1 & SDA1MASK) | SDA1_SEL))
+#define I2C1_ENABLE_SCL1_PIN   (PINSEL1 = ((PINSEL1 & SCL1MASK) | SCL1_SEL))
+
+#define I2C2_ENABLE_SDA2_PIN   (PINSEL0 = ((PINSEL0 & SDA2MASK) | SDA2_SEL))
+#define I2C2_ENABLE_SCL2_PIN   (PINSEL0 = ((PINSEL0 & SCL2MASK) | SCL2_SEL))
+
+#define I2C_BINSEM_WAITTICKS  3000
 
 
-typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
+typedef enum { I2C0=0, I2C1, I2C2 } i2c_iface;
 
 typedef enum { 
     I2C_IDLE = 0, 
@@ -114,48 +139,57 @@ typedef enum {
 typedef struct i2c_master_xact {
     volatile i2c_state state;
 
-    volatile uint8_t  I2C_TX_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
-    volatile uint8_t  I2C_RD_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
-    volatile uint8_t  I2Cext_slave_address;
+    volatile uint8_t  i2c_tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
+    volatile uint8_t  i2c_rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
+    volatile uint8_t  i2c_ext_slave_address;
     volatile uint8_t  write_length;
     volatile uint8_t  read_length;
+    volatile uint8_t  xact_active;
+    volatile uint8_t  xact_success;
 
 } i2c_master_xact_t;
 
+typedef void (XACT_FnCallback) (i2c_master_xact_t* caller, i2c_master_xact_t* i2c);
 
-/*
+// Use a binary semaphore for mutual exclusion on the i2c interface.
+extern volatile  bin_semaphore         i2c0_binsem_g;
+extern volatile  bin_semaphore         i2c1_binsem_g;
+extern volatile  bin_semaphore         i2c2_binsem_g;
+
+// One structure for each i2c channel
+extern i2c_master_xact_t     i2c0_s_g;
+extern i2c_master_xact_t     i2c1_s_g;
+extern i2c_master_xact_t     i2c2_s_g;
+
+extern volatile uint32_t              i2c_wrindex_g;
+extern volatile uint32_t              i2c_rdindex_g;
+
+extern XACT_FnCallback*      _i2c0_FnCallback_g;
+extern XACT_FnCallback*      _i2c1_FnCallback_g;
+extern XACT_FnCallback*      _i2c2_FnCallback_g;
+
+extern i2c_master_xact_t*    i2c0_s_caller_g;
+extern i2c_master_xact_t*    i2c1_s_caller_g;
+extern i2c_master_xact_t*    i2c2_s_caller_g;
+
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c1_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
-*/
 
-void i2c0_isr(void) __attribute__ ((naked));
-void i2c1_isr(void) __attribute__ ((naked));
-void i2c2_isr(void) __attribute__ ((naked));
+// still experimenting. gcc v4.5.2 may do the correct thing now.
+//void i2c0_isr(void) __attribute__ ((naked));  // use ISR_ENTRY/ISR_EXIT from lpc23xx-vic.h
+//void i2c1_isr(void) __attribute__ ((naked));
+//void i2c2_isr(void) __attribute__ ((naked));
 
-// Use a binary semaphore for mutual exclusion on the i2c interface.
-// Ref: http://www.freertos.org/index.html?http://www.freertos.org/a00121.html
-static volatile xSemaphoreHandle i2cSemaphore_g;
-
-// One structure for each i2c channel
-static i2c_master_xact_t     i2c0_s_g;
-static i2c_master_xact_t     i2c1_s_g;
-static i2c_master_xact_t     i2c2_s_g;
-
-static volatile uint32_t         i2c_wrindex_g;
-static volatile uint32_t         i2c_rdindex_g;
-
-// void I2CGeneral_Call(i2c_iface channel);
-void I2CInit_State( i2c_master_xact_t* s) ;
+// void i2cgeneral_call(i2c_iface channel);
+void i2c_init_state( i2c_master_xact_t* s) ;
 void i2c_init(i2c_iface channel) ;
-void I2C0_get_read_data(i2c_master_xact_t* s) ;
-void I2C0_master_xact(i2c_master_xact_t*  s) ;
+void i2c0_get_read_data(i2c_master_xact_t* s) ;
+void i2c0_master_xact(i2c_master_xact_t*  s) ;
 
 /*
 void I2C1_master_xact(i2c_master_xact_t&  s) ;
 void I2C2_master_xact(i2c_master_xact_t&  s) ;
 */
-
-
 
 #endif

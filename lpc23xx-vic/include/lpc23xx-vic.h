@@ -23,7 +23,7 @@
  *    4 - Push it onto the IRQ stack as well.
  *
  */
-#define ISR_ENTRY() asm volatile(" sub   lr, lr,#4\n"		\
+#define ISR_ENTRY asm volatile(" sub   lr, lr,#4\n"		\
                                  " stmfd sp!,{r0-r12,lr}\n"	\
                                  " mrs   r1, spsr\n"		\
                                  " stmfd sp!,{r1}")
@@ -42,7 +42,7 @@
  *        the IRQ stack & return
  *
  */
-#define ISR_EXIT()  asm volatile(" ldmfd sp!,{r1}\n"		\
+#define ISR_EXIT asm volatile(" ldmfd sp!,{r1}\n"		\
                                  " msr   spsr_c,r1\n"		\
                                  " ldmfd sp!,{r0-r12,pc}^")
 

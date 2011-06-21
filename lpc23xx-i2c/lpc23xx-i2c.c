@@ -4,10 +4,35 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "lpc23xx.h"
 
+#include "lpc23xx-binsem.h"
+#include "lpc23xx-uart.h"
+#include "lpc23xx-util.h"
+#include "lpc23xx-vic.h"
+
 #include "lpc23xx-i2c.h"
+
+bin_semaphore         i2c0_binsem_g;
+bin_semaphore         i2c1_binsem_g;
+bin_semaphore         i2c2_binsem_g;
+
+i2c_master_xact_t     i2c0_s_g;
+i2c_master_xact_t     i2c1_s_g;
+i2c_master_xact_t     i2c2_s_g;
+
+volatile uint32_t     i2c_wrindex_g;
+volatile uint32_t     i2c_rdindex_g;
+
+XACT_FnCallback*      _i2c0_FnCallback_g;
+XACT_FnCallback*      _i2c1_FnCallback_g;
+XACT_FnCallback*      _i2c2_FnCallback_g;
+
+i2c_master_xact_t*    i2c0_s_caller_g;
+i2c_master_xact_t*    i2c1_s_caller_g;
+i2c_master_xact_t*    i2c2_s_caller_g;
 
 /*
  * i2c_create_read_addr
@@ -24,19 +49,21 @@ uint8_t i2c_create_write_address(uint8_t addr) {
 }
 
 /*
- * I2CInit_State
+ * i2c_init_state
  */
-void I2CInit_State( i2c_master_xact_t* s) {
+void i2c_init_state( i2c_master_xact_t* s) {
     int i = 0;
 
     s->state             = I2C_IDLE;
     for(i=0; i<I2C_MAX_BUFFER; i++) {
-        s->I2C_TX_buffer[i] = 0;
-        s->I2C_RD_buffer[i] = 0;
+        s->i2c_tx_buffer[i] = 0;
+        s->i2c_rd_buffer[i] = 0;
     }
-    s->I2Cext_slave_address = 0x0;
-    s->write_length         = 0x0;
-    s->read_length          = 0x0;
+    s->i2c_ext_slave_address = 0x0;
+    s->write_length          = 0x0;
+    s->read_length           = 0x0;
+    s->xact_active           = 0x0;
+    s->xact_success          = 0x0;
 }
 
 /*
@@ -47,112 +74,101 @@ void I2CInit_State( i2c_master_xact_t* s) {
  * 2. Configure the clock for the channel
  * 3. Set I/O pins to correct mode
  * 4. Configure interrupt in VIC
- * 5. Continue initializing...tbd
  */
-void I2Cinit(i2c_iface channel) {
-    { 
-        portENTER_CRITICAL();
+void i2c_init(i2c_iface channel) {
 
-        // Sat 27 March 2010 11:02:36 (PDT)
-        // only create one semaphore for now, maybe one for each
-        // channel later.
-        vSemaphoreCreateBinary( i2cSemaphore_g );
-        if( i2cSemaphore_g == NULL ) {
-            vSerialPutString(0, "*** I2C-ERROR ***: Failed to create i2cSemaphore_g. I2CInit Failed!\n\r", 50);
-        } else {
-            switch(channel) {
-                case I2C0: 
-                    // structure
-                    I2CInit_State( &i2c0_s_g );
+    switch(channel) {
+        case I2C0: 
+            init_binsem( &i2c0_binsem_g );
 
-                    // power
-                    SET_BIT(PCONP, PCI2C0);
+            i2c_init_state( &i2c0_s_g );
 
-                    // Enable
-                    I2C0CONCLR = 0x7C;
-                    I2C0CONSET = (I2C_I2EN | I2C_AA); // master mode
-                    // printf2("I20Conset is 0x%X\n",I2C0CONSET);
+            POWER_I2C0_ON;
 
-                    // I2C clock
-                    I2C0SCLL = I2SCLLOW;
-                    I2C0SCLH = I2SCLHIGH;
+            I2C0CONCLR = 0x7C;
+            I2C0CONSET = (I2C_I2EN | I2C_AA); // master mode
 
-                    // 2368 is 100pin package use table 107 p158 lpc23xx usermanual
-                    PINSEL1 &= SDA0MASK;
-                    PINSEL1 |= SDA0;
-                    PINSEL1 &= SCL0MASK;
-                    PINSEL1 |= SCL0;
+            // I2C clock
+            I2C0_IS_CCLK_DIV1;
+            I2C0SCLL   = I2SCLLOW;
+            I2C0SCLH   = I2SCLHIGH;
 
-                    // pinmode:   I2C0 pins permanent open drain (pullup)
-                    // reference: lpc23xx usermanual p158 table 107 footnote 2
+            I2C0_ENABLE_SDA0_PIN;
+            I2C0_ENABLE_SCL0_PIN;
 
-                    // vic
-                    // set up VIC p93 table 86 lpc23xx user manual
-                    SET_BIT(VICIntEnable, VICI2C0EN);
-                    VICVectAddr9 = (unsigned) i2c0_isr;
+            // pinmode:   I2C0 pins permanent open drain (pullup)
+            // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-                    I2C0CONCLR   = I2C_SIC;
-                    break;
+            // vic
+            // set up VIC p93 table 86 lpc23xx user manual
+            ENABLE_I2C0_INT;
+            VICVectAddr9 = (unsigned int) i2c0_isr;
 
-                case I2C1: 
-                    // structure
-                    I2CInit_State( &i2c1_s_g );
+            I2C0CONCLR   = I2C_SIC;
+            break;
 
+        case I2C1: 
 
-                    SET_BIT(PCONP, PCI2C1);
+            init_binsem(&i2c1_binsem_g);
 
-                    I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
+            i2c_init_state( &i2c1_s_g );
 
-                    I2C1SCLL = I2SCLLOW;
-                    I2C1SCLH = I2SCLHIGH;
+            POWER_I2C1_ON;
 
-                    PINSEL1 &= SDA1MASK;
-                    PINSEL1 |= SDA1;
-                    PINSEL1 &= SCL1MASK;
-                    PINSEL1 |= SCL1;
+            I2C1CONCLR = 0x7C;
+            I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
 
-                    PINMODE1 &= SDA1MASK;
-                    PINMODE1 |= PULLUP;
-                    PINMODE1 &= SCL1MASK;
-                    PINMODE1 |= PULLUP;
+            I2C2_IS_CCLK_DIV1;
+            I2C1SCLL   = I2SCLLOW;
+            I2C1SCLH   = I2SCLHIGH;
 
-                    SET_BIT(VICIntEnable, VICI2C1EN);
-                    VICVectAddr19 = (unsigned) i2c1_isr;
-                    break;
+            I2C1_ENABLE_SDA1_PIN;
+            I2C1_ENABLE_SCL1_PIN;
 
-                case I2C2: 
-                    // structure
-                    I2CInit_State( &i2c2_s_g );
+            // reference: lpc23xx usermanual p158 table 107 footnote 2
+            I2C1_SDA1_PULLUP;
 
+            // vic
+            // set up VIC p93 table 86 lpc23xx user manual
+            ENABLE_I2C1_INT;
+            VICVectAddr19 = (unsigned int) i2c1_isr;
 
-                    SET_BIT(PCONP, PCI2C2);
+            I2C1CONCLR    = I2C_SIC;
+            break;
 
-                    I2C2CONSET = (I2C_I2EN | I2C_AA); // master mode
+        case I2C2: 
+            init_binsem(&i2c2_binsem_g);
 
-                    I2C2SCLL = I2SCLLOW;
-                    I2C2SCLH = I2SCLHIGH;
+            i2c_init_state( &i2c2_s_g );
 
-                    PINSEL0 &= SDA2MASK;
-                    PINSEL0 |= SDA2;
-                    PINSEL0 &= SCL2MASK;
-                    PINSEL0 |= SCL2;
+            POWER_I2C2_ON;
 
-                    PINMODE2 &= SDA2MASK;
-                    PINMODE2 |= PULLUP;
-                    PINMODE2 &= SCL2MASK;
-                    PINMODE2 |= PULLUP;
+            I2C2CONCLR = 0x7C;
+            I2C2CONSET = (I2C_I2EN | I2C_AA); // master mode
 
-                    SET_BIT(VICIntEnable, VICI2C2EN);
-                    VICVectAddr30 = (unsigned) i2c2_isr;
-                    break;
+            // I2C clock
+            I2C2_IS_CCLK_DIV1;
+            I2C1SCLL   = I2SCLLOW;
+            I2C1SCLH   = I2SCLHIGH;
 
-                default:
-                    //  error         ???
-                    break;
-            }
-        }
+            I2C2_ENABLE_SDA2_PIN;
+            I2C2_ENABLE_SCL2_PIN;
+
+            // reference: lpc23xx usermanual p158 table 107 footnote 2
+            I2C2_SDA2_PULLUP;
+
+            // vic
+            // set up VIC p93 table 86 lpc23xx user manual
+            ENABLE_I2C2_INT;
+            VICVectAddr30 = (unsigned int) i2c2_isr;
+
+            I2C2CONCLR    = I2C_SIC;
+            break;
+
+        default:
+            //  error         ???
+            break;
     }
-    portEXIT_CRITICAL();
 }
 
 /*
@@ -160,21 +176,15 @@ void I2Cinit(i2c_iface channel) {
  */
 void i2c0_isr(void) {
 
-    portSAVE_CONTEXT();
+ //   ISR_ENTRY;
 
     uint32_t                 status;
-    uint8_t                  give_binsem;
-    static signed            portBASE_TYPE xHigherPriorityTaskWoken; 
+    uint8_t                  xact_exit;
 
-    xHigherPriorityTaskWoken = pdFALSE;
-    give_binsem              = 0;
+    xact_exit              = 0;
 
-    status = I2C0STAT;
+    status                   = I2C0STAT;
 
-#if DEBUG_ISR==1
-    // status (state) register observability to io pins
-#include "i2c_debug_isr_status.c"
-#endif
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
@@ -184,7 +194,7 @@ void i2c0_isr(void) {
             i2c_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
+            xact_exit       = 1;
             break;
 
             // State 0X08 - 
@@ -195,7 +205,7 @@ void i2c0_isr(void) {
             i2c_wrindex_g     = 0;
 
             // write the Slave Address with R/W bit to I2DAT
-            I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
+            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
             i2c0_s_g.state    = I2C_START;
 
             break;
@@ -208,7 +218,7 @@ void i2c0_isr(void) {
             i2c_rdindex_g     = 0;
 
             // Device address + R/W is first after write data in stream
-            I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
+            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
             i2c0_s_g.state    = I2C_RESTART;
             I2C0CONCLR        = I2C_STAC;
             break;
@@ -221,7 +231,7 @@ void i2c0_isr(void) {
             //   An ACK bit will be received.
         case 0x18:
             if(i2c0_s_g.state == I2C_START) {
-                I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
+                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
                 I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
                 i2c0_s_g.state    = I2C_ACK;
@@ -234,8 +244,8 @@ void i2c0_isr(void) {
             //   A Stop condition will be transmitted.
         case 0x20:
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
-            i2c0_s_g.state = I2C_NOTACK;
+            xact_exit       = 1;
+            i2c0_s_g.state    = I2C_NOTACK;
             break;
 
             // State 0x28 - 
@@ -245,17 +255,17 @@ void i2c0_isr(void) {
             //   start transaction)
         case 0x28:
             if(i2c_wrindex_g < i2c0_s_g.write_length) {
-                I2C0DAT           = i2c0_s_g.I2C_TX_buffer[i2c_wrindex_g++] ;
+                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
-                i2c0_s_g.state = I2C_ACK;
+                i2c0_s_g.state    = I2C_ACK;
             } else {
                 if (i2c0_s_g.read_length != 0) {
                     I2C0CONSET        = I2C_STA;  // repeated start
                     i2c0_s_g.state    = I2C_REPEATED_START;
                 } else {
                     I2C0CONSET        = (I2C_STO | I2C_AA);
-                    give_binsem = 1;
-                    i2c0_s_g.state = I2C_ACK;
+                    xact_exit       = 1;
+                    i2c0_s_g.state    = I2C_ACK;
                 }
             }
             break;
@@ -266,8 +276,8 @@ void i2c0_isr(void) {
             //   A Stop condition will be transmitted.
         case 0x30:
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
-            i2c0_s_g.state = I2C_NOTACK;
+            xact_exit       = 1;
+            i2c0_s_g.state    = I2C_NOTACK;
             break;
 
             // State 0x38 - Multiple Master State 
@@ -277,10 +287,9 @@ void i2c0_isr(void) {
             //   *** We will issue a STOP here, since we should never be in Multiple master 
             //   mode for our application ***
         case 0x38:
-            // I2C0CONSET        = (I2C_STA | I2C_AA);
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
-            i2c0_s_g.state = I2C_ERROR;
+            xact_exit       = 1;
+            i2c0_s_g.state    = I2C_ERROR;
             break;
 
             // MASTER RECEIVE STATES
@@ -305,7 +314,7 @@ void i2c0_isr(void) {
             //   A Stop condition will be transmitted.
         case 0x48:
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
+            xact_exit       = 1;
             i2c0_s_g.state    = I2C_NOTACK;
             break;
 
@@ -316,7 +325,7 @@ void i2c0_isr(void) {
             //   If this is the last data byte then NOT ACK will be returned, 
             //     otherwise ACK will be returned. 
         case 0x50:
-            i2c0_s_g.I2C_RD_buffer[i2c_rdindex_g++] = I2C0DAT;  
+            i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
             if(i2c_rdindex_g < i2c0_s_g.read_length) {
                 I2C0CONSET     = I2C_AA;
                 i2c0_s_g.state = I2C_ACK;
@@ -331,10 +340,10 @@ void i2c0_isr(void) {
             //   Data will be read from I2DAT. 
             //   A Stop condition will be transmitted.
         case 0x58:
-            i2c0_s_g.I2C_RD_buffer[i2c_rdindex_g++] = I2C0DAT;  
+            i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
             I2C0CONSET         = (I2C_STO | I2C_AA);
             i2c0_s_g.state     = I2C_NOTACK;
-            give_binsem = 1;
+            xact_exit = 1;
             break;
 
             // State: ???
@@ -342,30 +351,30 @@ void i2c0_isr(void) {
         default:
             i2c_wrindex_g     = 0;
             i2c_rdindex_g     = 0;
-            i2c0_s_g.state = I2C_ERROR;
+            i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            give_binsem       = 1;
+            xact_exit       = 1;
             break;
     }
 
     I2C0CONCLR = I2C_SIC;
 
-    VICVectAddr = 0x0;      // clear VIC address
+    // p 91 LPC23xx_UM
+    VICAddress = 0x0;      // clear VIC address
 
-    if(give_binsem == 1) {  // STOP Bit has been set
-        xSemaphoreGiveFromISR( i2cSemaphore_g, &xHigherPriorityTaskWoken );
+    if(xact_exit == 1) {  // STOP Bit has been set
+        if(i2c0_s_g.state != I2C_ERROR) {
+            i2c0_s_g.xact_success = 1;
+        }
+        _i2c0_FnCallback_g( i2c0_s_caller_g, &i2c0_s_g );
+        i2c_init_state(&i2c0_s_g) ;
+
+        release_binsem(&i2c0_binsem_g);
     }
 
-    /*
-     * If xHigherPriorityTaskWoken was set to true you
-     *  we should yield.  The actual macro used here is 
-     *  port specific.
-     *  Sat 27 March 2010 12:46:21 (PDT):Only needed if context switch in i2c_isr?
-     *  portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
-     */
-    portRESTORE_CONTEXT();
-}
+//    ISR_EXIT;
 
+}
 
 /*
  * i2c1_isr
@@ -381,72 +390,55 @@ void i2c2_isr(void) {
     // not implemented
 }
 
-/*
- * I2C0_get_read_data
- * Input: Pointer to i2c_master_t structure with xaction data
- * This will copy data from local i2c0_s_g structure to same
- * type of structure passed as pointer from outside i2c scope.
- */
-void I2C0_get_read_data(i2c_master_xact_t* s) {
-    uint32_t i;
 
-    if(s !=NULL ) {
-        if( i2cSemaphore_g != NULL ) { 
-            // See if we can obtain the semaphore. If the semaphore is not available 
-            // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-            if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-                for(i=0; i<I2C_MAX_BUFFER; i++) {
-                    s->I2C_RD_buffer[i] = i2c0_s_g.I2C_RD_buffer[i];
-                }
-                if( xSemaphoreGive( i2cSemaphore_g ) != pdTRUE ) {
-                    vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, Give semaphore fail should not be possible.\n\r", 50);
-                }
-            } else { 
-                vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
-            }
-        } else {
-            vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
-        }
-    } else {
-        vSerialPutString(0, "*** I2C-ERROR ***: I2C0_get_read_data, structure pointer is NULL. Skipping.\n\r", 50);
-    }
-}
-
+// example basic callback function
+// void app_i2c0_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c) {
+//     uint16_t i;
+//      for(i=0; i<I2C_MAX_BUFFER; ++i) {
+//         caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
+//         caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
+//     }
+//
+//    caller->i2cext_slave_address = i2c->i2cext_slave_address;
+//    caller->write_length         = i2c->write_length;
+//    caller->read_length          = i2c->read_length;
+//    caller->xact_active          = i2c->xact_active;
+//    caller->xact_success         = i2c->xact_success;
+//     /* maybe trigger an interrupt here */
+// }
 
 /*
  * I2C_master_xact
  * Input: Pointer to i2c_master_t structure with xaction data
  */
-void I2C0_master_xact(i2c_master_xact_t* s) {
+void I2C0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
 
-    uint8_t i;
+    uint16_t i;
     if(s!=NULL) {
-        if( i2cSemaphore_g != NULL ) { 
-            // See if we can obtain the semaphore. If the semaphore is not available 
-            // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-            if( xSemaphoreTake( i2cSemaphore_g, I2C_BINSEM_WAIT ) == pdTRUE ) { 
-                for(i=0; i<I2C_MAX_BUFFER; i++){
-                    i2c0_s_g.I2C_TX_buffer[i] = s->I2C_TX_buffer[i];
-                    i2c0_s_g.I2C_RD_buffer[i] = s->I2C_RD_buffer[i];
-                }
-                i2c0_s_g.I2Cext_slave_address = s->I2Cext_slave_address;
-                i2c0_s_g.write_length         = s->write_length;
-                i2c0_s_g.read_length          = s->read_length;
+        // See if we can obtain the semaphore. If the semaphore is not available 
+        // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
+        if( get_binsem( &i2c0_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
+            for(i=0; i<I2C_MAX_BUFFER; ++i) {
+                i2c0_s_g.i2c_tx_buffer[i] = s->i2c_tx_buffer[i];
+                i2c0_s_g.i2c_rd_buffer[i] = s->i2c_rd_buffer[i];
+            }
+            i2c0_s_g.i2c_ext_slave_address = s->i2c_ext_slave_address;
+            i2c0_s_g.write_length         = s->write_length;
+            i2c0_s_g.read_length          = s->read_length;
+            i2c0_s_g.xact_active          = 1;
+            i2c0_s_g.xact_success         = 0;
+            s->xact_active                = 1;
+            s->xact_success               = 0;
+            i2c0_s_caller_g               = s;
+            _i2c0_FnCallback_g            = xact_fn;
 
-//                 printf2("write_length: 0x%X\r\n", s->write_length);
-                //write 0x20 to I2CONSET to set the STA bit
-                I2C0CONSET                    = I2C_STA;
-           } else { 
-                vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, Timed out waiting for i2cSemaphore_g. Skipping Request.\n\r", 50);
-            } 
-        } else {
-            vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, i2cSemaphore_g is NULL in I2C0MasterTX. Did you run I2CInit?\n\r", 50);
-        }  
+            //write 0x20 to I2CONSET to set the STA bit
+            I2C0CONSET                    = I2C_STA;
+        } else { 
+            uart0_putstring("*** I2C0-ERROR ***: I2C0_master_xact, Timed out waiting for i2c0_binsem_g. Skipping Request.\n");
+        } 
     } else {
-        vSerialPutString(0, "*** I2C-ERROR ***: I2C0_master_xact, structure pointer is NULL. Skipping.\n\r", 50);
+        uart0_putstring("*** I2C0-ERROR ***: I2C0_master_xact, structure pointer is NULL. Skipping.\n");
     }
 }
-
-
-
 

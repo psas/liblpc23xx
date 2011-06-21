@@ -8,7 +8,25 @@
 
 #include "lpc23xx.h"
 
+#include "lpc23xx-pll.h"
 #include "lpc23xx-util.h"
+
+/*
+ * microsecondsToCPUTicks
+ */
+uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
+    uint32_t ret = ( pllquery_cclk_mhz() / 1000000) * microseconds;
+    return(ret);
+}
+
+/*
+ * millisecondsToCPUTicks
+ */
+uint32_t millisecondsToCPUTicks(const uint32_t milliseconds) {
+    uint32_t ret = (pllquery_cclk_mhz() / 1000) * milliseconds;
+    return(ret);
+}
+
 /*
  * util_itoa
  * convert a signed int to a string...

@@ -9,12 +9,14 @@
 
 #include <stdint.h>
 
+typedef         volatile uint32_t        bin_semaphore;
+
 /*
  * init_binsem
  *  r0 contains address of semaphore, need to initialize
  *  semaphore to non-zero value prior to using.
  */
-void     init_binsem(uint32_t* binsem_addr);
+void     init_binsem(bin_semaphore* binsem_addr);
 
 /*
  * is_binsem_locked
@@ -23,7 +25,7 @@ void     init_binsem(uint32_t* binsem_addr);
  * return: 1 if locked 
  *         0 if not locked 
  */
-uint32_t is_binsem_locked(uint32_t* binsem_addr);
+uint32_t is_binsem_locked(bin_semaphore* binsem_addr);
 
 /*
  * get_binsem
@@ -32,7 +34,7 @@ uint32_t is_binsem_locked(uint32_t* binsem_addr);
  * return: a '1' for successful lock
  *         a '0' if wait for cycles count and not successful
  */ 
-uint32_t get_binsem(uint32_t* binsem_addr, uint32_t wait_count);
+uint32_t get_binsem(bin_semaphore* binsem_addr, uint32_t wait_count);
 
 /*
  * release_binsem
@@ -41,7 +43,7 @@ uint32_t get_binsem(uint32_t* binsem_addr, uint32_t wait_count);
  * returns a '0' for release of unlocked binary semaphore
  * in C define prototype: uint32_t release_binsem(uint32_t* binsem_addr);
  */ 
-uint32_t release_binsem(uint32_t* binsem);
+uint32_t release_binsem(bin_semaphore* binsem);
 
 #endif
 

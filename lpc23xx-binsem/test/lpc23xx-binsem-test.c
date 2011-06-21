@@ -18,15 +18,13 @@
 
 int main (void) {
 
-    uint32_t binsem       = 42;
-    uint32_t wait_count   = 1000;
+    bin_semaphore binsem       = 42;
+    uint32_t      wait_count   = 1000;
 
-    uint32_t getlock_bool = 0;
-    uint32_t lock_bool    = 0;
+    uint32_t      getlock_bool = 0;
+    uint32_t      lock_bool    = 0;
 
-    uint32_t all_passed   = 1;
-
-    // init_binsem(binsem);
+    uint32_t      all_passed   = 1;
 
     pllstart_seventytwomhz() ;
 

@@ -56,11 +56,13 @@ static inline void __set_cpsr(uint32_t val) {
     asm volatile (" msr  cpsr, %0" : /* no outputs */ : "r" (val)  );
 }
 
+uint32_t        microsecondsToCPUTicks(const uint32_t microseconds) ;
+uint32_t        millisecondsToCPUTicks(const uint32_t milliseconds) ;
 
-char*                  util_itoa(int32_t val, uint32_t base) ;
-char*                  util_uitoa(uint32_t val, uint32_t base) ;
+char*           util_itoa(int32_t val, uint32_t base) ;
+char*           util_uitoa(uint32_t val, uint32_t base) ;
 
-void                   util_waitTicks(uint32_t ticks) ;
+void            util_waitTicks(uint32_t ticks) ;
 
 
 #endif
