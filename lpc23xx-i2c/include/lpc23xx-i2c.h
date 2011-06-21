@@ -182,10 +182,13 @@ void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 //void i2c2_isr(void) __attribute__ ((naked));
 
 // void i2cgeneral_call(i2c_iface channel);
-void i2c_init_state( i2c_master_xact_t* s) ;
-void i2c_init(i2c_iface channel) ;
-void i2c0_get_read_data(i2c_master_xact_t* s) ;
-void i2c0_master_xact(i2c_master_xact_t*  s) ;
+
+uint8_t i2c_create_read_address(uint8_t addr) ;
+uint8_t i2c_create_write_address(uint8_t addr) ;
+void    i2c_init_state( i2c_master_xact_t* s) ;
+void    i2c_init(i2c_iface channel) ;
+void    i2c0_get_read_data(i2c_master_xact_t* s) ;
+void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
 
 /*
 void I2C1_master_xact(i2c_master_xact_t&  s) ;

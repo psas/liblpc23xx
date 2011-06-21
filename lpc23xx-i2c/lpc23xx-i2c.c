@@ -77,6 +77,7 @@ void i2c_init_state( i2c_master_xact_t* s) {
  */
 void i2c_init(i2c_iface channel) {
 
+	uart0_putstring("In i2c_init\n");
     switch(channel) {
         case I2C0: 
             init_binsem( &i2c0_binsem_g );
@@ -99,10 +100,16 @@ void i2c_init(i2c_iface channel) {
             // pinmode:   I2C0 pins permanent open drain (pullup)
             // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-            // vic
+            // vic/
             // set up VIC p93 table 86 lpc23xx user manual
             ENABLE_I2C0_INT;
+
+            uart0_putstring("VICIntEnable is: 0b");
+               uart0_putstring(util_uitoa(VICIntEnable,2));
+               uart0_putstring("\n");
+
             VICVectAddr9 = (unsigned int) i2c0_isr;
+            VICAddress = 0x0;      // clear VIC address
 
             I2C0CONCLR   = I2C_SIC;
             break;
@@ -184,7 +191,9 @@ void i2c0_isr(void) {
     xact_exit              = 0;
 
     status                   = I2C0STAT;
-
+    uart0_putstring("Entering i2c0_isr");
+    uart0_putstring("status is: 0x");
+    uart0_putstring(util_uitoa(status,16));
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
@@ -366,6 +375,7 @@ void i2c0_isr(void) {
         if(i2c0_s_g.state != I2C_ERROR) {
             i2c0_s_g.xact_success = 1;
         }
+        i2c0_s_g.xact_active = 0;
         _i2c0_FnCallback_g( i2c0_s_caller_g, &i2c0_s_g );
         i2c_init_state(&i2c0_s_g) ;
 
@@ -411,7 +421,8 @@ void i2c2_isr(void) {
  * I2C_master_xact
  * Input: Pointer to i2c_master_t structure with xaction data
  */
-void I2C0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
+void start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
+
 
     uint16_t i;
     if(s!=NULL) {
