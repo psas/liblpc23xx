@@ -62,7 +62,7 @@ uint32_t        millisecondsToCPUTicks(const uint32_t milliseconds) ;
 char*           util_itoa(int32_t val, uint32_t base) ;
 char*           util_uitoa(uint32_t val, uint32_t base) ;
 
-void            util_waitTicks(uint32_t ticks) ;
+void            util_waitticks(uint32_t ticks) ;
 
 
 #endif

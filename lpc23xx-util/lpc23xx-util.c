@@ -90,7 +90,7 @@ char* util_uitoa(uint32_t val, uint32_t base) {
  * -----------------------
  * Spin in a loop for ticks ..
  */
-void util_waitCount(uint32_t ticks) {
+void util_waitticks(uint32_t ticks) {
     uint32_t j;
 
     for(j=ticks; j>0; --j);
