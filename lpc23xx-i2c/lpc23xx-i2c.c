@@ -205,7 +205,7 @@ void i2c_init(i2c_iface channel) {
  */
 void i2c0_isr(void) {
 
-   ISR_ENTRY;
+//   ISR_ENTRY;
 
     uint32_t                 status;
     uint8_t                  xact_exit;
@@ -213,9 +213,10 @@ void i2c0_isr(void) {
     xact_exit              = 0;
 
     status                   = I2C0STAT;
-    uart0_putstring("Entering i2c0_isr");
+    uart0_putstring("Entering i2c0_isr\n");
     uart0_putstring("status is: 0x");
     uart0_putstring(util_uitoa(status,16));
+    uart0_putstring("\n***\n");
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
@@ -275,8 +276,11 @@ void i2c0_isr(void) {
             //   A Stop condition will be transmitted.
         case 0x20:
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            xact_exit       = 1;
+            xact_exit         = 1;
             i2c0_s_g.state    = I2C_NOTACK;
+            I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
+            status            = I2C0STAT;
+
             break;
 
             // State 0x28 - 
@@ -295,7 +299,7 @@ void i2c0_isr(void) {
                     i2c0_s_g.state    = I2C_REPEATED_START;
                 } else {
                     I2C0CONSET        = (I2C_STO | I2C_AA);
-                    xact_exit       = 1;
+                    xact_exit         = 1;
                     i2c0_s_g.state    = I2C_ACK;
                 }
             }
@@ -307,7 +311,7 @@ void i2c0_isr(void) {
             //   A Stop condition will be transmitted.
         case 0x30:
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            xact_exit       = 1;
+            xact_exit         = 1;
             i2c0_s_g.state    = I2C_NOTACK;
             break;
 
@@ -388,23 +392,21 @@ void i2c0_isr(void) {
             break;
     }
 
-    I2C0CONCLR = I2C_SIC;
-
-    // p 91 LPC23xx_UM
-    VICAddress = 0x0;      // clear VIC address
-
     if(xact_exit == 1) {  // STOP Bit has been set
         if(i2c0_s_g.state != I2C_ERROR) {
             i2c0_s_g.xact_success = 1;
         }
         i2c0_s_g.xact_active = 0;
+
         _i2c0_FnCallback_g( i2c0_s_caller_g, &i2c0_s_g );
         i2c_init_state(&i2c0_s_g) ;
-
         release_binsem(&i2c0_binsem_g);
     }
+    I2C0CONCLR = I2C_SIC;
+    // p 91 LPC23xx_UM
+    VICAddress = 0x0;      // clear VIC
 
-    ISR_EXIT;
+//    ISR_EXIT;
 
 }
 
