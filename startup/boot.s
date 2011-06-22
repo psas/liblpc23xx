@@ -67,7 +67,10 @@ _mainCRTStartup:
 
 	/* We want to start in supervisor mode.  Operation will switch to system
 	mode when the first task starts. */
-	msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT
+/*	msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT */
+
+        /* turn on FIQ */
+	msr   CPSR_c, #MODE_SVC|F_BIT 
 
 	/* Clear BSS. */
 
