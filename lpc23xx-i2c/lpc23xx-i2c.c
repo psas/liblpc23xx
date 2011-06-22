@@ -104,14 +104,36 @@ void i2c_init(i2c_iface channel) {
             // set up VIC p93 table 86 lpc23xx user manual
             ENABLE_I2C0_INT;
 
+            uart0_putstring ("In i2c0 init\n");
+
+            uart0_putstring("I2C0STAT is:\t0b");
+            uart0_putstring(util_uitoa(I2C0STAT,2));
+            uart0_putstring("\n");
+            uart0_putstring("VICRawIntr is:\t0b");
+            uart0_putstring(util_uitoa(VICRawIntr,2));
+            uart0_putstring("\n");
             uart0_putstring("VICIntEnable is: 0b");
-               uart0_putstring(util_uitoa(VICIntEnable,2));
-               uart0_putstring("\n");
+            uart0_putstring(util_uitoa(VICIntEnable,2));
+            uart0_putstring("\n");
 
             VICVectAddr9 = (unsigned int) i2c0_isr;
             VICAddress = 0x0;      // clear VIC address
 
             I2C0CONCLR   = I2C_SIC;
+
+            uart0_putstring("\nafter clearing SI:\n");
+
+            uart0_putstring("I2C0STAT is:\t0b");
+            uart0_putstring(util_uitoa(I2C0STAT,2));
+            uart0_putstring("\n");
+            uart0_putstring("VICRawIntr is:\t0b");
+            uart0_putstring(util_uitoa(VICRawIntr,2));
+            uart0_putstring("\n");
+            uart0_putstring("VICIntEnable is: 0b");
+            uart0_putstring(util_uitoa(VICIntEnable,2));
+            uart0_putstring("\n");
+
+
             break;
 
         case I2C1: 
@@ -183,7 +205,7 @@ void i2c_init(i2c_iface channel) {
  */
 void i2c0_isr(void) {
 
- //   ISR_ENTRY;
+   ISR_ENTRY;
 
     uint32_t                 status;
     uint8_t                  xact_exit;
@@ -382,7 +404,7 @@ void i2c0_isr(void) {
         release_binsem(&i2c0_binsem_g);
     }
 
-//    ISR_EXIT;
+    ISR_EXIT;
 
 }
 
