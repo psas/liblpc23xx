@@ -394,6 +394,7 @@ void i2c0_isr(void) {
 
     if(xact_exit == 1) {  // STOP Bit has been set
         if(i2c0_s_g.state != I2C_ERROR) {
+            uart0_putstring("*** No Error in isr ***\n");
             i2c0_s_g.xact_success = 1;
         }
         i2c0_s_g.xact_active = 0;

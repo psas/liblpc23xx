@@ -76,12 +76,12 @@
 #define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x11 << 20)))
 
 // p516: Max rate is 400kHz according to lpc23xx manual.
-// at CCLK=72Mhz, this is 400khz i2c clock.
-//#define I2SCLHIGH           90
-//#define I2SCLLOW            90
-// at CCLK=72Mhz, this is 90khz i2c clock.
-#define I2SCLHIGH           400
-#define I2SCLLOW            400
+// at CCLK=72Mhz, this is 400khz i2c clock. (measured 363.64 Khz)
+#define I2SCLHIGH           90
+#define I2SCLLOW            90
+// at CCLK=72Mhz, this is 90khz i2c clock. (measured 87.9 Khz)
+//#define I2SCLHIGH           400
+//#define I2SCLLOW            400
 
 // Pinsel0 has builtin pullup. 
 // Pinsel1&2 do not. 
@@ -137,15 +137,15 @@ typedef enum {
 } i2c_state;
 
 typedef struct i2c_master_xact {
-    volatile i2c_state state;
+     i2c_state state;
 
-    volatile uint8_t  i2c_tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
-    volatile uint8_t  i2c_rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
-    volatile uint8_t  i2c_ext_slave_address;
-    volatile uint8_t  write_length;
-    volatile uint8_t  read_length;
-    volatile uint8_t  xact_active;
-    volatile uint8_t  xact_success;
+     uint8_t   i2c_tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
+     uint8_t   i2c_rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
+     uint8_t   i2c_ext_slave_address;
+     uint32_t  write_length;
+     uint32_t  read_length;
+     uint32_t  xact_active;
+     uint32_t  xact_success;
 
 } i2c_master_xact_t;
 
