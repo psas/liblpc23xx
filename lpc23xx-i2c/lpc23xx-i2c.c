@@ -77,7 +77,6 @@ void i2c_init_state( i2c_master_xact_t* s) {
  */
 void i2c_init(i2c_iface channel) {
 
-	uart0_putstring("In i2c_init\n");
     switch(channel) {
         case I2C0: 
             init_binsem( &i2c0_binsem_g );
@@ -100,39 +99,14 @@ void i2c_init(i2c_iface channel) {
             // pinmode:   I2C0 pins permanent open drain (pullup)
             // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-            // vic/
+            // vic
             // set up VIC p93 table 86 lpc23xx user manual
             ENABLE_I2C0_INT;
-
-            uart0_putstring ("In i2c0 init\n");
-
-            uart0_putstring("I2C0STAT is:\t0b");
-            uart0_putstring(util_uitoa(I2C0STAT,2));
-            uart0_putstring("\n");
-            uart0_putstring("VICRawIntr is:\t0b");
-            uart0_putstring(util_uitoa(VICRawIntr,2));
-            uart0_putstring("\n");
-            uart0_putstring("VICIntEnable is: 0b");
-            uart0_putstring(util_uitoa(VICIntEnable,2));
-            uart0_putstring("\n");
 
             VICVectAddr9 = (unsigned int) i2c0_isr;
             VICAddress = 0x0;      // clear VIC address
 
             I2C0CONCLR   = I2C_SIC;
-
-            uart0_putstring("\nafter clearing SI:\n");
-
-            uart0_putstring("I2C0STAT is:\t0b");
-            uart0_putstring(util_uitoa(I2C0STAT,2));
-            uart0_putstring("\n");
-            uart0_putstring("VICRawIntr is:\t0b");
-            uart0_putstring(util_uitoa(VICRawIntr,2));
-            uart0_putstring("\n");
-            uart0_putstring("VICIntEnable is: 0b");
-            uart0_putstring(util_uitoa(VICIntEnable,2));
-            uart0_putstring("\n");
-
 
             break;
 
@@ -205,18 +179,15 @@ void i2c_init(i2c_iface channel) {
  */
 void i2c0_isr(void) {
 
-//   ISR_ENTRY;
+    //   ISR_ENTRY;
 
     uint32_t                 status;
     uint8_t                  xact_exit;
 
-    xact_exit              = 0;
+    xact_exit                = 0;
 
     status                   = I2C0STAT;
-    uart0_putstring("Entering i2c0_isr\n");
-    uart0_putstring("status is: 0x");
-    uart0_putstring(util_uitoa(status,16));
-    uart0_putstring("\n***\n");
+
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
@@ -226,7 +197,7 @@ void i2c0_isr(void) {
             i2c_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            xact_exit       = 1;
+            xact_exit         = 1;
             break;
 
             // State 0X08 - 
@@ -394,7 +365,6 @@ void i2c0_isr(void) {
 
     if(xact_exit == 1) {  // STOP Bit has been set
         if(i2c0_s_g.state != I2C_ERROR) {
-            uart0_putstring("*** No Error in isr ***\n");
             i2c0_s_g.xact_success = 1;
         }
         i2c0_s_g.xact_active = 0;
@@ -404,10 +374,11 @@ void i2c0_isr(void) {
         release_binsem(&i2c0_binsem_g);
     }
     I2C0CONCLR = I2C_SIC;
-    // p 91 LPC23xx_UM
-    VICAddress = 0x0;      // clear VIC
 
-//    ISR_EXIT;
+    // p 91 LPC23xx_UM
+    VICAddress = 0x0;
+
+    //    ISR_EXIT;
 
 }
 
@@ -426,21 +397,24 @@ void i2c2_isr(void) {
 }
 
 
-// example basic callback function
-// void app_i2c0_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c) {
-//     uint16_t i;
-//      for(i=0; i<I2C_MAX_BUFFER; ++i) {
-//         caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
-//         caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
-//     }
-//
-//    caller->i2cext_slave_address = i2c->i2cext_slave_address;
-//    caller->write_length         = i2c->write_length;
-//    caller->read_length          = i2c->read_length;
-//    caller->xact_active          = i2c->xact_active;
-//    caller->xact_success         = i2c->xact_success;
-//     /* maybe trigger an interrupt here */
-// }
+/****************************************************************************
+// EXAMPLE BASIC CALLBACK FUNCTION
+void app_i2c0_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c) {
+uint16_t i;
+for(i=0; i<I2C_MAX_BUFFER; ++i) {
+caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
+caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
+}
+
+caller->i2cext_slave_address = i2c->i2cext_slave_address;
+caller->write_length         = i2c->write_length;
+caller->read_length          = i2c->read_length;
+caller->xact_active          = i2c->xact_active;
+caller->xact_success         = i2c->xact_success;
+// maybe trigger an interrupt here
+}
+
+ ****************************************************************************/
 
 /*
  * I2C_master_xact
@@ -455,18 +429,18 @@ void start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( get_binsem( &i2c0_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
             for(i=0; i<I2C_MAX_BUFFER; ++i) {
-                i2c0_s_g.i2c_tx_buffer[i] = s->i2c_tx_buffer[i];
-                i2c0_s_g.i2c_rd_buffer[i] = s->i2c_rd_buffer[i];
+                i2c0_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
+                i2c0_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
             }
             i2c0_s_g.i2c_ext_slave_address = s->i2c_ext_slave_address;
-            i2c0_s_g.write_length         = s->write_length;
-            i2c0_s_g.read_length          = s->read_length;
-            i2c0_s_g.xact_active          = 1;
-            i2c0_s_g.xact_success         = 0;
-            s->xact_active                = 1;
-            s->xact_success               = 0;
-            i2c0_s_caller_g               = s;
-            _i2c0_FnCallback_g            = xact_fn;
+            i2c0_s_g.write_length          = s->write_length;
+            i2c0_s_g.read_length           = s->read_length;
+            i2c0_s_g.xact_active           = 1;
+            i2c0_s_g.xact_success          = 0;
+            s->xact_active                 = 1;
+            s->xact_success                = 0;
+            i2c0_s_caller_g                = s;
+            _i2c0_FnCallback_g             = xact_fn;
 
             //write 0x20 to I2CONSET to set the STA bit
             I2C0CONSET                    = I2C_STA;
