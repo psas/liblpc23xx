@@ -435,21 +435,21 @@ void i2c2_isr(void) {
 }
 
 
-/****************************************************************************
+/*****************************************************************************
 // EXAMPLE BASIC CALLBACK FUNCTION
 void app_i2c0_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c) {
-uint16_t i;
-for(i=0; i<I2C_MAX_BUFFER; ++i) {
-caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
-caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
-}
+    uint16_t i;
+    for(i=0; i<I2C_MAX_BUFFER; ++i) {
+        caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
+        caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
+    }
 
-caller->i2cext_slave_address = i2c->i2cext_slave_address;
-caller->write_length         = i2c->write_length;
-caller->read_length          = i2c->read_length;
-caller->xact_active          = i2c->xact_active;
-caller->xact_success         = i2c->xact_success;
-// maybe trigger an interrupt here
+    caller->i2cext_slave_address = i2c->i2cext_slave_address;
+    caller->write_length         = i2c->write_length;
+    caller->read_length          = i2c->read_length;
+    caller->xact_active          = i2c->xact_active;
+    caller->xact_success         = i2c->xact_success;
+    // maybe trigger an interrupt here
 }
 
  ****************************************************************************/
