@@ -193,6 +193,9 @@ void i2c0_isr(void) {
     switch(status) {
         // State 0x00 - Bus Error
         case 0x00:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x00\n");
+#endif
             i2c_wrindex_g     = 0;
             i2c_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
@@ -205,6 +208,9 @@ void i2c0_isr(void) {
             //   The Slave Address and Read or Write bit will be transmitted.
             //   An ACK bit will be received.
         case 0x08:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x08\n");
+#endif
             i2c_wrindex_g     = 0;
 
             // write the Slave Address with R/W bit to I2DAT
@@ -218,6 +224,9 @@ void i2c0_isr(void) {
             //   The Slave Address and Read or Write bit will be transmitted.  
             //   An ACK bit will be received
         case 0x10:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x10\n");
+#endif
             i2c_rdindex_g     = 0;
 
             // Device address + R/W is first after write data in stream
@@ -233,6 +242,9 @@ void i2c0_isr(void) {
             //   The first data byte will be transmitted. 
             //   An ACK bit will be received.
         case 0x18:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x18\n");
+#endif
             if(i2c0_s_g.state == I2C_START) {
                 I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
@@ -246,6 +258,9 @@ void i2c0_isr(void) {
             //   "NOT_ACK" has been received. 
             //   A Stop condition will be transmitted.
         case 0x20:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x20\n");
+#endif
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
             i2c0_s_g.state    = I2C_NOTACK;
@@ -260,6 +275,9 @@ void i2c0_isr(void) {
             //   check to see if read length is > 0. (looking for repeated 
             //   start transaction)
         case 0x28:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x28\n");
+#endif
             if(i2c_wrindex_g < i2c0_s_g.write_length) {
                 I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
@@ -281,6 +299,9 @@ void i2c0_isr(void) {
             //   NOT ACK received. 
             //   A Stop condition will be transmitted.
         case 0x30:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x30\n");
+#endif
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
             i2c0_s_g.state    = I2C_NOTACK;
@@ -293,6 +314,9 @@ void i2c0_isr(void) {
             //   *** We will issue a STOP here, since we should never be in Multiple master 
             //   mode for our application ***
         case 0x38:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x38\n");
+#endif
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit       = 1;
             i2c0_s_g.state    = I2C_ERROR;
@@ -304,6 +328,9 @@ void i2c0_isr(void) {
             //   Previous state was State 0x08 or State 0x10. 
             //   Slave Address + Read has been transmitted, ACK has been received.
         case 0x40:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x40\n");
+#endif
             if (i2c0_s_g.read_length == 1) {
                 // go to state 0x58
                 I2C0CONCLR        = I2C_AAC;
@@ -319,6 +346,9 @@ void i2c0_isr(void) {
             //   Slave Address + Read has been transmitted, NOT ACK has been received. 
             //   A Stop condition will be transmitted.
         case 0x48:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x48\n");
+#endif
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit       = 1;
             i2c0_s_g.state    = I2C_NOTACK;
@@ -331,8 +361,11 @@ void i2c0_isr(void) {
             //   If this is the last data byte then NOT ACK will be returned, 
             //     otherwise ACK will be returned. 
         case 0x50:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x50\n");
+#endif
             i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
-            if(i2c_rdindex_g < i2c0_s_g.read_length) {
+            if(i2c_rdindex_g < (i2c0_s_g.read_length-1)) {
                 I2C0CONSET     = I2C_AA;
                 i2c0_s_g.state = I2C_ACK;
             } else { // it's the last byte...
@@ -346,20 +379,25 @@ void i2c0_isr(void) {
             //   Data will be read from I2DAT. 
             //   A Stop condition will be transmitted.
         case 0x58:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0x58\n");
+#endif
             i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
-            I2C0CONSET         = (I2C_STO | I2C_AA);
-            i2c0_s_g.state     = I2C_NOTACK;
-            xact_exit = 1;
+            I2C0CONSET                              = (I2C_STO | I2C_AA);
+            i2c0_s_g.state                          = I2C_NOTACK;
+            xact_exit                               = 1;
             break;
 
-            // State: ???
             //   Unimplemented state, treat like state 0x0, bus error
         default:
+#ifdef DEBUG_I2C 
+            uart0_putstring("*Dbg* I2C state 0xdefault\n");
+#endif      
             i2c_wrindex_g     = 0;
             i2c_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
-            xact_exit       = 1;
+            xact_exit         = 1;
             break;
     }
 
@@ -397,21 +435,21 @@ void i2c2_isr(void) {
 }
 
 
-/****************************************************************************
+/*****************************************************************************
 // EXAMPLE BASIC CALLBACK FUNCTION
 void app_i2c0_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c) {
-uint16_t i;
-for(i=0; i<I2C_MAX_BUFFER; ++i) {
-caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
-caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
-}
+    uint16_t i;
+    for(i=0; i<I2C_MAX_BUFFER; ++i) {
+        caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
+        caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
+    }
 
-caller->i2cext_slave_address = i2c->i2cext_slave_address;
-caller->write_length         = i2c->write_length;
-caller->read_length          = i2c->read_length;
-caller->xact_active          = i2c->xact_active;
-caller->xact_success         = i2c->xact_success;
-// maybe trigger an interrupt here
+    caller->i2cext_slave_address = i2c->i2cext_slave_address;
+    caller->write_length         = i2c->write_length;
+    caller->read_length          = i2c->read_length;
+    caller->xact_active          = i2c->xact_active;
+    caller->xact_success         = i2c->xact_success;
+    // maybe trigger an interrupt here
 }
 
  ****************************************************************************/
