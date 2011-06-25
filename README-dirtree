@@ -2,28 +2,18 @@
 |-- include
 |   |-- common-test-make.mk
 |   `-- lpc23xx.h
-|-- liblpc23xx.a
 |-- lpc23xx-binsem
 |   |-- include
 |   |   `-- lpc23xx-binsem.h
-|   |-- lpc23xx-binsem.lst
-|   |-- lpc23xx-binsem.o
 |   |-- lpc23xx-binsem.s
 |   |-- README
 |   `-- test
-|       |-- boot.lst
-|       |-- boot.o
 |       |-- boot.s -> ../../startup/boot.s
 |       |-- hwsys.c -> ../../startup/hwsys.c
-|       |-- hwsys.o
 |       |-- include
 |       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
 |       |   `-- lpc23xx-binsem-test.h
 |       |-- lpc23xx-binsem-test.c
-|       |-- lpc23xx-binsem-test.hex
-|       |-- lpc23xx-binsem-test.map
-|       |-- lpc23xx-binsem-test.o
-|       |-- lpc23xx-binsem-test.out
 |       |-- lpc23xx.ld -> ../../startup/lpc23xx.ld
 |       |-- Makefile
 |       |-- oocd_flash_lpc2378.script
@@ -32,60 +22,46 @@
 |   |-- example
 |   |   |-- blinkm-test.c
 |   |   |-- blinkm-test.h
-|   |   `-- README
+|   |   |-- eeprom-test.c
+|   |   |-- eeprom-test.h
+|   |   |-- README
+|   |   |-- screenshot-eeprom-test.png
+|   |   `-- screenshot-i2c-write-xaction.png
 |   |-- include
 |   |   `-- lpc23xx-i2c.h
 |   |-- lpc23xx-i2c.c
-|   |-- lpc23xx-i2c.o
 |   `-- README
 |-- lpc23xx-info
 |   |-- include
 |   |   `-- lpc23xx-info.h
-|   |-- lpc23xx-info.c
-|   `-- lpc23xx-info.o
+|   `-- lpc23xx-info.c
 |-- lpc23xx-pll
 |   |-- include
 |   |   `-- lpc23xx-pll.h
 |   |-- lpc23xx-pll.c
-|   |-- lpc23xx-pll.o
 |   |-- README
 |   `-- test
-|       |-- boot.lst
-|       |-- boot.o
 |       |-- boot.s -> ../../startup/boot.s
 |       |-- hwsys.c -> ../../startup/hwsys.c
-|       |-- hwsys.o
 |       |-- include
 |       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
 |       |   `-- lpc23xx-pll-test.h
 |       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
 |       |-- lpc23xx-pll-test.c
-|       |-- lpc23xx-pll-test.hex
-|       |-- lpc23xx-pll-test.map
-|       |-- lpc23xx-pll-test.o
-|       |-- lpc23xx-pll-test.out
 |       `-- Makefile
 |-- lpc23xx-uart
 |   |-- include
 |   |   `-- lpc23xx-uart.h
 |   |-- lpc23xx-uart.c
-|   |-- lpc23xx-uart.o
 |   |-- README
 |   `-- test
-|       |-- boot.lst
-|       |-- boot.o
 |       |-- boot.s -> ../../startup/boot.s
 |       |-- hwsys.c -> ../../startup/hwsys.c
-|       |-- hwsys.o
 |       |-- include
 |       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
 |       |   `-- lpc23xx-uart-test.h
 |       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
 |       |-- lpc23xx-uart-test.c
-|       |-- lpc23xx-uart-test.hex
-|       |-- lpc23xx-uart-test.map
-|       |-- lpc23xx-uart-test.o
-|       |-- lpc23xx-uart-test.out
 |       |-- Makefile
 |       |-- oocd_flash_lpc2378.script
 |       `-- openocd_lpc2378.cfg
@@ -93,14 +69,11 @@
 |   |-- include
 |   |   `-- lpc23xx-util.h
 |   |-- lpc23xx-util.c
-|   |-- lpc23xx-util.o
 |   `-- README
 |-- lpc23xx-vic
 |   |-- include
-|   |   |-- interrupts.h
 |   |   `-- lpc23xx-vic.h
 |   |-- lpc23xx-vic.c
-|   |-- lpc23xx-vic.o
 |   `-- README
 |-- Makefile
 |-- README
@@ -123,10 +96,10 @@
     |-- lpc2368.ld
     |-- lpc2378.ld
     |-- lpc23xx.ld -> lpc2378.ld
-    |-- oocd_flash_lpc2378.script
+    |-- oocd_flash_lpc2378.script -> oocd_flash_v0.3.1-1.script
     |-- oocd_flash_v0.3.1-1.script
     |-- oocd_flash_v0.3.script
     |-- openocd_lpc2378.cfg
     `-- README
 
-27 directories, 102 files
+27 directories, 75 files
