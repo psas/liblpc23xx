@@ -1,0 +1,193 @@
+
+hid.elf:     file format elf32-littlearm
+hid.elf
+architecture: arm, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00008000 vaddr 0x00000000 paddr 0x00000000 align 2**15
+         filesz 0x00001f20 memsz 0x00001f20 flags r-x
+    LOAD off    0x00010200 vaddr 0x40000200 paddr 0x00001f20 align 2**15
+         filesz 0x00000055 memsz 0x00000055 flags rw-
+    LOAD off    0x00010258 vaddr 0x40000258 paddr 0x40000258 align 2**15
+         filesz 0x00000000 memsz 0x000000a0 flags rw-
+private flags = 200: [APCS-32] [FPA float format] [software FP]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00001f20  00000000  00000000  00008000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000055  40000200  00001f20  00010200  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          000000a0  40000258  40000258  00010258  2**2
+                  ALLOC
+  3 .ARM.attributes 00000010  00000000  00000000  00010255  2**0
+                  CONTENTS, READONLY
+  4 .debug_abbrev 00000ae4  00000000  00000000  00010265  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00001bdf  00000000  00000000  00010d49  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   000008cb  00000000  00000000  00012928  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  000005e8  00000000  00000000  000131f4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_loc    00001417  00000000  00000000  000137dc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_pubnames 00000405  00000000  00000000  00014bf3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_aranges 00000160  00000000  00000000  00014ff8  2**3
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000130  00000000  00000000  00015158  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_str    000008f5  00000000  00000000  00015288  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .comment      00000090  00000000  00000000  00015b7d  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+40000200 l    d  .data	00000000 .data
+40000258 l    d  .bss	00000000 .bss
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_ranges	00000000 .debug_ranges
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .comment	00000000 .comment
+00000001 l       *ABS*	00000000 LPC214x
+00000040 l       *ABS*	00000000 UND_STACK_SIZE
+00000040 l       *ABS*	00000000 ABT_STACK_SIZE
+00000040 l       *ABS*	00000000 FIQ_STACK_SIZE
+00000100 l       *ABS*	00000000 IRQ_STACK_SIZE
+00000400 l       *ABS*	00000000 SVC_STACK_SIZE
+00000010 l       *ABS*	00000000 MODE_USR
+00000011 l       *ABS*	00000000 MODE_FIQ
+00000012 l       *ABS*	00000000 MODE_IRQ
+00000013 l       *ABS*	00000000 MODE_SVC
+00000017 l       *ABS*	00000000 MODE_ABT
+0000001b l       *ABS*	00000000 MODE_UND
+0000001f l       *ABS*	00000000 MODE_SYS
+00000080 l       *ABS*	00000000 I_BIT
+00000040 l       *ABS*	00000000 F_BIT
+00000000 l       .text	00000000 _vectors
+00000020 l       .text	00000000 Reset_Addr
+00000024 l       .text	00000000 Undef_Addr
+00000028 l       .text	00000000 SWI_Addr
+0000002c l       .text	00000000 PAbt_Addr
+00000030 l       .text	00000000 DAbt_Addr
+00000038 l       .text	00000000 FIQ_Addr
+00000034 l       .text	00000000 IRQ_Addr
+00000000 l    df *ABS*	00000000 halsys.c
+00000000 l    df *ABS*	00000000 printf.c
+00000228 l     F .text	00000028 printchar
+00000250 l     F .text	000000c0 prints
+00000310 l     F .text	00000128 printi
+00000438 l     F .text	000001e0 print
+00000000 l    df *ABS*	00000000 console.c
+00000000 l    df *ABS*	00000000 main_hid.c
+00001ba8 l     O .text	0000006b abDescriptors
+000008f8 l     F .text	00000068 HIDHandleStdReq
+40000264 l       .bss	00000000 abClassReqData
+00000844 l     F .text	000000b4 HandleClassRequest
+000007e0 l     F .text	00000064 HandleFrame
+40000258 l       .bss	00000000 _iFrame
+4000025c l       .bss	00000000 iCount.1652
+40000200 l     O .data	00000008 abReport
+40000260 l       .bss	00000000 _iIdleRate
+40000208 l     O .data	0000004d abReportDesc
+00000000 l    df *ABS*	00000000 usbhw_lpc.c
+00000960 l     F .text	00000038 USBHwCmd
+00000998 l     F .text	00000044 USBHwCmdWrite
+000009dc l     F .text	00000048 USBHwCmdRead
+40000268 l       .bss	00000000 _pfnFrameHandler
+4000026c l       .bss	00000000 _pfnDevIntHandler
+40000270 l       .bss	00000000 _apfnEPIntHandlers
+00001c14 l     O .text	0000001a __FUNCTION__.1675
+00000000 l    df *ABS*	00000000 usbcontrol.c
+00001c30 l     O .text	0000001a __FUNCTION__.1666
+400002c0 l       .bss	00000000 apbDataStore
+400002b0 l       .bss	00000000 apfnReqHandlers
+0000125c l     F .text	00000048 _HandleRequest
+000012a4 l     F .text	00000060 StallControlPipe
+400002d0 l       .bss	00000000 Setup
+00001304 l     F .text	0000004c DataIn
+400002dc l       .bss	00000000 iResidue
+400002d8 l       .bss	00000000 pbData
+400002e0 l       .bss	00000000 iLen
+00001c4c l     O .text	00000019 __FUNCTION__.1628
+00000000 l    df *ABS*	00000000 usbstdreq.c
+400002ec l       .bss	00000000 pabDescrip
+400002e4 l       .bss	00000000 pfnHandleCustomReq
+00001c7c l     O .text	00000011 __FUNCTION__.1609
+400002e8 l       .bss	00000000 bConfiguration
+00001c68 l     O .text	00000014 __FUNCTION__.1642
+00000000 l    df *ABS*	00000000 usbinit.c
+000019b4 l     F .text	00000014 HandleUsbReset
+400002f0 l       .bss	00000000 abStdReqData
+000006d0 g     F .text	0000003c putchar
+00001540 g     F .text	000000d0 USBGetDescriptor
+00000b94 g     F .text	0000009c USBHwEPRead
+00001530 g     F .text	00000010 USBRegisterCustomReqHandler
+00000650 g     F .text	00000034 printf
+00001520 g     F .text	00000010 USBRegisterDescriptors
+00000684 g     F .text	0000004c ConsoleInit
+000000e4 g     F .text	00000004 UNDEF_Routine
+00000ce4 g     F .text	00000160 USBHwISR
+00001f20 g       .text	00000000 _etext
+00000728 g     F .text	00000034 puts
+000019c8 g     F .text	000000f8 __udivsi3
+00000ff4 g     F .text	00000028 USBDisableDMAForEndpoint
+40000258 g       .bss	00000000 _bss_start
+00000b08 g     F .text	0000008c USBHwEPWrite
+0000101c g     F .text	00000028 USBEnableDMAForEndpoint
+000000e0 g     F .text	00000004 SWI_Routine
+00000c30 g     F .text	000000a4 USBHwISOCEPRead
+00000150 g     F .text	0000000c HalSysGetPCLK
+00000000 g       .text	00000000 _startup
+400002f8 g       *ABS*	00000000 _bss_end
+00000a24 g     F .text	00000058 USBHwEPConfig
+00000040 g       .text	00000000 Reset_Handler
+00001350 g     F .text	000001d0 USBHandleControlTransfer
+00000a7c g     F .text	00000010 USBHwSetAddress
+000000dc g     F .text	00000004 FIQ_Routine
+00001ad8 g     F .text	000000cc __umodsi3
+000011d0 g     F .text	0000008c USBRegisterRequestHandler
+00000144 g     F .text	0000000c HalSysGetCCLK
+00001948 g     F .text	0000006c USBInit
+000000e8 g     F .text	0000005c HalSysPinSelect
+00000a8c g     F .text	00000030 USBHwConnect
+00001ba4 g     F .text	00000004 __aeabi_ldiv0
+00000ae8 g     F .text	00000020 USBHwEPStall
+00001098 g     F .text	00000018 USBSetHeadDDForDMA
+0000075c g     F .text	00000084 main
+00001ba4 g     F .text	00000004 __div0
+000019c8 g     F .text	00000000 __aeabi_uidiv
+0000070c g     F .text	0000001c getchar
+40007edc g       *ABS*	00000000 _stack_end
+000010b0 g     F .text	00000028 USBInitializeUSBDMA
+00001104 g     F .text	0000002c USBHwRegisterDevIntHandler
+00001130 g     F .text	000000a0 USBHwRegisterEPIntHandler
+00000618 g     F .text	00000038 sprintf
+000000d8 g     F .text	00000004 IRQ_Routine
+00001610 g     F .text	00000338 USBHandleStandardRequest
+40000200 g       .data	00000000 _data
+00000f7c g     F .text	00000078 USBSetupDMADescriptor
+00000cd4 g     F .text	00000010 USBHwConfigDevice
+00001ac0 g     F .text	00000018 __aeabi_uidivmod
+40000255 g       .data	00000000 _edata
+400002f8 g       *ABS*	00000000 _end
+00000abc g     F .text	0000000c USBHwNakIntEnable
+000001b8 g     F .text	00000070 HalSysInit
+00000e44 g     F .text	00000138 USBHwInit
+000010d8 g     F .text	0000002c USBHwRegisterFrameHandler
+00001ba4 g     F .text	00000004 __aeabi_idiv0
+00000ac8 g     F .text	00000020 USBHwEPGetStatus
+0000015c g     F .text	0000005c HalPinSelect
+00001044 g     F .text	00000054 USBInitializeISOCFrameArray
+
+

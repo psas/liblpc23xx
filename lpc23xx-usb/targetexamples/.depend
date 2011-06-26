@@ -1,0 +1,3 @@
+halsys.o: halsys.c ../type.h ../debug.h hal.h ../lpc214x.h
+printf.o: printf.c console.h
+console.o: console.c console.h ../lpc214x.h
