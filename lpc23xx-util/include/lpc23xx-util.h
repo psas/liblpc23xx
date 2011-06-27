@@ -3,21 +3,35 @@
  * lpc23xx-util.h
  */
 
-
 #ifndef _LPC23XX_UTIL_H
 #define _LPC23XX_UTIL_H
 
 #include "lpc23xx.h"
+#include "lpc23xx-uart.h"
+
+// Use typeof to avoid side effects from MAX(i++,j++) type of call.
+//  (only evaluate each variable once.)
+
+#define MAX(a,b) \
+    ({ typeof (a) _a = (a); \
+       typeof (b) _b = (b); \
+       _a > _b ? _a : _b; })
+
+#define MIN(a,b) \
+    ({ typeof (a) _a = (a); \
+       typeof (b) _b = (b); \
+       _a < _b ? _a : _b; })
 
 #define         MAX_I2ASTRING           33
 #define         CPSR_TBIT               (1<<5)
 #define         CPSR_SUPERVISOR_MODE    0b10011
 
-#define         FIQ_BIT                    (1<<6)
-#define         IRQ_BIT                    (1<<7)
+#define         FIQ_BIT                 (1<<6)
+#define         IRQ_BIT                 (1<<7)
 
-#define         FIQ_MASK                   ~(FIQ_BIT)
-#define         IRQ_MASK                   ~(IRQ_BIT)
+#define         FIQ_MASK                ~(FIQ_BIT)
+#define         IRQ_MASK                ~(IRQ_BIT)
+
 
 /*
  * __get_cpsr
@@ -61,6 +75,12 @@ uint32_t        millisecondsToCPUTicks(const uint32_t milliseconds) ;
 
 char*           util_itoa(int32_t val, uint32_t base) ;
 char*           util_uitoa(uint32_t val, uint32_t base) ;
+
+void            debug_msg(char* msg) ;
+void            debug_val(char* msg, int32_t val, uint32_t base) ;
+
+void            putstring_lpc(uartport p, const char *s) ;
+void            putchar_lpc(uartport p,  char c) ;
 
 void            util_waitticks(uint32_t ticks) ;
 

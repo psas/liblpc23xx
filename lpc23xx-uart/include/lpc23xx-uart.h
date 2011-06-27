@@ -6,8 +6,9 @@
 #ifndef _LPC23XX_UART_H
 #define _LPC23XX_UART_H
 
-#define UART_MAXBUFFER  121 
+#include <stdint.h>
 
+#define UART_MAXBUFFER  121 
 
 /*
  * PCLKSEL0
@@ -136,6 +137,8 @@ extern struct uart0_status {
 
 //extern char uart0_linebuffer[UART_MAXBUFFER] ;
 
+typedef enum {UART0=0, UART1, UART2, UART3} uartport;
+
 Baud    uart0_query_baud(void) ;
 
 uint8_t uart0_query_charlength(void) ;
@@ -145,11 +148,11 @@ uint8_t uart0_query_stopbits(void) ;
 void    uart0_init_9600(void) ;
 void    uart0_init_115200(void) ;
 
-void    uart0_putchar(int8_t ch) ;
+void    uart0_putchar(char ch) ;
 
 void    uart0_putstring(const char *s) ;
 
-int8_t  uart0_getchar (void) ;
+char  uart0_getchar (void) ;
 
 char*   uart0_getstring (void) ;
 

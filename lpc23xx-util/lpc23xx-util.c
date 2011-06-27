@@ -9,6 +9,7 @@
 #include "lpc23xx.h"
 
 #include "lpc23xx-pll.h"
+#include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
 
 /*
@@ -84,6 +85,67 @@ char* util_uitoa(uint32_t val, uint32_t base) {
         return &ibuf[i+1];
     }
 }
+
+/*
+ * debug_msg
+ */
+void debug_msg(char* msg) {
+    uart0_putstring(msg) ;
+    uart0_putstring("\n");
+}
+
+/*
+ * debug_val
+ */
+void debug_val(char* msg, int32_t val, uint32_t base) {
+    uart0_putstring(msg) ;
+    uart0_putstring(util_itoa(val,base));
+    uart0_putstring("\n");
+}
+
+/*
+ * putstring_lpc
+ * put a string to a uart port
+ */
+void putstring_lpc(uartport p, const char *s) {
+    switch(p){ 
+        case UART0:
+            uart0_putstring(s);
+            break;
+//        case UART1:
+//            uart1_putstring(s);
+//            break;
+//        case UART2:
+//            uart2_putstring(s);
+//            break;
+//        case UART3:
+//            uart3_putstring(s);
+//            break;
+        default:
+            break;
+    }
+}
+/*
+ * put a character to a uart port
+ */
+void putchar_lpc(uartport p,  char c) {
+    switch(p){ 
+        case UART0:
+            uart0_putchar(c);
+            break;
+//        case UART1:
+//            uart1_putchar(c);
+//            break;
+//        case UART2:
+//            uart2_putchar(c);
+//            break;
+//        case UART3:
+//            uart3_putchar(c);
+//            break;
+        default:
+            break;
+    }
+} 
 
 /*
  * util_waitTicks

@@ -156,7 +156,7 @@ void uart0_init_115200(void) {
 /*
  * uart0_putchar
  */
-void uart0_putchar(int8_t ch) {
+void uart0_putchar(char ch) {
     if (ch == '\n') {
         while (!(U0THR_EMPTY));
         U0THR = '\r';
@@ -184,7 +184,7 @@ void uart0_putstring(const char *s) {
 /*
  * uart0_getchar
  */
-int8_t uart0_getchar (void)  {
+char uart0_getchar (void)  {
 
     while (!U0RDR_READY);
 
@@ -203,7 +203,7 @@ char* uart0_getstring (void) {
 
     static char uart0_linebuffer[UART_MAXBUFFER] ;
 
-    uint8_t    current = ' ';
+    char    current = ' ';
     uint32_t   index   = 0;
 
     while((current != '\n' && current != '\r') && index < UART_MAXBUFFER-1) {
