@@ -9,6 +9,8 @@
 #include "lpc23xx-pll.h"
 
 #include "lpc23xx-uart.h"
+#include "lpc23xx-util.h"
+#include "printf-lpc.h"
 
 #include "lpc23xx-uart-test.h"
 
@@ -44,6 +46,8 @@ int main (void) {
     //uart0_init_9600() ;
 
     uart0_putstring("\n***Starting UART test: uart0.***\n\n");
+    printf_lpc(UART0, "\n***Testing printf ***\n\n");
+    printf_lpc(UART0, "\n***Testing printf Hex: %X, Dec: %d, String: %s, Char: %c ***\n\n", 220, 220, "220", '2');
 
     uart0_putchar('1');
     uart0_putchar('2');

@@ -10,7 +10,7 @@
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
 
-#include "printf_lpc.h"
+#include "printf-lpc.h"
 
 /*
  * print_lpc

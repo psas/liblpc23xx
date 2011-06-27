@@ -1,6 +1,6 @@
 
 /*
- * printf_lpc.h
+ * printf-lpc.h
  */
 
 #ifndef _PRINTF_LPC_H
