@@ -45,9 +45,11 @@ int main (void) {
     uart0_init_115200() ;
     //uart0_init_9600() ;
 
+    unsigned int t1 = 221;
+
     uart0_putstring("\n***Starting UART test: uart0.***\n\n");
     printf_lpc(UART0, "\n***Testing printf ***\n\n");
-    printf_lpc(UART0, "\n***Testing printf Hex: %X, Dec: %d, String: %s, Char: %c ***\n\n", 220, 220, "220", '2');
+    printf_lpc(UART0, "\n***Testing printf\nHex(%%X):\t%X\nDec(%%d):\t%d\nOct(%%o):\t%o\nBin(%%b):\t%b\nString(%%s):\t%s\nChar(%%c):\t%c\n ***\n\n", t1, 220, 220, 220, "220", '2');
 
     uart0_putchar('1');
     uart0_putchar('2');

@@ -12,11 +12,17 @@
 
 #include "printf-lpc.h"
 
+/* 
+ * doubles (%g) might be accommodated with dtoa() from gcc/newlib dist, but
+ * this uses a large amount of code space. Is it really necessary? Omitted
+ * for now.
+ */
+
 /*
  * print_lpc
  */
-void print_lpc(uartport fd, const char *format, ... ) {
-    va_list args = NULL ;
+void print_lpc(uartport fd, const char *format, va_list args ) {
+
     const char *curFormatPtr = format;
 
     for( ;*curFormatPtr != '\0'; curFormatPtr++ ) {
@@ -29,13 +35,19 @@ void print_lpc(uartport fd, const char *format, ... ) {
             }
             if( *curFormatPtr == 'd') {
                 const int valToPrint = va_arg( args, int );
-                putstring_lpc(fd,util_itoa(valToPrint,10));
+                putstring_lpc(fd,util_itoa(valToPrint,DEC));
             } else if( *curFormatPtr == 'u') {
                 const unsigned int valToPrint = va_arg( args, unsigned int );
-                putstring_lpc(fd,util_uitoa(valToPrint,10));
+                putstring_lpc(fd,util_uitoa(valToPrint,DEC));
             } else if( *curFormatPtr == 'X') {
                 unsigned int valToPrint = va_arg( args, unsigned int );
-                putstring_lpc(fd, util_uitoa(valToPrint,16));
+                putstring_lpc(fd, util_uitoa(valToPrint,HEX));
+            } else if( *curFormatPtr == 'o') {
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,OCT));
+            } else if( *curFormatPtr == 'b') {
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,BIN));
             } else if( *curFormatPtr == 's') {
                 char *s = (char *) va_arg( args, int );
                 putstring_lpc(fd, s);
