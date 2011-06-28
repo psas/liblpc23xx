@@ -33,14 +33,11 @@
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
 
-
 #include "usbhw_lpc.h"
 #include "usbapi.h"
 
-
 /** data storage area for standard requests */
 static uint8_t	abStdReqData[8];
-
 
 /**
 	USB reset handler
