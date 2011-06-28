@@ -19,7 +19,7 @@ Freq    pllquery_fcco_mhz(void) {
 }
 
 /*
- * pllquery_clk_mhz
+ * pllquery_cclk_mhz
  */
 Freq    pllquery_cclk_mhz(void) {
     return(pllstat.cclk_mhz);

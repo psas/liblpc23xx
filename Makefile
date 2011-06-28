@@ -21,6 +21,7 @@ INCLUDE         := -I.\
                    -I./include\
                    -I./lpc23xx-info/include\
                    -I./lpc23xx-i2c/include\
+                   -I./lpc23xx-mam/include\
                    -I./lpc23xx-pll/include\
                    -I./lpc23xx-uart/include\
                    -I./lpc23xx-usb/include\
@@ -32,6 +33,7 @@ HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-binsem/include/*.h)\
                     $(wildcard ./lpc23xx-info/include/*.h)\
                     $(wildcard ./lpc23xx-i2c/include/*.h)\
+                    $(wildcard ./lpc23xx-mam/include/*.h)\
                     $(wildcard ./lpc23xx-pll/include/*.h)\
                     $(wildcard ./lpc23xx-uart/include/*.h)\
                     $(wildcard ./lpc23xx-usb/include/*.h)\
@@ -51,6 +53,7 @@ ASRCS           := $(wildcard lpc23xx-pll/*.s)\
 
 CSRCS           := $(wildcard lpc23xx-info/*.c)\
    		   $(wildcard lpc23xx-i2c/*.c)\
+   		   $(wildcard lpc23xx-mam/*.c)\
    		   $(wildcard lpc23xx-binsem/*.c)\
 		   $(wildcard lpc23xx-pll/*.c)\
 		   $(wildcard lpc23xx-uart/*.c)\
