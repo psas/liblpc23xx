@@ -12,6 +12,13 @@
 struct pll_status pllstat;
 
 /*
+ * pllquery_fcco_mhz
+ */
+Freq    pllquery_fcco_mhz(void) {
+    return(pllstat.fcco_mhz);
+}
+
+/*
  * pllquery_clk_mhz
  */
 Freq    pllquery_cclk_mhz(void) {
@@ -84,6 +91,7 @@ void pllstart_seventytwomhz(void) {
     SET_PLLC;
     pllfeed();
     pllstat.cclk_mhz = SEVENTY_TWO_MHZ;
+    pllstat.fcco_mhz = TWO_EIGHTY_EIGHT_MHZ;
 }
 
 
@@ -116,6 +124,8 @@ void pllstart_sixtymhz(void) {
     SET_PLLC;
     pllfeed();
     pllstat.cclk_mhz = SIXTY_MHZ;
+    pllstat.fcco_mhz = FOUR_EIGHTY_MHZ;
+
 }
 
 /*
@@ -147,6 +157,7 @@ void pllstart_fourtyeightmhz(void) {
     SET_PLLC;
     pllfeed();
     pllstat.cclk_mhz = FOURTY_EIGHT_MHZ;
+    pllstat.fcco_mhz = FOUR_EIGHTY_MHZ;
 }
 
 

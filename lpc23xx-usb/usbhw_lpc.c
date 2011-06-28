@@ -32,34 +32,13 @@
 
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
-
+#include "lpc23xx-pll.h"
 
 #include "lpc23xx.h"
 
 #include "usbhw_lpc.h"
 #include "usbapi.h"
 
-
-#ifdef DEBUG
-// comment out the following line if you don't want to use debug LEDs
-#define DEBUG_LED
-#endif
-
-#ifdef DEBUG_LED
-#ifdef LPC214x
-#define DEBUG_LED_ON(x)     IOCLR0 = (1 << x);
-#define DEBUG_LED_OFF(x)    IOSET0 = (1 << x);
-#define DEBUG_LED_INIT(x)   PINSEL0 &= ~(0x3 << (2*x)); IODIR0 |= (1 << x); DEBUG_LED_OFF(x);
-#else
-#define DEBUG_LED_ON(x)     FIO2SET = (1 << (x-8));
-#define DEBUG_LED_OFF(x)    FIO2CLR = (1 << (x-8));
-#define DEBUG_LED_INIT(x)   SCS |= 1; PINSEL10 = 0; FIO2DIR |= (1 << (x-8)); DEBUG_LED_OFF(x);
-#endif
-#else
-#define DEBUG_LED_INIT(x)   /**< LED initialisation macro */
-#define DEBUG_LED_ON(x)     /**< turn LED on */
-#define DEBUG_LED_OFF(x)    /**< turn LED off */
-#endif
 
 /** Installed device interrupt handler */
 static TFnDevIntHandler *_pfnDevIntHandler = NULL;
@@ -596,42 +575,20 @@ DEBUG_LED_OFF(9);
         
     @return TRUE if the hardware was successfully initialised
  */
-BOOL USBHwInit(void)
-{
-#ifdef LPC214x
-    
-    // configure P0.23 for Vbus sense
-    PINSEL1 = (PINSEL1 & ~(3 << 14)) | (1 << 14);   // P0.23
-    // configure P0.31 for CONNECT
-    PINSEL1 = (PINSEL1 & ~(3 << 30)) | (2 << 30);   // P0.31
+void USBHwInit(void) {
 
-    // enable PUSB
-    PCONP |= (1 << 31);     
-
-    // initialise PLL
-    PLL1CON = 1;            // enable PLL
-    PLL1CFG = (1 << 5) | 3; // P = 2, M = 4
-    PLL1FEED = 0xAA;
-    PLL1FEED = 0x55;
-    while ((PLL1STAT & (1 << 10)) == 0);
-
-    PLL1CON = 3;            // enable and connect
-    PLL1FEED = 0xAA;
-    PLL1FEED = 0x55;
-
-#endif
-
-#ifdef LPC23xx
+/* LPC23xx user manual v3 p 321 */
 #ifdef LPC2378_PORTB
     PINSEL1 = (PINSEL1 & ~(3 << 30)) | (1 << 30);
     PINSEL3 = (PINSEL3 & ~(3 << 28)) | (2 << 28);
     /* Due to a bug in the LPC23xx chips, the connection functionality must be
     * simulated using GPIO. Hopefully for production this will be fixed and the
     * commented out code will work */
+    /* NXP ES_LPC2378 Errata sheet Rev. 10 20 April 2011 */
     //PINSEL0 = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26) | (1 << 28); /* Doesn't work due to bug in chip */
-    PINSEL0 = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26);
+    PINSEL0  = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26);
     FIO0DIR |= (1<<14); /* Set pin to output */
-    FIO0SET = (1<<14); /* Set output high to disconnect */
+    FIO0SET  = (1<<14); /* Set output high to disconnect */
     
 #else
     PINSEL1 = (PINSEL1 & ~((3 << 26) | (3 << 28))) | (1 << 26) | (1 << 28);
@@ -648,10 +605,7 @@ BOOL USBHwInit(void)
     // enable PUSB
     PCONP |= (1 << 31);     
 
-  /* The LPC23xx uses a single PLL, and has multiple clock dividers for each
-   * peripheral. These settings assume a PLL frequency of 288 MHz */
-
-    USBCLKCFG = 5; /* 288 MHz / 48 MHz = 6 */
+    /* clock is configured in lpc23xx-pll.c/.h */
 
 #ifdef LPC2378_PORTB
     USBClkCtrl = (1 << 1) | (1 << 3) | (1 << 4); /* Enable the clocks */
@@ -662,32 +616,20 @@ BOOL USBHwInit(void)
     while (!(USBClkSt & ((1 << 1) | (1 << 4))));
 #endif
 
-#endif
-    
     // disable/clear all interrupts for now
-    USBDevIntEn = 0;
+    USBDevIntEn  = 0;
     USBDevIntClr = 0xFFFFFFFF;
     USBDevIntPri = 0;
 
-    USBEpIntEn = 0;
-    USBEpIntClr = 0xFFFFFFFF;
-    USBEpIntPri = 0;
+    USBEpIntEn   = 0;
+    USBEpIntClr  = 0xFFFFFFFF;
+    USBEpIntPri  = 0;
 
     // by default, only ACKs generate interrupts
     USBHwNakIntEnable(0);
-    
-    // init debug leds
-    DEBUG_LED_INIT(8);
-    DEBUG_LED_INIT(9);
-    DEBUG_LED_INIT(10);
 
     return TRUE;
 }
-
-
-
-
-
 
 
 /**
@@ -804,13 +746,3 @@ void USBInitializeUSBDMA(volatile uint32_t* udcaHeadArray[32]) {
 	}
 	USBUDCAH = (uint32_t) udcaHeadArray;
 }
-
-
-
-
-
-
-
-
-
-
