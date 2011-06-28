@@ -45,7 +45,6 @@
 
 typedef enum Freqtype { 
     ZERO                 = (uint32_t) 0,
-    TWELVE_MHZ           = (uint32_t) 12000000,
     FOURTY_EIGHT_MHZ     = (uint32_t) 48000000,
     SIXTY_MHZ            = (uint32_t) 60000000,
     SEVENTY_TWO_MHZ      = (uint32_t) 72000000,

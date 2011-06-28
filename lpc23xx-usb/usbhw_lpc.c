@@ -490,9 +490,6 @@ void USBHwISR(void)
     int i;
     uint16_t wFrame;
 
-// LED9 monitors total time in interrupt routine
-DEBUG_LED_ON(9);
-
     // handle device interrupts
     dwStatus = USBDevIntSt;
     
@@ -522,9 +519,7 @@ DEBUG_LED_ON(9);
                     ((bDevStat & RST) ? DEV_STATUS_RESET : 0);
             // call handler
             if (_pfnDevIntHandler != NULL) {
-DEBUG_LED_ON(8);        
                 _pfnDevIntHandler(bStat);
-DEBUG_LED_OFF(8);       
             }
         }
     }
@@ -549,15 +544,12 @@ DEBUG_LED_OFF(8);
                         ((bEPStat & EPSTAT_PO) ? EP_STATUS_ERROR : 0);
                 // call handler
                 if (_apfnEPIntHandlers[i / 2] != NULL) {
-DEBUG_LED_ON(10);       
                     _apfnEPIntHandlers[i / 2](IDX2EP(i), bStat);
-DEBUG_LED_OFF(10);
                 }
             }
         }
     }
     
-DEBUG_LED_OFF(9);       
 }
 
 
@@ -628,7 +620,6 @@ void USBHwInit(void) {
     // by default, only ACKs generate interrupts
     USBHwNakIntEnable(0);
 
-    return TRUE;
 }
 
 
