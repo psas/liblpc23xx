@@ -52,6 +52,7 @@
 #include "lpc23xx-debug.h"
 #include "lpc23xx-util.h"
 #include "lpc23xx-uart.h"
+#include "printf-lpc.h"
 
 #include "usbstruct.h"
 #include "usbapi.h"
@@ -115,14 +116,11 @@ static void StallControlPipe(uint8_t bEPStat)
 	USBHwEPStall(0x80, TRUE);
 
 // dump setup packet
-        debug_msg("STALL on [");
         pb = (uint8_t *)&Setup;
 	for (i = 0; i < 8; i++) {
-            debug_val(" ",*pb++,16);
-//	    DBG(" %02x", *pb++);
+	    DBG(UART0," %02x", *pb++);
 	}
-        debug_val("] stat= ",bEPStat,16);
-        DBG("] stat=%x\n", bEPStat);
+        DBG(UART0,"] stat=%x\n", bEPStat);
 }
 
 
@@ -155,7 +153,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 		if (bEPStat & EP_STATUS_SETUP) {
 			// setup packet, reset request message state machine
 			USBHwEPRead(0x00, (uint8_t *)&Setup, sizeof(Setup));
-			DBG("S%x", Setup.bRequest);
+			DBG(UART0,"S%x", Setup.bRequest);
 
 			// defaults for data pointer and residue
 			iType = REQTYPE_GET_TYPE(Setup.bmRequestType);
@@ -167,7 +165,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 				(REQTYPE_GET_DIR(Setup.bmRequestType) == REQTYPE_DIR_TO_HOST)) {
 				// ask installed handler to process request
 				if (!_HandleRequest(&Setup, &iLen, &pbData)) {
-					DBG("_HandleRequest1 failed\n");
+					DBG(UART0,"_HandleRequest1 failed\n");
 					StallControlPipe(bEPStat);
 					return;
 				}
@@ -192,7 +190,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 					iType = REQTYPE_GET_TYPE(Setup.bmRequestType);
 					pbData = apbDataStore[iType];
 					if (!_HandleRequest(&Setup, &iLen, &pbData)) {
-						DBG("_HandleRequest2 failed\n");
+						DBG(UART0,"_HandleRequest2 failed\n");
 						StallControlPipe(bEPStat);
 						return;
 					}
@@ -203,7 +201,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 			else {
 				// absorb zero-length status message
 				iChunk = USBHwEPRead(0x00, NULL, 0);
-				DBG(iChunk > 0 ? "?" : "");
+				DBG(UART0,iChunk > 0 ? "?" : "");
 			}
 		}
 	}

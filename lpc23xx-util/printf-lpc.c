@@ -42,6 +42,9 @@ void print_lpc(uartport fd, const char *format, va_list args ) {
             } else if( *curFormatPtr == 'X') {
                 unsigned int valToPrint = va_arg( args, unsigned int );
                 putstring_lpc(fd, util_uitoa(valToPrint,HEX));
+            } else if( *curFormatPtr == 'x') {
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,HEX));
             } else if( *curFormatPtr == 'o') {
                 unsigned int valToPrint = va_arg( args, unsigned int );
                 putstring_lpc(fd, util_uitoa(valToPrint,OCT));

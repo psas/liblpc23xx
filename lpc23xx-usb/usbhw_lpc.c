@@ -33,12 +33,13 @@
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
 #include "lpc23xx-pll.h"
+#include "printf-lpc.h"
 
 #include "lpc23xx.h"
 
 #include "usbhw_lpc.h"
 #include "usbapi.h"
-
+#define  LPC2378_PORTB 1
 
 /** Installed device interrupt handler */
 static TFnDevIntHandler *_pfnDevIntHandler = NULL;
@@ -192,7 +193,7 @@ void USBHwRegisterEPIntHandler(uint8_t bEP, TFnEPIntHandler *pfnHandler)
     USBEpIntEn |= (1 << idx);
     USBDevIntEn |= EP_SLOW;
     
-    DBG("Registered handler for EP 0x%x\n", bEP);
+    DBG(UART0,"Registered handler for EP 0x%x\n", bEP);
 }
 
 
@@ -208,7 +209,7 @@ void USBHwRegisterDevIntHandler(TFnDevIntHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= DEV_STAT;
 
-    DBG("Registered handler for device status\n");
+    DBG(UART0,"Registered handler for device status\n");
 }
 
 
@@ -224,7 +225,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= FRAME;
 
-    DBG("Registered handler for frame\n");
+    DBG(UART0,"Registered handler for frame\n");
 }
 
 
@@ -602,7 +603,7 @@ void USBHwInit(void) {
 #ifdef LPC2378_PORTB
     USBClkCtrl = (1 << 1) | (1 << 3) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 3) | (1 << 4))));
-    USBPortSel = 0x3; /* Set LPC to use USB Port B pins */
+    USBPortSelect = 0x3; /* Set LPC to use USB Port B pins */
 #else
     USBClkCtrl = (1 << 1) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 4))));

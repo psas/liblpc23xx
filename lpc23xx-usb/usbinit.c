@@ -32,6 +32,7 @@
 
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
+#include "printf-lpc.h"
 
 #include "usbhw_lpc.h"
 #include "usbapi.h"
@@ -47,7 +48,7 @@ static uint8_t	abStdReqData[8];
 static void HandleUsbReset(uint8_t bDevStatus)
 {
 	if (bDevStatus & DEV_STATUS_RESET) {
-		DBG("\n!");
+		DBG(UART0,"\n!");
 	}
 }
 

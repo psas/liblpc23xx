@@ -45,6 +45,7 @@
 
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
+#include "printf-lpc.h"
 
 
 #include "usbstruct.h"
@@ -139,7 +140,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 		pab += pab[DESC_bLength];
 	}
 	// nothing found
-	DBG("Desc %x not found!\n", wTypeIndex);
+	DBG(UART0,"Desc %x not found!\n", wTypeIndex);
 	return FALSE;
 }
 
@@ -244,7 +245,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		break;
 
 	case REQ_GET_DESCRIPTOR:
-		DBG("D%x", pSetup->wValue);
+		DBG(UART0,"D%x", pSetup->wValue);
 		return USBGetDescriptor(pSetup->wValue, pSetup->wIndex, piLen, ppbData);
 
 	case REQ_GET_CONFIGURATION:
@@ -255,7 +256,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 
 	case REQ_SET_CONFIGURATION:
 		if (!USBSetConfiguration(pSetup->wValue & 0xFF, 0)) {
-			DBG("USBSetConfiguration failed!\n");
+			DBG(UART0,"USBSetConfiguration failed!\n");
 			return FALSE;
 		}
 		// configuration successful, update current configuration
@@ -273,11 +274,11 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		return FALSE;
 
 	case REQ_SET_DESCRIPTOR:
-		DBG("Device req %d not implemented\n", pSetup->bRequest);
+		DBG(UART0,"Device req %d not implemented\n", pSetup->bRequest);
 		return FALSE;
 
 	default:
-		DBG("Illegal device req %d\n", pSetup->bRequest);
+		DBG(UART0,"Illegal device req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 	
@@ -327,7 +328,7 @@ static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **pp
 		break;
 
 	default:
-		DBG("Illegal interface req %d\n", pSetup->bRequest);
+		DBG(UART0,"Illegal interface req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 
@@ -375,11 +376,11 @@ static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppb
 		return FALSE;
 
 	case REQ_SYNCH_FRAME:
-		DBG("EP req %d not implemented\n", pSetup->bRequest);
+		DBG(UART0,"EP req %d not implemented\n", pSetup->bRequest);
 		return FALSE;
 
 	default:
-		DBG("Illegal EP req %d\n", pSetup->bRequest);
+		DBG(UART0,"Illegal EP req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 	
