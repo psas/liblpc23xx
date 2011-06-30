@@ -498,6 +498,8 @@ void USBHwISR(void)
     int i;
     uint16_t wFrame;
 
+    DBG(UART0, "\n*ISR* In USBHwISR\n");
+
     // handle device interrupts
     dwStatus = USBDevIntSt;
     

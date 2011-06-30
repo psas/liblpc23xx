@@ -23,14 +23,20 @@
        _a < _b ? _a : _b; })
 
 #define         MAX_I2ASTRING           33
-#define         CPSR_TBIT               (1<<5)
-#define         CPSR_SUPERVISOR_MODE    0b10011
+#define         CPSR_SUPERVISOR_MODE    0x13
 
-#define         FIQ_BIT                 (1<<6)
-#define         IRQ_BIT                 (1<<7)
+#define         T_BIT                   5
+#define         FIQ_BIT                 6
+#define         IRQ_BIT                 7
 
-#define         FIQ_MASK                ~(FIQ_BIT)
-#define         IRQ_MASK                ~(IRQ_BIT)
+#define         VOVERFLOW_BIT           28
+#define         CCARRY_BIT              29
+#define         ZZERO_BIT               30
+#define         NNEGLT_BIT              31
+
+#define         IRQ_MASK                ~(1<<IRQ_BIT)
+#define         FIQ_MASK                ~(1<<FIQ_BIT)
+#define         T_MASK                  ~(1<<T_BIT)
 
 enum {BIN=2, OCT=8, DEC=10, HEX=16} ;
 
@@ -65,11 +71,14 @@ static inline void __set_cpsr(uint32_t val) {
    
     current_cpsr = __get_cpsr();
 
-    save_Tbit    = (current_cpsr & CPSR_TBIT); 
-    val          = (val & ~(CPSR_TBIT)) | save_Tbit; 
+    save_Tbit    = (current_cpsr & (1<<T_BIT));
+    val          = (val & T_MASK) | save_Tbit;
 
     asm volatile (" msr  cpsr, %0" : /* no outputs */ : "r" (val)  );
 }
+
+inline uint32_t util_getbitval(uint32_t val, uint32_t bitnumber) ;
+void            util_cpsrstat(uint32_t cpsrval);
 
 uint32_t        microsecondsToCPUTicks(const uint32_t microseconds) ;
 uint32_t        millisecondsToCPUTicks(const uint32_t milliseconds) ;
