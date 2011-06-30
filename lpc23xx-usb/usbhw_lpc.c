@@ -572,14 +572,14 @@ void USBHwInit(void) {
 
 /* LPC23xx user manual v3 p 321 */
 #ifdef LPC2378_PORTB
-    PINSEL1 = (PINSEL1 & ~(3 << 30)) | (1 << 30);
-    PINSEL3 = (PINSEL3 & ~(3 << 28)) | (2 << 28);
+    PINSEL1 = (PINSEL1 & ~(3 << 30)) | (1 << 30);    // USB_D+ (2)
+    PINSEL3 = (PINSEL3 & ~(3 << 28)) | (2 << 28);   // V_bus
     /* Due to a bug in the LPC23xx chips, the connection functionality must be
     * simulated using GPIO. Hopefully for production this will be fixed and the
     * commented out code will work */
     /* NXP ES_LPC2378 Errata sheet Rev. 10 20 April 2011 */
     //PINSEL0 = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26) | (1 << 28); /* Doesn't work due to bug in chip */
-    PINSEL0  = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26);
+    PINSEL0  = (PINSEL0 & ~((3 << 26) | (3 << 28))) | (1 << 26); // USB_UP_LED2
     FIO0DIR |= (1<<14); /* Set pin to output */
     FIO0SET  = (1<<14); /* Set output high to disconnect */
     

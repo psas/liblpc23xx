@@ -14,6 +14,8 @@ AS              := $(CROSS)/bin/arm-elf-as
 CP              := $(CROSS)/bin/arm-elf-objcopy
 OD              := $(CROSS)/bin/arm-elf-objdump
 
+USB_PORT        ?= -DLPC23XX_PORTB
+
 DEBUG           ?=
 #DEBUG           = -DDEBUG
  
@@ -65,7 +67,7 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(USB_PORT) -g -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rvs
 
