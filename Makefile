@@ -14,9 +14,10 @@ AS              := $(CROSS)/bin/arm-elf-as
 CP              := $(CROSS)/bin/arm-elf-objcopy
 OD              := $(CROSS)/bin/arm-elf-objdump
 
-USB_PORT        ?= -DLPC23XX_PORTB
+USB_PORT        ?=
+#USB_PORT        ?= -DLPC2378_PORTB
 
-DEBUG           ?=
+DEBUG           ?= -DDEBUG_USB
 #DEBUG           = -DDEBUG
  
 INCLUDE         := -I.\

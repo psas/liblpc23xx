@@ -39,7 +39,6 @@
 
 #include "usbhw_lpc.h"
 #include "usbapi.h"
-#define  LPC2378_PORTB 1
 
 /** Installed device interrupt handler */
 static TFnDevIntHandler *_pfnDevIntHandler = NULL;
@@ -97,7 +96,9 @@ static void USBHwCmdWrite(uint8_t bCmd, uint16_t bData)
 
     // write command data
     USBCmdCode = 0x00000100 | (bData << 16);
+    DBG(UART0,"Entered Command Code:\t0x%x\n", bData);
     Wait4DevInt(CCEMTY);
+    DBG(UART0,"Past waiting\n");
 }
 
 
@@ -247,20 +248,26 @@ void USBHwSetAddress(uint8_t bAddr)
  */
 void USBHwConnect(BOOL fConnect)
 {
-#ifdef LPC23xx
+
 #ifndef LPC2378_PORTB
+	printf_lpc(UART0,"In  PORTA USBHwConnect\n");
   if(fConnect)
     FIO2CLR = (1<<9);
   else
     FIO2SET = (1<<9);
 #else
-  if(fConnect)
+	printf_lpc(UART0,"In  PORTB USBHwConnect\n");
+
+  if(fConnect) {
+		printf_lpc(UART0,"In  PORTB fConnect true USBHwConnect\n");
+
     FIO0CLR = (1<<14);
+  }
   else
     FIO0SET = (1<<14);
 #endif
-#endif
-    USBHwCmdWrite(CMD_DEV_STATUS, fConnect ? CON : 0);
+
+   // USBHwCmdWrite(CMD_DEV_STATUS, fConnect ? CON : 0);
 }
 
 
