@@ -48,11 +48,8 @@
 	control transfer data. The data is then packetised and sent to the host.
 */
 
-#include "lpc23xx-types.h"
-#include "lpc23xx-debug.h"
-#include "lpc23xx-util.h"
-#include "lpc23xx-uart.h"
-#include "printf-lpc.h"
+#include "type.h"
+#include "debug.h"
 
 #include "usbstruct.h"
 #include "usbapi.h"
@@ -64,14 +61,14 @@
 
 static TSetupPacket		Setup;	/**< setup packet */
 
-static uint8_t				*pbData;	/**< pointer to data buffer */
+static U8				*pbData;	/**< pointer to data buffer */
 static int				iResidue;	/**< remaining bytes in buffer */
 static int				iLen;		/**< total length of control transfer */
 
 /** Array of installed request handler callbacks */
 static TFnHandleRequest *apfnReqHandlers[4] = {NULL, NULL, NULL, NULL};
 /** Array of installed request data pointers */
-static uint8_t				*apbDataStore[4] = {NULL, NULL, NULL, NULL};
+static U8				*apbDataStore[4] = {NULL, NULL, NULL, NULL};
 
 /**
 	Local function to handle a request by calling one of the installed
@@ -87,7 +84,7 @@ static uint8_t				*apbDataStore[4] = {NULL, NULL, NULL, NULL};
 
 	@return TRUE if the request was handles successfully
  */
-static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
+static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 {
 	TFnHandleRequest *pfnHandler;
 	int iType;
@@ -95,8 +92,8 @@ static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 	iType = REQTYPE_GET_TYPE(pSetup->bmRequestType);
 	pfnHandler = apfnReqHandlers[iType];
 	if (pfnHandler == NULL) {
-            debug_val("No handler for reqtype ",iType,10);
-            return FALSE;
+		DBG("No handler for reqtype %d\n", iType);
+		return FALSE;
 	}
 
 	return pfnHandler(pSetup, piLen, ppbData);
@@ -108,19 +105,20 @@ static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 	
 	@param [in]	bEPStat	Endpoint status
  */
-static void StallControlPipe(uint8_t bEPStat)
+static void StallControlPipe(U8 bEPStat)
 {
-	uint8_t	*pb;
+	U8	*pb;
 	int	i;
 
 	USBHwEPStall(0x80, TRUE);
 
 // dump setup packet
-        pb = (uint8_t *)&Setup;
+	DBG("STALL on [");
+	pb = (U8 *)&Setup;
 	for (i = 0; i < 8; i++) {
-	    DBG(UART0," %02x", *pb++);
+		DBG(" %02x", *pb++);
 	}
-        DBG(UART0,"] stat=%x\n", bEPStat);
+	DBG("] stat=%x\n", bEPStat);
 }
 
 
@@ -144,7 +142,7 @@ static void DataIn(void)
  *	@param [in]	bEP		Endpoint address
  *	@param [in]	bEPStat	Endpoint status
  */
-void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
+void USBHandleControlTransfer(U8 bEP, U8 bEPStat)
 {
 	int iChunk, iType;
 
@@ -152,8 +150,8 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 		// OUT transfer
 		if (bEPStat & EP_STATUS_SETUP) {
 			// setup packet, reset request message state machine
-			USBHwEPRead(0x00, (uint8_t *)&Setup, sizeof(Setup));
-			DBG(UART0,"S%x", Setup.bRequest);
+			USBHwEPRead(0x00, (U8 *)&Setup, sizeof(Setup));
+			DBG("S%x", Setup.bRequest);
 
 			// defaults for data pointer and residue
 			iType = REQTYPE_GET_TYPE(Setup.bmRequestType);
@@ -165,7 +163,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 				(REQTYPE_GET_DIR(Setup.bmRequestType) == REQTYPE_DIR_TO_HOST)) {
 				// ask installed handler to process request
 				if (!_HandleRequest(&Setup, &iLen, &pbData)) {
-					DBG(UART0,"_HandleRequest1 failed\n");
+					DBG("_HandleRequest1 failed\n");
 					StallControlPipe(bEPStat);
 					return;
 				}
@@ -190,7 +188,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 					iType = REQTYPE_GET_TYPE(Setup.bmRequestType);
 					pbData = apbDataStore[iType];
 					if (!_HandleRequest(&Setup, &iLen, &pbData)) {
-						DBG(UART0,"_HandleRequest2 failed\n");
+						DBG("_HandleRequest2 failed\n");
 						StallControlPipe(bEPStat);
 						return;
 					}
@@ -201,7 +199,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 			else {
 				// absorb zero-length status message
 				iChunk = USBHwEPRead(0x00, NULL, 0);
-				DBG(UART0,iChunk > 0 ? "?" : "");
+				DBG(iChunk > 0 ? "?" : "");
 			}
 		}
 	}
@@ -223,7 +221,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 	@param [in]	*pfnHandler		Callback function pointer
 	@param [in]	*pbDataStore	Data storage area for this type of request
  */
-void USBRegisterRequestHandler(int iType, TFnHandleRequest *pfnHandler, uint8_t *pbDataStore)
+void USBRegisterRequestHandler(int iType, TFnHandleRequest *pfnHandler, U8 *pbDataStore)
 {
 	ASSERT(iType >= 0);
 	ASSERT(iType < 4);

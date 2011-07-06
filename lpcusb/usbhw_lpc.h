@@ -132,12 +132,13 @@
 #define BTSTF						(1<<6)
 #define TGL_ERR						(1<<7)
 
+
 /** USBHw functions only used internally */
-void            USBHwInit(void);
-void            USBHwSetAddress(uint8_t bAddr);
-void            USBHwConfigDevice(BOOL fConfigured);
-void            USBHwEPConfig(uint8_t bEP, uint16_t wMaxPacketSize);
-uint8_t         USBHwEPGetStatus(uint8_t bEP);
+BOOL USBHwInit			(void);
+void USBHwSetAddress	(U8 bAddr);
+void USBHwConfigDevice	(BOOL fConfigured);
+void USBHwEPConfig		(U8 bEP, U16 wMaxPacketSize);
+U8   USBHwEPGetStatus	(U8 bEP);
 
 
 

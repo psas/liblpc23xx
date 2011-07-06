@@ -30,7 +30,7 @@
 */
 
 
-#include "lpc23xx-types.h"
+#include "type.h"
 #include "usbstruct.h"		// for TSetupPacket
 
 /*************************************************************************
@@ -65,25 +65,25 @@
 #define INACK_BO		(1<<6)			/**< interrupt on NACK for bulk out */
 
 void USBHwISR			(void);
-void USBHwNakIntEnable	(uint8_t bIntBits);
+void USBHwNakIntEnable	(U8 bIntBits);
 void USBHwConnect		(BOOL fConnect);
 
 // endpoint operations
-int  USBHwEPRead		(uint8_t bEP, uint8_t *pbBuf, int iMaxLen);
-int	 USBHwEPWrite		(uint8_t bEP, uint8_t *pbBuf, int iLen);
-void USBHwEPStall		(uint8_t bEP, BOOL fStall);
-int  USBHwISOCEPRead    (const uint8_t bEP, uint8_t *pbBuf, const int iMaxLen);
+int  USBHwEPRead		(U8 bEP, U8 *pbBuf, int iMaxLen);
+int	 USBHwEPWrite		(U8 bEP, U8 *pbBuf, int iLen);
+void USBHwEPStall		(U8 bEP, BOOL fStall);
+int  USBHwISOCEPRead    (const U8 bEP, U8 *pbBuf, const int iMaxLen);
 
 /** Endpoint interrupt handler callback */
-typedef void (TFnEPIntHandler)	(uint8_t bEP, uint8_t bEPStatus);
-void USBHwRegisterEPIntHandler	(uint8_t bEP, TFnEPIntHandler *pfnHandler);
+typedef void (TFnEPIntHandler)	(U8 bEP, U8 bEPStatus);
+void USBHwRegisterEPIntHandler	(U8 bEP, TFnEPIntHandler *pfnHandler);
 
 /** Device status handler callback */
-typedef void (TFnDevIntHandler)	(uint8_t bDevStatus);
+typedef void (TFnDevIntHandler)	(U8 bDevStatus);
 void USBHwRegisterDevIntHandler	(TFnDevIntHandler *pfnHandler);
 
 /** Frame event handler callback */
-typedef void (TFnFrameHandler)(uint16_t wFrame);
+typedef void (TFnFrameHandler)(U16 wFrame);
 void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler);
 
 
@@ -95,42 +95,42 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler);
 BOOL USBInit(void);
 
 /** Request handler callback (standard, vendor, class) */
-typedef BOOL (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
-void USBRegisterRequestHandler(int iType, TFnHandleRequest *pfnHandler, uint8_t *pbDataStore);
+typedef BOOL (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, U8 **ppbData);
+void USBRegisterRequestHandler(int iType, TFnHandleRequest *pfnHandler, U8 *pbDataStore);
 void USBRegisterCustomReqHandler(TFnHandleRequest *pfnHandler);
 
 /** Descriptor handler callback */
-typedef BOOL (TFnGetDescriptor)(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
+typedef BOOL (TFnGetDescriptor)(U16 wTypeIndex, U16 wLangID, int *piLen, U8 **ppbData);
 
 /** Default standard request handler */
-BOOL USBHandleStandardRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
+BOOL USBHandleStandardRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData);
 
 /** Default EP0 handler */
-void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat);
+void USBHandleControlTransfer(U8 bEP, U8 bEPStat);
 
 /** Descriptor handling */
-void USBRegisterDescriptors(const uint8_t *pabDescriptors);
-BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
+void USBRegisterDescriptors(const U8 *pabDescriptors);
+BOOL USBGetDescriptor(U16 wTypeIndex, U16 wLangID, int *piLen, U8 **ppbData);
 
 
 
 
 /** DMA descriptor setup */
 void USBSetupDMADescriptor(
-		volatile uint32_t dmaDescriptor[], 
-		volatile uint32_t nextDdPtr[],
-		const uint8_t isIsocFlag, 
-		const uint16_t maxPacketSize, 
-		const uint16_t dmaLengthIsocNumFrames,
+		volatile U32 dmaDescriptor[], 
+		volatile U32 nextDdPtr[],
+		const U8 isIsocFlag, 
+		const U16 maxPacketSize, 
+		const U16 dmaLengthIsocNumFrames,
 		void *dmaBufferStartAddress,
-		uint32_t *isocPacketSizeMemoryAddress );
+		U32 *isocPacketSizeMemoryAddress );
 
-void USBInitializeISOCFrameArray(uint32_t isocFrameArr[], const uint32_t numElements, const uint16_t startFrameNumber, const uint16_t defaultFrameLength);
-void USBInitializeUSBDMA(volatile uint32_t* udcaHeadArray[32]);
-void USBSetHeadDDForDMA(const uint8_t bEp, volatile uint32_t* udcaHeadArray[32], volatile const uint32_t *dmaDescriptorPtr);
+void USBInitializeISOCFrameArray(U32 isocFrameArr[], const U32 numElements, const U16 startFrameNumber, const U16 defaultFrameLength);
+void USBInitializeUSBDMA(volatile U32* udcaHeadArray[32]);
+void USBSetHeadDDForDMA(const U8 bEp, volatile U32* udcaHeadArray[32], volatile const U32 *dmaDescriptorPtr);
 
-void USBEnableDMAForEndpoint(const uint8_t bEndpointNumber) ;
-void USBDisableDMAForEndpoint(const uint8_t bEndpointNumber);
+void USBEnableDMAForEndpoint(const U8 bEndpointNumber) ;
+void USBDisableDMAForEndpoint(const U8 bEndpointNumber);
 
 
 

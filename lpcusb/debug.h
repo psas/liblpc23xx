@@ -25,60 +25,14 @@
 	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "lpc23xx-types.h"
-#include "serial_fifo.h"
 
-void fifo_init(fifo_t *fifo, uint8_t *buf)
-{
-	fifo->head = 0;
-	fifo->tail = 0;
-	fifo->buf = buf;
-}
+int printf(const char *format, ...);
 
-
-BOOL fifo_put(fifo_t *fifo, uint8_t c)
-{
-	int next;
-	
-	// check if FIFO has room
-	next = (fifo->head + 1) % VCOM_FIFO_SIZE;
-	if (next == fifo->tail) {
-		// full
-		return FALSE;
-	}
-	
-	fifo->buf[fifo->head] = c;
-	fifo->head = next;
-	
-	return TRUE;
-}
-
-
-BOOL fifo_get(fifo_t *fifo, uint8_t *pc)
-{
-	int next;
-	
-	// check if FIFO has data
-	if (fifo->head == fifo->tail) {
-		return FALSE;
-	}
-	
-	next = (fifo->tail + 1) % VCOM_FIFO_SIZE;
-	
-	*pc = fifo->buf[fifo->tail];
-	fifo->tail = next;
-
-	return TRUE;
-}
-
-int32_t fifo_avail(fifo_t *fifo)
-{
-	return (VCOM_FIFO_SIZE + fifo->head - fifo->tail) % VCOM_FIFO_SIZE;
-}
-
-
-int32_t fifo_free(fifo_t *fifo)
-{
-	return (VCOM_FIFO_SIZE - 1 - fifo_avail(fifo));
-}
+#ifdef DEBUG
+#define DBG	printf
+#define ASSERT(x)	if(!(x)){DBG("\nAssertion '%s' failed in %s:%s#%d!\n",#x,__FILE__,__FUNCTION__,__LINE__);while(1);}
+#else
+#define DBG(x ...)
+#define ASSERT(x)
+#endif
 

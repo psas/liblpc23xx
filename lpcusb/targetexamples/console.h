@@ -25,59 +25,9 @@
 	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define EOF (-1)
 
-/** @file
-	USB stack initialisation
- */
-
-#include "lpc23xx-types.h"
-#include "lpc23xx-debug.h"
-#include "printf-lpc.h"
-
-#include "usbhw_lpc.h"
-#include "usbapi.h"
-
-/** data storage area for standard requests */
-static uint8_t	abStdReqData[8];
-
-/**
-	USB reset handler
-	
-	@param [in] bDevStatus	Device status
- */
-static void HandleUsbReset(uint8_t bDevStatus)
-{
-	if (bDevStatus & DEV_STATUS_RESET) {
-		DBG(UART0,"\n!");
-	}
-}
-
-
-/**
-	Initialises the USB hardware and sets up the USB stack by
-	installing default callbacks.
-	
-	@return TRUE if initialisation was successful
- */
-BOOL USBInit(void)
-{
-	// init hardware
-	USBHwInit();
-	
-	// register bus reset handler
-	USBHwRegisterDevIntHandler(HandleUsbReset);
-	
-	// register control transfer handler on EP0
-	USBHwRegisterEPIntHandler(0x00, USBHandleControlTransfer);
-	USBHwRegisterEPIntHandler(0x80, USBHandleControlTransfer);
-	
-	// setup control endpoints
-	USBHwEPConfig(0x00, MAX_PACKET_SIZE0);
-	USBHwEPConfig(0x80, MAX_PACKET_SIZE0);
-	
-	// register standard request handler
-	USBRegisterRequestHandler(REQTYPE_TYPE_STANDARD, USBHandleStandardRequest, abStdReqData);
-
-	return TRUE;
-}
+void ConsoleInit(int iDivider);
+int putchar(int c);
+int puts(const char *s);
 

@@ -43,10 +43,8 @@
 	@todo SET_FEATURE, GET_FEATURE 
 */
 
-#include "lpc23xx-types.h"
-#include "lpc23xx-debug.h"
-#include "printf-lpc.h"
-
+#include "type.h"
+#include "debug.h"
 
 #include "usbstruct.h"
 #include "usbapi.h"
@@ -73,11 +71,11 @@
 
 
 /** Currently selected configuration */
-static uint8_t				bConfiguration = 0;
+static U8				bConfiguration = 0;
 /** Installed custom request handler */
 static TFnHandleRequest	*pfnHandleCustomReq = NULL;
 /** Pointer to registered descriptors */
-static const uint8_t			*pabDescrip = NULL;
+static const U8			*pabDescrip = NULL;
 
 
 /**
@@ -86,7 +84,7 @@ static const uint8_t			*pabDescrip = NULL;
 
 	@param [in]	pabDescriptors	The descriptor byte array
  */
-void USBRegisterDescriptors(const uint8_t *pabDescriptors)
+void USBRegisterDescriptors(const U8 *pabDescriptors)
 {
 	pabDescrip = pabDescriptors;
 }
@@ -103,10 +101,10 @@ void USBRegisterDescriptors(const uint8_t *pabDescriptors)
 	
 	@return TRUE if the descriptor was found, FALSE otherwise
  */
-BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData)
+BOOL USBGetDescriptor(U16 wTypeIndex, U16 wLangID, int *piLen, U8 **ppbData)
 {
-	uint8_t	bType, bIndex;
-	uint8_t	*pab;
+	U8	bType, bIndex;
+	U8	*pab;
 	int iCurIndex;
 	
 	ASSERT(pabDescrip != NULL);
@@ -114,7 +112,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 	bType = GET_DESC_TYPE(wTypeIndex);
 	bIndex = GET_DESC_INDEX(wTypeIndex);
 	
-	pab = (uint8_t *)pabDescrip;
+	pab = (U8 *)pabDescrip;
 	iCurIndex = 0;
 	
 	while (pab[DESC_bLength] != 0) {
@@ -140,7 +138,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 		pab += pab[DESC_bLength];
 	}
 	// nothing found
-	DBG(UART0,"Desc %x not found!\n", wTypeIndex);
+	DBG("Desc %x not found!\n", wTypeIndex);
 	return FALSE;
 }
 
@@ -157,12 +155,12 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 	
 	@return TRUE if successfully configured, FALSE otherwise
  */
-static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
+static BOOL USBSetConfiguration(U8 bConfigIndex, U8 bAltSetting)
 {
-	uint8_t	*pab;
-	uint8_t	bCurConfig, bCurAltSetting;
-	uint8_t	bEP;
-	uint16_t	wMaxPktSize;
+	U8	*pab;
+	U8	bCurConfig, bCurAltSetting;
+	U8	bEP;
+	U16	wMaxPktSize;
 	
 	ASSERT(pabDescrip != NULL);
 
@@ -172,7 +170,7 @@ static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 	}
 	else {
 		// configure endpoints for this configuration/altsetting
-		pab = (uint8_t *)pabDescrip;
+		pab = (U8 *)pabDescrip;
 		bCurConfig = 0xFF;
 		bCurAltSetting = 0xFF;
 
@@ -226,9 +224,9 @@ static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
+static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 {
-	uint8_t	*pbData = *ppbData;
+	U8	*pbData = *ppbData;
 
 	switch (pSetup->bRequest) {
 	
@@ -245,7 +243,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		break;
 
 	case REQ_GET_DESCRIPTOR:
-		DBG(UART0,"D%x", pSetup->wValue);
+		DBG("D%x", pSetup->wValue);
 		return USBGetDescriptor(pSetup->wValue, pSetup->wIndex, piLen, ppbData);
 
 	case REQ_GET_CONFIGURATION:
@@ -256,7 +254,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 
 	case REQ_SET_CONFIGURATION:
 		if (!USBSetConfiguration(pSetup->wValue & 0xFF, 0)) {
-			DBG(UART0,"USBSetConfiguration failed!\n");
+			DBG("USBSetConfiguration failed!\n");
 			return FALSE;
 		}
 		// configuration successful, update current configuration
@@ -274,11 +272,11 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		return FALSE;
 
 	case REQ_SET_DESCRIPTOR:
-		DBG(UART0,"Device req %d not implemented\n", pSetup->bRequest);
+		DBG("Device req %d not implemented\n", pSetup->bRequest);
 		return FALSE;
 
 	default:
-		DBG(UART0,"Illegal device req %d\n", pSetup->bRequest);
+		DBG("Illegal device req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 	
@@ -295,9 +293,9 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, U8 **ppbData)
 {
-	uint8_t	*pbData = *ppbData;
+	U8	*pbData = *ppbData;
 
 	switch (pSetup->bRequest) {
 
@@ -328,7 +326,7 @@ static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **pp
 		break;
 
 	default:
-		DBG(UART0,"Illegal interface req %d\n", pSetup->bRequest);
+		DBG("Illegal interface req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 
@@ -345,9 +343,9 @@ static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **pp
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, U8 **ppbData)
 {
-	uint8_t	*pbData = *ppbData;
+	U8	*pbData = *ppbData;
 
 	switch (pSetup->bRequest) {
 	case REQ_GET_STATUS:
@@ -376,11 +374,11 @@ static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppb
 		return FALSE;
 
 	case REQ_SYNCH_FRAME:
-		DBG(UART0,"EP req %d not implemented\n", pSetup->bRequest);
+		DBG("EP req %d not implemented\n", pSetup->bRequest);
 		return FALSE;
 
 	default:
-		DBG(UART0,"Illegal EP req %d\n", pSetup->bRequest);
+		DBG("Illegal EP req %d\n", pSetup->bRequest);
 		return FALSE;
 	}
 	
@@ -399,7 +397,7 @@ static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppb
 
 	@return TRUE if the request was handled successfully
  */
-BOOL USBHandleStandardRequest(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+BOOL USBHandleStandardRequest(TSetupPacket	*pSetup, int *piLen, U8 **ppbData)
 {
 	// try the custom request handler first
 	if ((pfnHandleCustomReq != NULL) && pfnHandleCustomReq(pSetup, piLen, ppbData)) {
