@@ -1,0 +1,110 @@
+
+usbinit.o:     file format elf32-littlearm
+
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 usbinit.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l     F .text	00000014 HandleUsbReset
+00000000 l    d  .rodata.str1.4	00000000 .rodata.str1.4
+00000000 l     O .bss	00000008 abStdReqData
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_pubtypes	00000000 .debug_pubtypes
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000         *UND*	00000000 printf
+00000014 g     F .text	0000006c USBInit
+00000000         *UND*	00000000 USBHwInit
+00000000         *UND*	00000000 USBHwRegisterDevIntHandler
+00000000         *UND*	00000000 USBHwRegisterEPIntHandler
+00000000         *UND*	00000000 USBHwEPConfig
+00000000         *UND*	00000000 USBRegisterRequestHandler
+00000000         *UND*	00000000 USBHandleControlTransfer
+00000000         *UND*	00000000 USBHandleStandardRequest
+
+
+
+Disassembly of section .text:
+
+00000000 <HandleUsbReset>:
+	
+	@param [in] bDevStatus	Device status
+ */
+static void HandleUsbReset(U8 bDevStatus)
+{
+	if (bDevStatus & DEV_STATUS_RESET) {
+   0:	e3100010 	tst	r0, #16
+   4:	012fff1e 	bxeq	lr
+		DBG("\n!");
+   8:	e59f0000 	ldr	r0, [pc, #0]	; 10 <HandleUsbReset+0x10>
+   c:	eafffffe 	b	0 <printf>
+  10:	00000000 	.word	0x00000000
+
+00000014 <USBInit>:
+	installing default callbacks.
+	
+	@return TRUE if initialisation was successful
+ */
+BOOL USBInit(void)
+{
+  14:	e92d4010 	push	{r4, lr}
+	
+	// register bus reset handler
+	USBHwRegisterDevIntHandler(HandleUsbReset);
+	
+	// register control transfer handler on EP0
+	USBHwRegisterEPIntHandler(0x00, USBHandleControlTransfer);
+  18:	e59f4050 	ldr	r4, [pc, #80]	; 70 <USBInit+0x5c>
+	@return TRUE if initialisation was successful
+ */
+BOOL USBInit(void)
+{
+	// init hardware
+	USBHwInit();
+  1c:	ebfffffe 	bl	0 <USBHwInit>
+	
+	// register bus reset handler
+	USBHwRegisterDevIntHandler(HandleUsbReset);
+  20:	e59f004c 	ldr	r0, [pc, #76]	; 74 <USBInit+0x60>
+  24:	ebfffffe 	bl	0 <USBHwRegisterDevIntHandler>
+	
+	// register control transfer handler on EP0
+	USBHwRegisterEPIntHandler(0x00, USBHandleControlTransfer);
+  28:	e1a01004 	mov	r1, r4
+  2c:	e3a00000 	mov	r0, #0
+  30:	ebfffffe 	bl	0 <USBHwRegisterEPIntHandler>
+	USBHwRegisterEPIntHandler(0x80, USBHandleControlTransfer);
+  34:	e1a01004 	mov	r1, r4
+  38:	e3a00080 	mov	r0, #128	; 0x80
+  3c:	ebfffffe 	bl	0 <USBHwRegisterEPIntHandler>
+	
+	// setup control endpoints
+	USBHwEPConfig(0x00, MAX_PACKET_SIZE0);
+  40:	e3a00000 	mov	r0, #0
+  44:	e3a01040 	mov	r1, #64	; 0x40
+  48:	ebfffffe 	bl	0 <USBHwEPConfig>
+	USBHwEPConfig(0x80, MAX_PACKET_SIZE0);
+  4c:	e3a00080 	mov	r0, #128	; 0x80
+  50:	e3a01040 	mov	r1, #64	; 0x40
+  54:	ebfffffe 	bl	0 <USBHwEPConfig>
+	
+	// register standard request handler
+	USBRegisterRequestHandler(REQTYPE_TYPE_STANDARD, USBHandleStandardRequest, abStdReqData);
+  58:	e3a00000 	mov	r0, #0
+  5c:	e59f1014 	ldr	r1, [pc, #20]	; 78 <USBInit+0x64>
+  60:	e59f2014 	ldr	r2, [pc, #20]	; 7c <USBInit+0x68>
+  64:	ebfffffe 	bl	0 <USBRegisterRequestHandler>
+
+	return TRUE;
+}
+  68:	e3a00001 	mov	r0, #1
+  6c:	e8bd8010 	pop	{r4, pc}
+	...

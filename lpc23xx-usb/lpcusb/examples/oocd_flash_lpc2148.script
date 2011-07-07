@@ -1,0 +1,100 @@
+
+
+# open ocd (on chip debugger) script to flash lpc2148
+# 'info .../OCD/src/openocd/doc/openocd.info'
+
+# 3 is most. 0 is least info.
+debug_level 1
+
+# stop
+reset halt
+
+# log file
+log_output write_flash.log
+
+# pause...500mS
+sleep 500
+
+# current state
+poll
+
+# Force ARM7 into supervisor mode
+reg cpsr 0x13
+
+# mww: Memory word write
+# Set the MEMMAP reg to point to flash (avoids problems while trying to
+#flash)
+mww 0xE01FC040 1
+
+###
+# * arm7_9 dcc_downloads <ENABLE|DISABLE> Enable the use of the debug
+#     communications channel (DCC) to write larger (>128 byte) amounts
+#     of memory. DCC downloads offer a huge speed increase, but might be
+#     potentially unsafe, especially with targets running at a very low
+#     speed. This command was introduced with OpenOCD rev. 60.
+arm7_9 dcc_downloads enable
+
+# Wait for target to enter debug mode. Default time is 5ms.
+wait_halt
+
+# pause
+sleep 10
+
+# current state
+poll
+
+# identify the flash
+flash probe 0
+
+# erase first bank only:
+flash erase_sector 0 0 26
+
+# pause
+sleep 20
+
+# memory display halfword <from address> [COUNT]
+mdh 0x0 30
+
+# pause
+sleep 20
+
+###
+# * flash write_image [ERASE] <FILE> [OFFSET] [TYPE] Write the image
+#     <FILE> to the current target's flash bank(s). A relocation
+#     [OFFSET] can be specified and the file [TYPE] can be specified
+#     explicitly as `bin' (binary), `ihex' (Intel hex), `elf' (ELF file)
+#     or `s19' (Motorola s19). Flash memory will be erased prior to
+#     programming if the `erase' parameter is given.
+
+flash write_image serial.hex 0x0
+
+#flash erase write_image serial.hex 0x0
+#flash write_image serial.elf 0x0 elf
+#flash write_image serial.hex 0x0 ihex
+#flash write_image serial.bin 0x0 bin
+
+# pause
+sleep 20
+
+# memory display halfword <from address> [COUNT]
+mdh 0x0 30
+
+# pause
+sleep 20
+
+# can't verify because of 0x14 reserved chksum address (LPC SPEC)
+#verify_image serial.hex 0x0 bin
+
+# memory display halfword <from address> [COUNT]
+mdh 0x0 30
+
+# pause
+sleep 20
+
+#reset run_and_halt
+
+# pause
+sleep 10
+
+# stop the open ocd daemon.
+#shutdown

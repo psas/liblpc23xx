@@ -27,12 +27,16 @@ INCLUDE         := -I.\
                    -I./lpc23xx-util/include\
                    -I./lpc23xx-vic/include\
                    -I./lpc23xx-binsem/include\
-                   -I./lpcusb
+                   -I./lpc23xx-usb/include
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-*/include/*.h)
 
-LIBS            = $(NAME).a
+TOPLIB          = $(NAME).a
+
+TARGET          = LPC23xx
+# If you are using port B on the LPC2378 uncomment out the next line (Used on the Olimex 2378 Dev Board)
+LPC2378_PORT    = -DLPC2378_PORTB
 
 USBLIB          = ./lpcusb/usbstack.a
 
@@ -50,7 +54,8 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
+#CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(TARGET) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(TARGET) -ggdb -c -Wall -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rvs
 
@@ -68,7 +73,7 @@ ASFLAGS         = -ggdb -ahls -mfloat-abi=softfp $(INCLUDE)
 	@echo "======== COMPILING $@ ========================"
 	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
-all: $(LIBS) Makefile
+all: $(TOPLIB) Makefile
 
 tests: $(TESTS) $(USBTESTS)
 
@@ -78,21 +83,21 @@ $(USBLIB):
 	@echo "========= Recursive make: $(@D)    ========================"
 	$(MAKE) -s -C $(@D) $(@F)
 
-$(LIBS): $(AOBJS) $(COBJS) $(USBLIB)
+$(TOPLIB): $(AOBJS) $(COBJS)
 	@echo "========= Making Library $@ ========================"
 	$(AR) $(ARCHIVEFLAGS) $@ $(AOBJS) $(COBJS)
 
-$(USBTESTS): $(USBLIBS)
+$(USBTESTS): $(USBLIB)
 	@echo "========= Recursive make: $(@D) ========================"
 	$(MAKE) -s -C $(@D)
 
 
-$(TESTS): $(LIBS)
+$(TESTS): $(LIB)
 	@echo "========= Recursive make: $(@D) ========================"
 	$(MAKE) -s -C $(@D) $(@F)
 
 clean:
-	$(RM)  $(LIBS) $(AOBJS) $(COBJS) $(COBJS) $(USBLIB)\
+	$(RM)  $(LIB) $(AOBJS) $(COBJS) $(COBJS) $(USBLIB)\
 	lpc23xx*/*.lst *.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
