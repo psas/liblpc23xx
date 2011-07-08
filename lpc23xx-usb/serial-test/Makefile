@@ -1,5 +1,5 @@
 LIBNAME	= ../../liblpc23xx
-APPNAME = main
+APPNAME = serial-test
 
 #Select target
 #TARGET=LPC214x
@@ -28,11 +28,11 @@ CSRCS	= halsys.c printf.c console.c
 #OBJS 	= crt.o $(CSRCS:.c=.o)
 OBJS 	= boot.o $(CSRCS:.c=.o)
 
-EXAMPLES = main-serial
+EXAMPLES = serial-test
 
 all: depend $(EXAMPLES)
 
-main-serial: $(OBJS) main_serial.o serial_fifo.o armVIC.o $(LIBNAME).a
+serial-test: $(OBJS) serial-test.o serial_fifo.o armVIC.o $(LIBNAME).a
 
 
 $(EXAMPLES):

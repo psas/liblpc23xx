@@ -231,8 +231,7 @@ static const U8 abDescriptors[] = {
 	@param [in] bEP
 	@param [in] bEPStatus
  */
-static void BulkOut(U8 bEP, U8 bEPStatus)
-{
+static void BulkOut(U8 bEP, U8 bEPStatus) {
 	int i, iLen;
 
 	if (fifo_free(&rxfifo) < MAX_PACKET_SIZE) {

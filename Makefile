@@ -102,9 +102,8 @@ clean:
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
 	$(MAKE) -s -C lpc23xx-binsem/test clean
-	$(MAKE) -s -C lpcusb clean
-	$(MAKE) -s -C lpcusb/examples clean
-
+	$(MAKE) -s -C lpc23xx-usb/serial-test clean
+	
 allclean: clean
 	
 rebuild: allclean
