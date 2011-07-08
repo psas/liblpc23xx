@@ -1,4 +1,8 @@
 
+
+----------------------------------------------------------------------------------------------------
+
+Help->install new software
 Add this site, or something like it.
 
 http://download.eclipse.org/tools/cdt/releases/helios
@@ -11,3 +15,10 @@ but this was current as of: Thu 30 June 2011 13:10:20 (PDT)
 
 Another reference:
 http://www.yagarto.de/howto/yagarto2/index.html
+----------------------------------------------------------------------------------------------------
+
+Another Option: Use the zylin hw debugger.
+
+Help->install new software
+Zylin CDT site - http://www.zylin.com/zylincdt
+
