@@ -1,0 +1,13 @@
+
+Add this site, or something like it.
+
+http://download.eclipse.org/tools/cdt/releases/helios
+
+Look for GDB Hardware Debugging
+
+Eclipse doesn't leave things in one place for very long
+but this was current as of: Thu 30 June 2011 13:10:20 (PDT)
+
+
+Another reference:
+http://www.yagarto.de/howto/yagarto2/index.html
