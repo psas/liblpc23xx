@@ -1,10 +1,13 @@
 .
 |-- include
 |   |-- common-test-make.mk
-|   `-- lpc23xx.h
+|   |-- lpc23xx-debug.h
+|   |-- lpc23xx.h
+|   `-- lpc23xx-types.h
 |-- lpc23xx-binsem
 |   |-- include
 |   |   `-- lpc23xx-binsem.h
+|   |-- lpc23xx-binsem.lst
 |   |-- lpc23xx-binsem.s
 |   |-- README
 |   `-- test
@@ -35,6 +38,11 @@
 |   |-- include
 |   |   `-- lpc23xx-info.h
 |   `-- lpc23xx-info.c
+|-- lpc23xx-mam
+|   |-- include
+|   |   `-- lpc23xx-mam.h
+|   |-- lpc23xx-mam.c
+|   `-- README
 |-- lpc23xx-pll
 |   |-- include
 |   |   `-- lpc23xx-pll.h
@@ -65,11 +73,245 @@
 |       |-- Makefile
 |       |-- oocd_flash_lpc2378.script
 |       `-- openocd_lpc2378.cfg
+|-- lpc23xx-usb
+|   |-- examples
+|   |   |-- armVIC.c
+|   |   |-- armVIC.h
+|   |   |-- blockdev.h
+|   |   |-- blockdev_sd.c
+|   |   |-- boot.s
+|   |   |-- console.c
+|   |   |-- console.h
+|   |   |-- crt.s
+|   |   |-- hal.h
+|   |   |-- halsys.c
+|   |   |-- isoc_io_dma_sample.c
+|   |   |-- isoc_io_sample.c
+|   |   |-- lpc2000_spi.c
+|   |   |-- lpc2000_ssp.c
+|   |   |-- lpc2148-ram.ld
+|   |   |-- lpc2148-rom.ld
+|   |   |-- lpc214x.h
+|   |   |-- lpc23xx.h
+|   |   |-- lpc23xx.ld -> ../../startup/lpc23xx.ld
+|   |   |-- lpc23xx-types.h
+|   |   |-- lpc23xx-vic.h
+|   |   |-- lpc_flash.exp
+|   |   |-- main_custom.c
+|   |   |-- main_hid.c
+|   |   |-- main_msc.c
+|   |   |-- main_serial.c
+|   |   |-- Makefile
+|   |   |-- msc_bot.c
+|   |   |-- msc_bot.h
+|   |   |-- msc_scsi.c
+|   |   |-- msc_scsi.h
+|   |   |-- oocd_flash_lpc2148.script
+|   |   |-- oocd_flash_lpc2378.script
+|   |   |-- openocd_lpc2148.cfg
+|   |   |-- openocd_lpc2378.cfg
+|   |   |-- printf.c
+|   |   |-- sdcard.c
+|   |   |-- sdcard.h
+|   |   |-- serial_fifo.c
+|   |   |-- serial_fifo.h
+|   |   |-- serial-fifo.h
+|   |   |-- serial-test
+|   |   |-- serial-test.c
+|   |   |-- serial-test.c-wrks
+|   |   |-- spi.h
+|   |   |-- tolib.bash
+|   |   `-- tolib.sed
+|   |-- include
+|   |   |-- debug.h
+|   |   |-- lpc214x.h
+|   |   |-- lpc23xx-usb.h
+|   |   |-- tolib.bash -> ../tolib.bash
+|   |   |-- tolib.sed -> ../tolib.sed
+|   |   |-- type.h
+|   |   |-- usbapi.h
+|   |   |-- usbhw_lpc.h
+|   |   `-- usbstruct.h
+|   |-- lpcusb
+|   |   |-- debug.h
+|   |   |-- examples
+|   |   |   |-- armVIC.c
+|   |   |   |-- armVIC.h
+|   |   |   |-- blockdev.h
+|   |   |   |-- blockdev_sd.c
+|   |   |   |-- boot.s
+|   |   |   |-- console.c
+|   |   |   |-- console.h
+|   |   |   |-- crt.s
+|   |   |   |-- hal.h
+|   |   |   |-- halsys.c
+|   |   |   |-- isoc_io_dma_sample.c
+|   |   |   |-- isoc_io_sample.c
+|   |   |   |-- lpc2000_spi.c
+|   |   |   |-- lpc2000_ssp.c
+|   |   |   |-- lpc2148-ram.ld
+|   |   |   |-- lpc2148-rom.ld
+|   |   |   |-- lpc214x.h
+|   |   |   |-- lpc23xx.h
+|   |   |   |-- lpc23xx.ld -> ../../startup/lpc23xx.ld
+|   |   |   |-- lpc23xx-types.h
+|   |   |   |-- lpc23xx-vic.h
+|   |   |   |-- lpc_flash.exp
+|   |   |   |-- main_custom.c
+|   |   |   |-- main_hid.c
+|   |   |   |-- main_msc.c
+|   |   |   |-- main_serial.c
+|   |   |   |-- Makefile
+|   |   |   |-- msc_bot.c
+|   |   |   |-- msc_bot.h
+|   |   |   |-- msc_scsi.c
+|   |   |   |-- msc_scsi.h
+|   |   |   |-- oocd_flash_lpc2148.script
+|   |   |   |-- oocd_flash_lpc2378.script
+|   |   |   |-- openocd_lpc2148.cfg
+|   |   |   |-- openocd_lpc2378.cfg
+|   |   |   |-- printf.c
+|   |   |   |-- sdcard.c
+|   |   |   |-- sdcard.h
+|   |   |   |-- serial_fifo.c
+|   |   |   |-- serial_fifo.h
+|   |   |   |-- serial-fifo.h
+|   |   |   |-- serial-test
+|   |   |   |-- serial-test.c
+|   |   |   |-- serial-test.c-wrks
+|   |   |   |-- spi.h
+|   |   |   |-- tolib.bash
+|   |   |   `-- tolib.sed
+|   |   |-- hostexamples
+|   |   |   |-- benchmark
+|   |   |   |   |-- main.c
+|   |   |   |   `-- Makefile
+|   |   |   |-- CHANGELOG
+|   |   |   |-- linux_isoc_sample
+|   |   |   |   |-- Makefile
+|   |   |   |   `-- src
+|   |   |   |       `-- linux_usbfs_isoc_io_test.c
+|   |   |   `-- linux_isoc_sample_libusb-1.0
+|   |   |       |-- Makefile
+|   |   |       `-- test_isoc.c
+|   |   |-- include
+|   |   |   |-- tolib.bash
+|   |   |   `-- tolib.sed
+|   |   |-- lpc214x.h
+|   |   |-- lpc23xx.h
+|   |   |-- lpc23xx.ld -> ../startup/lpc23xx.ld
+|   |   |-- Makefile
+|   |   |-- README
+|   |   |-- targetexamples
+|   |   |   |-- armVIC.c
+|   |   |   |-- armVIC.h
+|   |   |   |-- blockdev.h
+|   |   |   |-- blockdev_sd.c
+|   |   |   |-- console.c
+|   |   |   |-- console.h
+|   |   |   |-- crt.lst
+|   |   |   |-- crt.s
+|   |   |   |-- custom.asm
+|   |   |   |-- custom.dmp
+|   |   |   |-- custom.elf
+|   |   |   |-- custom.hex
+|   |   |   |-- custom.inf
+|   |   |   |-- custom.map
+|   |   |   |-- hal.h
+|   |   |   |-- halsys.c
+|   |   |   |-- hid.asm
+|   |   |   |-- hid.dmp
+|   |   |   |-- hid.elf
+|   |   |   |-- hid.hex
+|   |   |   |-- hid.map
+|   |   |   |-- isoc_io_dma_sample.asm
+|   |   |   |-- isoc_io_dma_sample.c
+|   |   |   |-- isoc_io_dma_sample.dmp
+|   |   |   |-- isoc_io_dma_sample.elf
+|   |   |   |-- isoc_io_dma_sample.hex
+|   |   |   |-- isoc_io_dma_sample.map
+|   |   |   |-- isoc_io_sample.asm
+|   |   |   |-- isoc_io_sample.c
+|   |   |   |-- isoc_io_sample.dmp
+|   |   |   |-- isoc_io_sample.elf
+|   |   |   |-- isoc_io_sample.hex
+|   |   |   |-- isoc_io_sample.map
+|   |   |   |-- lpc2000_spi.c
+|   |   |   |-- lpc2000_ssp.c
+|   |   |   |-- lpc2148-ram.ld
+|   |   |   |-- lpc2148-rom.ld
+|   |   |   |-- main_custom.c
+|   |   |   |-- main_hid.c
+|   |   |   |-- main_msc.c
+|   |   |   |-- main_serial.c
+|   |   |   |-- Makefile
+|   |   |   |-- msc.asm
+|   |   |   |-- msc_bot.c
+|   |   |   |-- msc_bot.h
+|   |   |   |-- msc.dmp
+|   |   |   |-- msc.elf
+|   |   |   |-- msc.hex
+|   |   |   |-- msc.map
+|   |   |   |-- msc_scsi.c
+|   |   |   |-- msc_scsi.h
+|   |   |   |-- printf.c
+|   |   |   |-- sdcard.c
+|   |   |   |-- sdcard.h
+|   |   |   |-- serial.asm
+|   |   |   |-- serial.dmp
+|   |   |   |-- serial.elf
+|   |   |   |-- serial_fifo.c
+|   |   |   |-- serial_fifo.h
+|   |   |   |-- serial.hex
+|   |   |   |-- serial.map
+|   |   |   |-- spi.h
+|   |   |   `-- usbser.inf
+|   |   |-- temp
+|   |   |-- tolib.bash
+|   |   |-- tolib.sed
+|   |   |-- type.h
+|   |   |-- usbapi.h
+|   |   |-- usbcontrol.c
+|   |   |-- usbhw_lpc.c
+|   |   |-- usbhw_lpc.h
+|   |   |-- usbinit.c
+|   |   |-- usbstdreq.c
+|   |   `-- usbstruct.h
+|   |-- serial-test
+|   |   |-- armVIC.c
+|   |   |-- boot.s -> ../../startup/boot.s
+|   |   |-- console.c
+|   |   |-- halsys.c
+|   |   |-- hwsys.c -> ../../startup/hwsys.c
+|   |   |-- include
+|   |   |   |-- armVIC.h
+|   |   |   |-- console.h
+|   |   |   |-- hal.h
+|   |   |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|   |   |   |-- lpc23xx-usb.h
+|   |   |   `-- serial_fifo.h
+|   |   |-- lpc23xx.ld -> ../../startup/lpc23xx.ld
+|   |   |-- Makefile
+|   |   |-- oocd_flash_lpc2378.script
+|   |   |-- openocd_lpc2378.cfg
+|   |   |-- printf.c
+|   |   |-- serial_fifo.c
+|   |   `-- serial-test.c
+|   |-- tolib.bash
+|   |-- tolib.sed
+|   |-- usbcontrol.c
+|   |-- usbhw_lpc.c
+|   |-- usbinit.c
+|   `-- usbstdreq.c
 |-- lpc23xx-util
 |   |-- include
-|   |   `-- lpc23xx-util.h
+|   |   |-- lpc23xx-util.h
+|   |   `-- printf-lpc.h
 |   |-- lpc23xx-util.c
-|   `-- README
+|   |-- printf-lpc.c
+|   |-- README
+|   |-- serial_fifo.o
+|   `-- tolib.sed
 |-- lpc23xx-vic
 |   |-- include
 |   |   `-- lpc23xx-vic.h
@@ -79,13 +321,17 @@
 |-- README
 |-- README-dirtree
 |-- reference
+|   |-- eclipsegdb.txt
 |   |-- lpc23xx-i2c-clock-calc.ods
 |   |-- lpc23xx-pll-clock-calc.ods
 |   |-- notes.crosscompile
 |   |-- notes.gdb-ocd
 |   `-- python
-|       |-- baudcalc.py
-|       `-- baudcalc.pyc
+|       |-- uart
+|       |   |-- baudcalc.py
+|       |   `-- baudcalc.pyc
+|       `-- usb
+|           `-- usbmoninspect.py
 |-- release
 |   `-- README
 `-- startup
@@ -102,4 +348,4 @@
     |-- openocd_lpc2378.cfg
     `-- README
 
-27 directories, 75 files
+45 directories, 303 files
