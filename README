@@ -4,7 +4,14 @@ PSAS utility library for NXP LPC23xx uControllers.
 
 Top level Makefile builds liblpc23xx.a.
 
+------- gcc version note
+
 export GCC_VERSION=4.x.x to override default in makefile.
 
+------- usb note
 
+In makefile:
+
+# If you are using port B on the LPC2378 uncomment out the next line (Used on the Olimex 2378 Dev Board)
+LPC2378_PORT    = -DLPC2378_PORTB
 
