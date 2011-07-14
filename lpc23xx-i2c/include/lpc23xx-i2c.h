@@ -76,12 +76,10 @@
 #define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x11 << 20)))
 
 // p516: Max rate is 400kHz according to lpc23xx manual.
-// at CCLK=72Mhz, this is 400khz i2c clock. (measured 363.64 Khz)
-#define I2SCLHIGH           90
-#define I2SCLLOW            90
-// at CCLK=72Mhz, this is 90khz i2c clock. (measured 87.9 Khz)
-//#define I2SCLHIGH           400
-//#define I2SCLLOW            400
+//#define I2SCLHIGH           90
+//#define I2SCLLOW            90
+#define I2SCLHIGH           300
+#define I2SCLLOW            300
 
 // Pinsel0 has builtin pullup. 
 // Pinsel1&2 do not. 

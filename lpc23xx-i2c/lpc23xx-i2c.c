@@ -899,7 +899,7 @@ void i2c2_isr(void) {
         }
         i2c2_s_g.xact_active = 0;
 
-        _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
+        // _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
         i2c_init_state(&i2c2_s_g) ;
         release_binsem(&i2c2_binsem_g);
     }
