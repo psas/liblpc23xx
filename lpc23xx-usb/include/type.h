@@ -36,9 +36,9 @@
 #define _TYPE_H_
 
 typedef unsigned char		BYTE;	/**< unsigned 8-bit */
-typedef unsigned char		U8;		/**< unsigned 8-bit */
-typedef unsigned short int	U16;	/**< unsigned 16-bit */
-typedef unsigned int		U32;	/**< unsigned 32-bit */
+typedef unsigned char		uint8_t;		/**< unsigned 8-bit */
+typedef unsigned short int	uint16_t;	/**< unsigned 16-bit */
+typedef unsigned int		uint32_t;	/**< unsigned 32-bit */
 
 typedef int					BOOL;	/**< #TRUE or #FALSE */
 
