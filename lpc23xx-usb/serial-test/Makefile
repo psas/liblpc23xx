@@ -16,7 +16,7 @@ OD		= arm-elf-objdump
 RM		= rm
 
 # Tool flags
-CFLAGS  = -I./include -I../include -I../../lpc23xx-mam/include -I../../lpc23xx-pll/include -I../../lpc23xx-uart/include -c -W -Wall -Os -g -DDEBUG -D$(TARGET) -mcpu=arm7tdmi
+CFLAGS  = -I./include -I../include -I../../include -I../../lpc23xx-mam/include -I../../lpc23xx-vic/include  -I../../lpc23xx-util/include -I../../lpc23xx-pll/include -I../../lpc23xx-uart/include -c -W -Wall -Os -g -DDEBUG -D$(TARGET) -mcpu=arm7tdmi
 ASFLAGS = -ahls -mapcs-32 -Wa,--defsym,$(TARGET)=1 
 LFLAGS  =  -nostartfiles --warn-common
 CPFLAGS = -O ihex

@@ -48,30 +48,23 @@
 #include <string.h>			// memcpy
 
 #include "type.h"
-#include "debug.h"
+
+#include "lpc23xx.h"
+#include "lpc23xx-debug.h"
 
 #include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
+#include "lpc23xx-util.h"
+#include "lpc23xx-vic.h"
 
-
-#ifdef LPC214x
-#include "lpc214x.h"
-#endif
-#ifdef LPC23xx
-#include "lpc23xx-usb.h"
-#endif
-
-#include "armVIC.h"
-
-#include "hal.h"
 #include "console.h"
 #include "usbapi.h"
 
 #include "serial_fifo.h"
 
 
-#define BAUD_RATE	115200
+#define BAUD_RATE	    115200
 
 #define INT_IN_EP		0x81
 #define BULK_OUT_EP		0x05
@@ -88,10 +81,6 @@
 #define	SET_LINE_CODING			0x20
 #define	GET_LINE_CODING			0x21
 #define	SET_CONTROL_LINE_STATE	0x22
-
-#define	INT_VECT_NUM	0
-
-#define IRQ_MASK 0x00000080
 
 // data structure for GET_LINE_CODING / SET_LINE_CODING class requests
 typedef struct {
@@ -399,7 +388,7 @@ int VCOM_getchar(void)
 static void USBIntHandler(void)
 {
 	USBHwISR();
-	VICVectAddr = 0x00;    // dummy write to VIC to signal end of ISR 	
+	VICAddress = 0x00;    // dummy write to VIC to signal end of ISR
 }
 
 /**
@@ -443,20 +432,13 @@ static void USBDevIntHandler(U8 bDevStatus)
 int main(void)
 {
 	int c;
-    SCS |= 1;//Set fast IO mode
 
+	FIO_ENABLE;
 	pllstart_seventytwomhz() ;
 	mam_enable();
 	uart0_init_115200() ;
-//#ifdef LPC214x
-//	// init DBG
-//	ConsoleInit(60000000 / (16 * BAUD_RATE));
-//#else
-//	// init DBG
-//	ConsoleInit(72000000 / (16 * BAUD_RATE));
-//#endif
-//
-	DBG("Initialising USB stack\n");
+
+	DBG(UART0,"Initialising USB stack\n");
 
 	// initialise stack
 	USBInit();
@@ -483,19 +465,14 @@ int main(void)
 
 	DBG("Starting USB communication\n");
 
-#ifdef LPC214x
-	(*(&VICVectCntl0+INT_VECT_NUM)) = 0x20 | 22; // choose highest priority ISR slot 	
-	(*(&VICVectAddr0+INT_VECT_NUM)) = (int)USBIntHandler;
-#else
-  VICVectCntl22 = 0x01;
-  VICVectAddr22 = (int)USBIntHandler;
-#endif
-  
+	VICVectPriority22 = 0x01;
+	VICVectAddr22 = (int) USBIntHandler;
+
 	// set up USB interrupt
 	VICIntSelect &= ~(1<<22);               // select IRQ for USB
 	VICIntEnable |= (1<<22);
 	
-	enableIRQ();
+	vic_enableIRQ();
 
 	// connect to bus
 	USBHwConnect(TRUE);
