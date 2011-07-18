@@ -160,8 +160,14 @@ extern i2c_master_xact_t     i2c0_s_g;
 extern i2c_master_xact_t     i2c1_s_g;
 extern i2c_master_xact_t     i2c2_s_g;
 
-extern volatile uint32_t     i2c_wrindex_g;
-extern volatile uint32_t     i2c_rdindex_g;
+extern volatile uint32_t     i2c0_wrindex_g;
+extern volatile uint32_t     i2c0_rdindex_g;
+
+extern volatile uint32_t     i2c1_wrindex_g;
+extern volatile uint32_t     i2c1_rdindex_g;
+
+extern volatile uint32_t     i2c2_wrindex_g;
+extern volatile uint32_t     i2c2_rdindex_g;
 
 extern XACT_FnCallback*      _i2c0_FnCallback_g;
 extern XACT_FnCallback*      _i2c1_FnCallback_g;

@@ -23,8 +23,15 @@ i2c_master_xact_t     i2c0_s_g;
 i2c_master_xact_t     i2c1_s_g;
 i2c_master_xact_t     i2c2_s_g;
 
-volatile uint32_t     i2c_wrindex_g;
-volatile uint32_t     i2c_rdindex_g;
+volatile uint32_t     i2c0_wrindex_g;
+volatile uint32_t     i2c0_rdindex_g;
+
+volatile uint32_t     i2c1_wrindex_g;
+volatile uint32_t     i2c1_rdindex_g;
+
+volatile uint32_t     i2c2_wrindex_g;
+volatile uint32_t     i2c2_rdindex_g;
+
 
 XACT_FnCallback*      _i2c0_FnCallback_g;
 XACT_FnCallback*      _i2c1_FnCallback_g;
@@ -196,8 +203,8 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x00\n");
 #endif
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c0_wrindex_g     = 0;
+            i2c0_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -211,10 +218,10 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x08\n");
 #endif
-            i2c_wrindex_g     = 0;
+            i2c0_wrindex_g     = 0;
 
             // write the Slave Address with R/W bit to I2DAT
-            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c0_wrindex_g++] ;
             i2c0_s_g.state    = I2C_START;
 
             break;
@@ -227,10 +234,10 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x10\n");
 #endif
-            i2c_rdindex_g     = 0;
+            i2c0_rdindex_g     = 0;
 
             // Device address + R/W is first after write data in stream
-            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c0_wrindex_g++] ;
             i2c0_s_g.state    = I2C_RESTART;
             I2C0CONCLR        = I2C_STAC;
             break;
@@ -246,7 +253,7 @@ void i2c0_isr(void) {
             uart0_putstring("*Dbg* I2C state 0x18\n");
 #endif
             if(i2c0_s_g.state == I2C_START) {
-                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c0_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
                 I2C0CONCLR        = I2C_STAC; // undocumented clear start flag
                 i2c0_s_g.state    = I2C_ACK;
@@ -278,8 +285,8 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x28\n");
 #endif
-            if(i2c_wrindex_g < i2c0_s_g.write_length) {
-                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            if(i2c0_wrindex_g < i2c0_s_g.write_length) {
+                I2C0DAT           = i2c0_s_g.i2c_tx_buffer[i2c0_wrindex_g++] ;
                 I2C0CONSET        = I2C_AA;
                 i2c0_s_g.state    = I2C_ACK;
             } else {
@@ -364,8 +371,8 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x50\n");
 #endif
-            i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
-            if(i2c_rdindex_g < (i2c0_s_g.read_length-1)) {
+            i2c0_s_g.i2c_rd_buffer[i2c0_rdindex_g++] = I2C0DAT;  
+            if(i2c0_rdindex_g < (i2c0_s_g.read_length-1)) {
                 I2C0CONSET     = I2C_AA;
                 i2c0_s_g.state = I2C_ACK;
             } else { // it's the last byte...
@@ -382,7 +389,7 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x58\n");
 #endif
-            i2c0_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C0DAT;  
+            i2c0_s_g.i2c_rd_buffer[i2c0_rdindex_g++] = I2C0DAT;  
             I2C0CONSET                              = (I2C_STO | I2C_AA);
             i2c0_s_g.state                          = I2C_NOTACK;
             xact_exit                               = 1;
@@ -393,8 +400,8 @@ void i2c0_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0xdefault\n");
 #endif      
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c0_wrindex_g     = 0;
+            i2c0_rdindex_g     = 0;
             i2c0_s_g.state    = I2C_ERROR;
             I2C0CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -442,8 +449,8 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x00\n");
 #endif
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c1_wrindex_g     = 0;
+            i2c1_rdindex_g     = 0;
             i2c1_s_g.state    = I2C_ERROR;
             I2C1CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -457,10 +464,10 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x08\n");
 #endif
-            i2c_wrindex_g     = 0;
+            i2c1_wrindex_g     = 0;
 
             // write the Slave Address with R/W bit to I2DAT
-            I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c1_wrindex_g++] ;
             i2c1_s_g.state    = I2C_START;
 
             break;
@@ -473,10 +480,10 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x10\n");
 #endif
-            i2c_rdindex_g     = 0;
+            i2c1_rdindex_g     = 0;
 
             // Device address + R/W is first after write data in stream
-            I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c1_wrindex_g++] ;
             i2c1_s_g.state    = I2C_RESTART;
             I2C1CONCLR        = I2C_STAC;
             break;
@@ -492,7 +499,7 @@ void i2c1_isr(void) {
             uart0_putstring("*Dbg* I2C1 state 0x18\n");
 #endif
             if(i2c1_s_g.state == I2C_START) {
-                I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+                I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c1_wrindex_g++] ;
                 I2C1CONSET        = I2C_AA;
                 I2C1CONCLR        = I2C_STAC; // undocumented clear start flag
                 i2c1_s_g.state    = I2C_ACK;
@@ -524,8 +531,8 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x28\n");
 #endif
-            if(i2c_wrindex_g < i2c1_s_g.write_length) {
-                I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            if(i2c1_wrindex_g < i2c1_s_g.write_length) {
+                I2C1DAT           = i2c1_s_g.i2c_tx_buffer[i2c1_wrindex_g++] ;
                 I2C1CONSET        = I2C_AA;
                 i2c1_s_g.state    = I2C_ACK;
             } else {
@@ -610,8 +617,8 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x50\n");
 #endif
-            i2c1_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C1DAT;  
-            if(i2c_rdindex_g < (i2c1_s_g.read_length-1)) {
+            i2c1_s_g.i2c_rd_buffer[i2c1_rdindex_g++] = I2C1DAT;  
+            if(i2c1_rdindex_g < (i2c1_s_g.read_length-1)) {
                 I2C1CONSET     = I2C_AA;
                 i2c1_s_g.state = I2C_ACK;
             } else { // it's the last byte...
@@ -628,7 +635,7 @@ void i2c1_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C1 state 0x58\n");
 #endif
-            i2c1_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C1DAT;  
+            i2c1_s_g.i2c_rd_buffer[i2c1_rdindex_g++] = I2C1DAT;  
             I2C1CONSET                              = (I2C_STO | I2C_AA);
             i2c1_s_g.state                          = I2C_NOTACK;
             xact_exit                               = 1;
@@ -637,10 +644,10 @@ void i2c1_isr(void) {
             //   Unimplemented state, treat like state 0x0, bus error
         default:
 #ifdef DEBUG_I2C 
-            uart0_putstring("*Dbg* I2C1 state 0xdefault\n");
+            uart0_putstring("*Dbg* I2C1 state default\n");
 #endif      
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c1_wrindex_g     = 0;
+            i2c1_rdindex_g     = 0;
             i2c1_s_g.state    = I2C_ERROR;
             I2C1CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -688,8 +695,8 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x00\n");
 #endif
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c2_wrindex_g     = 0;
+            i2c2_rdindex_g     = 0;
             i2c2_s_g.state    = I2C_ERROR;
             I2C2CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -703,10 +710,10 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x08\n");
 #endif
-            i2c_wrindex_g     = 0;
+            i2c2_wrindex_g     = 0;
 
             // write the Slave Address with R/W bit to I2DAT
-            I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c2_wrindex_g++] ;
             i2c2_s_g.state    = I2C_START;
 
             break;
@@ -719,10 +726,10 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x10\n");
 #endif
-            i2c_rdindex_g     = 0;
+            i2c2_rdindex_g     = 0;
 
             // Device address + R/W is first after write data in stream
-            I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c2_wrindex_g++] ;
             i2c2_s_g.state    = I2C_RESTART;
             I2C2CONCLR        = I2C_STAC;
             break;
@@ -738,7 +745,7 @@ void i2c2_isr(void) {
             uart0_putstring("*Dbg* I2C state 0x18\n");
 #endif
             if(i2c2_s_g.state == I2C_START) {
-                I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+                I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c2_wrindex_g++] ;
                 I2C2CONSET        = I2C_AA;
                 I2C2CONCLR        = I2C_STAC; // undocumented clear start flag
                 i2c2_s_g.state    = I2C_ACK;
@@ -770,8 +777,8 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x28\n");
 #endif
-            if(i2c_wrindex_g < i2c2_s_g.write_length) {
-                I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c_wrindex_g++] ;
+            if(i2c2_wrindex_g < i2c2_s_g.write_length) {
+                I2C2DAT           = i2c2_s_g.i2c_tx_buffer[i2c2_wrindex_g++] ;
                 I2C2CONSET        = I2C_AA;
                 i2c2_s_g.state    = I2C_ACK;
             } else {
@@ -856,8 +863,8 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x50\n");
 #endif
-            i2c2_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C2DAT;  
-            if(i2c_rdindex_g < (i2c2_s_g.read_length-1)) {
+            i2c2_s_g.i2c_rd_buffer[i2c2_rdindex_g++] = I2C2DAT;  
+            if(i2c2_rdindex_g < (i2c2_s_g.read_length-1)) {
                 I2C2CONSET     = I2C_AA;
                 i2c2_s_g.state = I2C_ACK;
             } else { // it's the last byte...
@@ -874,7 +881,7 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0x58\n");
 #endif
-            i2c2_s_g.i2c_rd_buffer[i2c_rdindex_g++] = I2C2DAT;  
+            i2c2_s_g.i2c_rd_buffer[i2c2_rdindex_g++] = I2C2DAT;  
             I2C2CONSET                              = (I2C_STO | I2C_AA);
             i2c2_s_g.state                          = I2C_NOTACK;
             xact_exit                               = 1;
@@ -885,8 +892,8 @@ void i2c2_isr(void) {
 #ifdef DEBUG_I2C 
             uart0_putstring("*Dbg* I2C state 0xdefault\n");
 #endif      
-            i2c_wrindex_g     = 0;
-            i2c_rdindex_g     = 0;
+            i2c2_wrindex_g     = 0;
+            i2c2_rdindex_g     = 0;
             i2c2_s_g.state    = I2C_ERROR;
             I2C2CONSET        = (I2C_STO | I2C_AA);
             xact_exit         = 1;
@@ -977,7 +984,7 @@ void start_i2c1_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
     if(s!=NULL) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
-        if( get_binsem( &i2c1_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
+        if( get_binsem( &i2c1_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 1
             for(i=0; i<I2C_MAX_BUFFER; ++i) {
                 i2c1_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
                 i2c1_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
