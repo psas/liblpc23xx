@@ -50,6 +50,11 @@
 #include "type.h"
 #include "debug.h"
 
+#include "lpc23xx-mam.h"
+#include "lpc23xx-pll.h"
+#include "lpc23xx-uart.h"
+
+
 #ifdef LPC214x
 #include "lpc214x.h"
 #endif
@@ -430,6 +435,7 @@ static void USBDevIntHandler(U8 bDevStatus)
 }
 
 
+
 /*************************************************************************
 	main
 	====
@@ -437,18 +443,19 @@ static void USBDevIntHandler(U8 bDevStatus)
 int main(void)
 {
 	int c;
-	
-	// PLL and MAM
-	HalSysInit();
+    SCS |= 1;//Set fast IO mode
 
-#ifdef LPC214x
-	// init DBG
-	ConsoleInit(60000000 / (16 * BAUD_RATE));
-#else
-	// init DBG
-	ConsoleInit(72000000 / (16 * BAUD_RATE));
-#endif
-
+	pllstart_seventytwomhz() ;
+	mam_enable();
+	uart0_init_115200() ;
+//#ifdef LPC214x
+//	// init DBG
+//	ConsoleInit(60000000 / (16 * BAUD_RATE));
+//#else
+//	// init DBG
+//	ConsoleInit(72000000 / (16 * BAUD_RATE));
+//#endif
+//
 	DBG("Initialising USB stack\n");
 
 	// initialise stack
