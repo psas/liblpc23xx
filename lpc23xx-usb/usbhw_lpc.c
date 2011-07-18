@@ -30,16 +30,12 @@
     USB hardware layer
  */
 
+#include "lpc23xx.h"
+
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
+#include "printf-lpc.h"
 
-
-#ifdef LPC214x
-#include "lpc214x.h"
-#endif
-#ifdef LPC23xx
-#include "lpc23xx-usb.h"
-#endif
 #include "usbhw_lpc.h"
 #include "usbapi.h"
 
@@ -217,7 +213,7 @@ void USBHwRegisterEPIntHandler(uint8_t bEP, TFnEPIntHandler *pfnHandler)
     USBEpIntEn |= (1 << idx);
     USBDevIntEn |= EP_SLOW;
     
-    DBG("Registered handler for EP 0x%x\n", bEP);
+    DBG(UART0,"Registered handler for EP 0x%x\n", bEP);
 }
 
 
@@ -233,7 +229,7 @@ void USBHwRegisterDevIntHandler(TFnDevIntHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= DEV_STAT;
 
-    DBG("Registered handler for device status\n");
+    DBG(UART0,"Registered handler for device status\n");
 }
 
 
@@ -249,7 +245,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= FRAME;
 
-    DBG("Registered handler for frame\n");
+    DBG(UART0,"Registered handler for frame\n");
 }
 
 
@@ -271,7 +267,6 @@ void USBHwSetAddress(uint8_t bAddr)
  */
 void USBHwConnect(BOOL fConnect)
 {
-#ifdef LPC23xx
 #ifndef LPC2378_PORTB
   if(fConnect)
     FIO2CLR = (1<<9);
@@ -282,7 +277,6 @@ void USBHwConnect(BOOL fConnect)
     FIO0CLR = (1<<14);
   else
     FIO0SET = (1<<14);
-#endif
 #endif
     USBHwCmdWrite(CMD_DEV_STATUS, fConnect ? CON : 0);
 }
@@ -624,7 +618,6 @@ BOOL USBHwInit(void)
 
 #endif
 
-#ifdef LPC23xx
 #ifdef LPC2378_PORTB
     PINSEL1 = (PINSEL1 & ~(3 << 30)) | (1 << 30);
     PINSEL3 = (PINSEL3 & ~(3 << 28)) | (2 << 28);
@@ -660,11 +653,10 @@ BOOL USBHwInit(void)
     USBClkCtrl = (1 << 1) | (1 << 3) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 3) | (1 << 4))));
     USBPortSel = 0x3; /* Set LPC to use USB Port B pins */
+//    (*(volatile unsigned int *)(0xFFE0C110)) = 0x3;
 #else
     USBClkCtrl = (1 << 1) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 4))));
-#endif
-
 #endif
     
     // disable/clear all interrupts for now

@@ -1,1 +1,0 @@
-../tolib.sed

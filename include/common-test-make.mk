@@ -21,7 +21,7 @@ DEBUG           ?=
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
-CFLAGS          ?= $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -Os -mfloat-abi=softfp -mcpu=arm7tdmi-s
+CFLAGS          ?= $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
 
 ASFLAGS         ?= -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
