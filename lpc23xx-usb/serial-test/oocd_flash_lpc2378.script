@@ -42,8 +42,8 @@ flash erase_check 0
 sleep 100
 mdh 0x0 100
 #
-flash write_image ./main-serial.hex
-flash write_image ./main-serial.hex
+flash write_image ./serial-test.hex
+flash write_image ./serial-test.hex
 
 #
 mdh 0x0 100
