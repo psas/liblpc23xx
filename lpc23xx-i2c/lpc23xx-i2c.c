@@ -182,6 +182,30 @@ void i2c_init(i2c_iface channel) {
 }
 
 /*
+ * i2c_freq
+ * set the i2c channel to a custom freq and duty cycle
+ */
+void i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) {
+    switch(channel) {
+        case I2C0: 
+            I2C0SCLL   = lowcount;
+            I2C0SCLH   = highcount;
+            break;
+        case I2C1: 
+            I2C1SCLL   = lowcount;
+            I2C1SCLH   = highcount;
+            break; 
+        case I2C2: 
+            I2C2SCLL   = lowcount;
+            I2C2SCLH   = highcount;
+            break; 
+        default:
+            // error !!
+            break;
+    }
+}
+
+/*
  * i2c0_isr
  */
 void i2c0_isr(void) {

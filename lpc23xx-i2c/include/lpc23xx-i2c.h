@@ -77,11 +77,12 @@
 
 // p516: Max rate is 400kHz according to lpc23xx manual.
 // at CCLK=72Mhz, this is 400khz i2c clock. (measured 363.64 Khz)
-#define I2SCLHIGH           90
-#define I2SCLLOW            90
+//#define I2SCLHIGH           90
+//#define I2SCLLOW            90
 // at CCLK=72Mhz, this is 90khz i2c clock. (measured 87.9 Khz)
-//#define I2SCLHIGH           400
-//#define I2SCLLOW            400
+#define I2SCLHIGH           400
+#define I2SCLLOW            400
+
 
 // Pinsel0 has builtin pullup. 
 // Pinsel1&2 do not. 
@@ -192,6 +193,7 @@ uint8_t i2c_create_read_address(uint8_t addr) ;
 uint8_t i2c_create_write_address(uint8_t addr) ;
 void    i2c_init_state( i2c_master_xact_t* s) ;
 void    i2c_init(i2c_iface channel) ;
+void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;
 void    i2c0_get_read_data(i2c_master_xact_t* s) ;
 
 void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
