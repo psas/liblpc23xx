@@ -3,22 +3,52 @@
  * lpc23xx-adc.c
  */
 
+#include <stdint.h>
 
 
-adc_init(ADC_CHANNEL);
+#include "lpc23xx-adc.h"
 
-adc_disable(ADC_CHANNEL);
+void adc_init(adc_channel c) {
+    switch(c) {
+        case ADC0:
 
-adc0_isr
-adc1_isr
-adc2_isr
-adc3_isr
-adc4_isr
-adc5_isr
 
-// lpc2377/78 lpc2388 only.
-adc6_isr
-adc7_isr
+            break;
+        default:
+            break;
+    }
+
+    
+    
+    
+}
+
+void adc_disable(ADC_CHANNEL);
+
+void adc0_isr(void){
+
+}
+//void adc1_isr(void){
+//
+//}
+//void adc2_isr(void){
+//
+//}
+//void adc3_isr(void){
+//
+//}
+//void adc4_isr(void){
+//
+//}
+//void adc5_isr(void){
+//
+//}
+
+//#if (defined LPC2377 || defined LPC2378 || defined LPC2388)
+//    // lpc2377/78 lpc2388 only.
+//    void adc6_isr
+//    void adc7_isr
+//#endif
 
 
 
