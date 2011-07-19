@@ -5,6 +5,16 @@
 
 NAME            := liblpc23xx
 
+#########
+# this is the default, make LPC23XX_PART=LPC2368 will over-ride
+LPC23XX_PART    ?= LPC2378
+#LPC23XX_PART   ?= LPC2368
+
+##############
+# If you are using port B the LPC2378 uncomment out the next line.
+# this is the default, make LPC2378_PORT= will overwrite
+LPC2378_PORT    = -DLPC2378_PORTB
+
 CROSSCMP        := /opt/cross
 
 CC              := $(CROSSCMP)/bin/arm-elf-gcc
@@ -34,9 +44,6 @@ HS              :=  $(wildcard ./include/*.h)\
 
 TOPLIB          = $(NAME).a
 
-# If you are using port B on the LPC2378 uncomment out the next line.
-LPC2378_PORT    = -DLPC2378_PORTB
-
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-binsem/test/lpc23xx-binsem-test.hex\
 	          ./lpc23xx-usb/serial-test/serial-test.hex\
@@ -50,7 +57,7 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(LPC23XX_PART) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rvs
 
