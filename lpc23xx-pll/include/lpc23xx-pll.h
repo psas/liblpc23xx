@@ -11,7 +11,7 @@
 #define         FEEDBYTE_A                 ((unsigned) 0xAA)
 #define         FEEDBYTE_B                 ((unsigned) 0x55)
 
-#define         SET_PLLC                   ( PLLCON = PLLCON | 0x2    ) 
+#define         SET_PLLCE                  ( PLLCON = PLLCON | 0x3    )
 #define         CLEAR_PLLC                 ( PLLCON = PLLCON & ~(0x2) ) 
 
 #define         SET_PLLE                   ( PLLCON = PLLCON | 0x1    ) 

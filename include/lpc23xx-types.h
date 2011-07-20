@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-// typedef enum {FALSE=0, TRUE} BOOL;
+typedef enum {FALSE=0, TRUE} BOOL;
 
 #undef NULL
     #if defined(__cplusplus)

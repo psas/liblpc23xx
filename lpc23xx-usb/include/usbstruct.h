@@ -34,16 +34,16 @@
 #define _USBSTRUCT_H_
 
 
-#include "type.h"
+#include "lpc23xx-types.h"
 
 
 /** setup packet definitions */
 typedef struct {
-	U8	bmRequestType;			/**< characteristics of the specific request */
-	U8	bRequest;				/**< specific request */
-	U16	wValue;					/**< request specific parameter */
-	U16	wIndex;					/**< request specific parameter */
-	U16	wLength;				/**< length of data transfered in data phase */
+	uint8_t	bmRequestType;			/**< characteristics of the specific request */
+	uint8_t	bRequest;				/**< specific request */
+	uint16_t	wValue;					/**< request specific parameter */
+	uint16_t	wIndex;					/**< request specific parameter */
+	uint16_t	wLength;				/**< length of data transfered in data phase */
 } TSetupPacket;
 
 
@@ -96,8 +96,8 @@ typedef struct {
 
 /** USB descriptor header */
 typedef struct {
-	U8	bLength;			/**< descriptor length */
-	U8	bDescriptorType;	/**< descriptor type */
+	uint8_t	bLength;			/**< descriptor length */
+	uint8_t	bDescriptorType;	/**< descriptor type */
 } TUSBDescHeader;
 
 #define DESC_DEVICE				1

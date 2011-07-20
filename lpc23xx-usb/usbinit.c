@@ -30,15 +30,17 @@
 	USB stack initialisation
  */
 
-#include "type.h"
-#include "debug.h"
+#include "lpc23xx-types.h"
+#include "lpc23xx-debug.h"
+#include "printf-lpc.h"
+
 
 #include "usbhw_lpc.h"
 #include "usbapi.h"
 
 
 /** data storage area for standard requests */
-static U8	abStdReqData[8];
+static uint8_t	abStdReqData[8];
 
 
 /**
@@ -46,10 +48,10 @@ static U8	abStdReqData[8];
 	
 	@param [in] bDevStatus	Device status
  */
-static void HandleUsbReset(U8 bDevStatus)
+static void HandleUsbReset(uint8_t bDevStatus)
 {
 	if (bDevStatus & DEV_STATUS_RESET) {
-		DBG("\n!");
+		DBG(UART0,"\n!");
 	}
 }
 

@@ -158,8 +158,14 @@ extern i2c_master_xact_t     i2c0_s_g;
 extern i2c_master_xact_t     i2c1_s_g;
 extern i2c_master_xact_t     i2c2_s_g;
 
-extern volatile uint32_t     i2c_wrindex_g;
-extern volatile uint32_t     i2c_rdindex_g;
+extern volatile uint32_t     i2c0_wrindex_g;
+extern volatile uint32_t     i2c0_rdindex_g;
+
+extern volatile uint32_t     i2c1_wrindex_g;
+extern volatile uint32_t     i2c1_rdindex_g;
+
+extern volatile uint32_t     i2c2_wrindex_g;
+extern volatile uint32_t     i2c2_rdindex_g;
 
 extern XACT_FnCallback*      _i2c0_FnCallback_g;
 extern XACT_FnCallback*      _i2c1_FnCallback_g;
@@ -184,6 +190,7 @@ uint8_t i2c_create_read_address(uint8_t addr) ;
 uint8_t i2c_create_write_address(uint8_t addr) ;
 void    i2c_init_state( i2c_master_xact_t* s) ;
 void    i2c_init(i2c_iface channel) ;
+void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;
 void    i2c0_get_read_data(i2c_master_xact_t* s) ;
 
 void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;

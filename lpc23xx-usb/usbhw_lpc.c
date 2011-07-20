@@ -30,15 +30,12 @@
     USB hardware layer
  */
 
-#include "type.h"
-#include "debug.h"
+#include "lpc23xx.h"
 
-#ifdef LPC214x
-#include "lpc214x.h"
-#endif
-#ifdef LPC23xx
-#include "lpc23xx-usb.h"
-#endif
+#include "lpc23xx-types.h"
+#include "lpc23xx-debug.h"
+#include "printf-lpc.h"
+
 #include "usbhw_lpc.h"
 #include "usbapi.h"
 
@@ -83,7 +80,7 @@ static TFnFrameHandler  *_pfnFrameHandler = NULL;
         
     @param [in] dwIntr      Bitmask of interrupts to wait for   
  */
-static void Wait4DevInt(U32 dwIntr)
+static void Wait4DevInt(uint32_t dwIntr)
 {
     // wait for specific interrupt
     while ((USBDevIntSt & dwIntr) != dwIntr);
@@ -97,7 +94,7 @@ static void Wait4DevInt(U32 dwIntr)
         
     @param [in] bCmd        Command to send
  */
-static void USBHwCmd(U8 bCmd)
+static void USBHwCmd(uint8_t bCmd)
 {
     // clear CDFULL/CCEMTY
     USBDevIntClr = CDFULL | CCEMTY;
@@ -113,7 +110,7 @@ static void USBHwCmd(U8 bCmd)
     @param [in] bCmd        Command to send
     @param [in] bData       Data to send
  */
-static void USBHwCmdWrite(U8 bCmd, U16 bData)
+static void USBHwCmdWrite(uint8_t bCmd, uint16_t bData)
 {
     // write command code
     USBHwCmd(bCmd);
@@ -131,7 +128,7 @@ static void USBHwCmdWrite(U8 bCmd, U16 bData)
 
     @return the data
  */
-static U8 USBHwCmdRead(U8 bCmd)
+static uint8_t USBHwCmdRead(uint8_t bCmd)
 {
     // write command code
     USBHwCmd(bCmd);
@@ -154,7 +151,7 @@ static U8 USBHwCmdRead(U8 bCmd)
     @param [in] idx         Endpoint index
     @param [in] wMaxPSize   Maximum packet size for this endpoint
  */
-static void USBHwEPRealize(int idx, U16 wMaxPSize)
+static void USBHwEPRealize(int idx, uint16_t wMaxPSize)
 {
     USBReEp |= (1 << idx);
     USBEpInd = idx;
@@ -181,7 +178,7 @@ static void USBHwEPEnable(int idx, BOOL fEnable)
     @param [in] bEP             Endpoint number
     @param [in] wMaxPacketSize  Maximum packet size for this EP
  */
-void USBHwEPConfig(U8 bEP, U16 wMaxPacketSize)
+void USBHwEPConfig(uint8_t bEP, uint16_t wMaxPacketSize)
 {
     int idx;
     
@@ -201,7 +198,7 @@ void USBHwEPConfig(U8 bEP, U16 wMaxPacketSize)
     @param [in] bEP             Endpoint number
     @param [in] pfnHandler      Callback function
  */
-void USBHwRegisterEPIntHandler(U8 bEP, TFnEPIntHandler *pfnHandler)
+void USBHwRegisterEPIntHandler(uint8_t bEP, TFnEPIntHandler *pfnHandler)
 {
     int idx;
     
@@ -216,7 +213,7 @@ void USBHwRegisterEPIntHandler(U8 bEP, TFnEPIntHandler *pfnHandler)
     USBEpIntEn |= (1 << idx);
     USBDevIntEn |= EP_SLOW;
     
-    DBG("Registered handler for EP 0x%x\n", bEP);
+    DBG(UART0,"Registered handler for EP 0x%x\n", bEP);
 }
 
 
@@ -232,7 +229,7 @@ void USBHwRegisterDevIntHandler(TFnDevIntHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= DEV_STAT;
 
-    DBG("Registered handler for device status\n");
+    DBG(UART0,"Registered handler for device status\n");
 }
 
 
@@ -248,7 +245,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
     // enable device interrupt
     USBDevIntEn |= FRAME;
 
-    DBG("Registered handler for frame\n");
+    DBG(UART0,"Registered handler for frame\n");
 }
 
 
@@ -257,7 +254,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
         
     @param [in] bAddr       Device address to set
  */
-void USBHwSetAddress(U8 bAddr)
+void USBHwSetAddress(uint8_t bAddr)
 {
     USBHwCmdWrite(CMD_DEV_SET_ADDRESS, DEV_EN | bAddr);
 }
@@ -270,7 +267,6 @@ void USBHwSetAddress(U8 bAddr)
  */
 void USBHwConnect(BOOL fConnect)
 {
-#ifdef LPC23xx
 #ifndef LPC2378_PORTB
   if(fConnect)
     FIO2CLR = (1<<9);
@@ -281,7 +277,6 @@ void USBHwConnect(BOOL fConnect)
     FIO0CLR = (1<<14);
   else
     FIO0SET = (1<<14);
-#endif
 #endif
     USBHwCmdWrite(CMD_DEV_STATUS, fConnect ? CON : 0);
 }
@@ -300,7 +295,7 @@ void USBHwConnect(BOOL fConnect)
     
     @param [in] bIntBits    Bitmap indicating which NAK interrupts to enable
  */
-void USBHwNakIntEnable(U8 bIntBits)
+void USBHwNakIntEnable(uint8_t bIntBits)
 {
     USBHwCmdWrite(CMD_DEV_SET_MODE, bIntBits);
 }
@@ -312,7 +307,7 @@ void USBHwNakIntEnable(U8 bIntBits)
     @param [in] bEP     Endpoint number
     @return Endpoint status byte (containing EP_STATUS_xxx bits)
  */
-U8  USBHwEPGetStatus(U8 bEP)
+uint8_t  USBHwEPGetStatus(uint8_t bEP)
 {
     int idx = EP2IDX(bEP);
 
@@ -326,7 +321,7 @@ U8  USBHwEPGetStatus(U8 bEP)
     @param [in] bEP     Endpoint number
     @param [in] fStall  TRUE to stall, FALSE to unstall
  */
-void USBHwEPStall(U8 bEP, BOOL fStall)
+void USBHwEPStall(uint8_t bEP, BOOL fStall)
 {
     int idx = EP2IDX(bEP);
 
@@ -343,7 +338,7 @@ void USBHwEPStall(U8 bEP, BOOL fStall)
             
     @return number of bytes written into the endpoint buffer
 */
-int USBHwEPWrite(U8 bEP, U8 *pbBuf, int iLen)
+int USBHwEPWrite(uint8_t bEP, uint8_t *pbBuf, int iLen)
 {
     int idx;
     
@@ -381,10 +376,10 @@ int USBHwEPWrite(U8 bEP, U8 *pbBuf, int iLen)
     @return the number of bytes available in the EP (possibly more than iMaxLen),
     or <0 in case of error.
  */
-int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
+int USBHwEPRead(uint8_t bEP, uint8_t *pbBuf, int iMaxLen)
 {
     int i, idx;
-    U32 dwData, dwLen;
+    uint32_t dwData, dwLen;
     
     idx = EP2IDX(bEP);
     
@@ -429,10 +424,10 @@ int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
 
 
 
-int USBHwISOCEPRead(const U8 bEP, U8 *pbBuf, const int iMaxLen)
+int USBHwISOCEPRead(const uint8_t bEP, uint8_t *pbBuf, const int iMaxLen)
 {
-    int i, idx,q;
-    U32 dwData, dwLen;
+    int i, idx;
+    uint32_t dwData, dwLen;
 
     idx = EP2IDX(bEP);
 
@@ -507,11 +502,11 @@ void USBHwConfigDevice(BOOL fConfigured)
  */
 void USBHwISR(void)
 {
-    U32 dwStatus;
-    U32 dwIntBit;
-    U8  bEPStat, bDevStat, bStat;
+    uint32_t dwStatus;
+    uint32_t dwIntBit;
+    uint8_t  bEPStat, bDevStat, bStat;
     int i;
-    U16 wFrame;
+    uint16_t wFrame;
 
 // LED9 monitors total time in interrupt routine
 DEBUG_LED_ON(9);
@@ -623,7 +618,6 @@ BOOL USBHwInit(void)
 
 #endif
 
-#ifdef LPC23xx
 #ifdef LPC2378_PORTB
     PINSEL1 = (PINSEL1 & ~(3 << 30)) | (1 << 30);
     PINSEL3 = (PINSEL3 & ~(3 << 28)) | (2 << 28);
@@ -659,11 +653,10 @@ BOOL USBHwInit(void)
     USBClkCtrl = (1 << 1) | (1 << 3) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 3) | (1 << 4))));
     USBPortSel = 0x3; /* Set LPC to use USB Port B pins */
+//    (*(volatile unsigned int *)(0xFFE0C110)) = 0x3;
 #else
     USBClkCtrl = (1 << 1) | (1 << 4); /* Enable the clocks */
     while (!(USBClkSt & ((1 << 1) | (1 << 4))));
-#endif
-
 #endif
     
     // disable/clear all interrupts for now
@@ -697,27 +690,27 @@ BOOL USBHwInit(void)
     after calling this function, the DMA descriptor could be used as part of a DMA tranfer.
     
         
-    @param [in] dmaDescriptor    A pointer to a 4 or 5 element long array of U32's that the DMA descriptor data is to be stored into, it should point to some place in DMA RAM.
+    @param [in] dmaDescriptor    A pointer to a 4 or 5 element long array of uint32_t's that the DMA descriptor data is to be stored into, it should point to some place in DMA RAM.
     @param [in] nextDdPtr        The value to be placed in the "Next_DD_Pointer" value of the DMA desriptor, set to NULL if there is no next-pointer.
     @param [in] isIsocFlag       Flag to indicate if this DMA descriptor is for an ISOC endpoint (with a 5 element dmaDescriptor array pointer), 1 indicates ISOC, 0 indicates non-ISOC. 
     @param [in] maxPacketSize    The maximum packet size that can be sent/received for the endpoint in question.
     @param [in] dmaLengthIsocNumFrames    For non-ISOC endpoints, the number of bytes in the buffer to be transfered, for ISOC endpoints, the number of frames to be transfered.
     @param [in] dmaBufferStartAddress    Start address for the dma transfer (location to store data for an OUT endpoint, location to pull data from for an IN endpoint), it should point to some place in DMA RAM.
-    @param [in] isocPacketSizeMemoryAddress   If a non-ISOC endpoint, set this to NULL, if an ISOC endpoint, then set this to a pointer to an array of U32's that represent how
+    @param [in] isocPacketSizeMemoryAddress   If a non-ISOC endpoint, set this to NULL, if an ISOC endpoint, then set this to a pointer to an array of uint32_t's that represent how
 
     @return  void
  */
 void USBSetupDMADescriptor(
-		volatile U32 dmaDescriptor[], 
-		volatile U32 nextDdPtr[],
-		const U8 isIsocFlag, 
-		const U16 maxPacketSize, 
-		const U16 dmaLengthIsocNumFrames,
+		volatile uint32_t dmaDescriptor[], 
+		volatile uint32_t nextDdPtr[],
+		const uint8_t isIsocFlag, 
+		const uint16_t maxPacketSize, 
+		const uint16_t dmaLengthIsocNumFrames,
 		void *dmaBufferStartAddress,
-		U32 *isocPacketSizeMemoryAddress ) 
+		uint32_t *isocPacketSizeMemoryAddress ) 
 {
 	dmaDescriptor[1] = 0;
-	dmaDescriptor[0] = (U32) nextDdPtr;
+	dmaDescriptor[0] = (uint32_t) nextDdPtr;
 	dmaDescriptor[1] |= ((maxPacketSize & 0x3FF) << 5);//Set maxPacketSize
 	dmaDescriptor[1] |= (dmaLengthIsocNumFrames << 16);//aka number of ISOC packets if in ISOC mode
 	if( isIsocFlag ) {
@@ -726,10 +719,10 @@ void USBSetupDMADescriptor(
 	if( nextDdPtr != NULL ) {
 		dmaDescriptor[1] |= (1<<2); //mark next DD as valid
 	}
-	dmaDescriptor[2] = (U32) dmaBufferStartAddress;
+	dmaDescriptor[2] = (uint32_t) dmaBufferStartAddress;
 	
 	if( isIsocFlag && isocPacketSizeMemoryAddress != NULL ) {
-		dmaDescriptor[4] = (U32) isocPacketSizeMemoryAddress;
+		dmaDescriptor[4] = (uint32_t) isocPacketSizeMemoryAddress;
 	}
 	dmaDescriptor[3] = 0; //mark DD as valid and reset all status bits
 }
@@ -741,7 +734,7 @@ void USBSetupDMADescriptor(
 
     @return   void
  */
-void USBDisableDMAForEndpoint(const U8 bEndpointNumber) {
+void USBDisableDMAForEndpoint(const uint8_t bEndpointNumber) {
 	int idx = EP2IDX(bEndpointNumber);
 	USBEpDMADis = (1<<idx);
 }
@@ -753,7 +746,7 @@ void USBDisableDMAForEndpoint(const U8 bEndpointNumber) {
 
     @return 
  */
-void USBEnableDMAForEndpoint(const U8 bEndpointNumber) {
+void USBEnableDMAForEndpoint(const uint8_t bEndpointNumber) {
 	int idx = EP2IDX(bEndpointNumber);
 	USBEpDMAEn = (1<<idx);
 }
@@ -768,9 +761,9 @@ void USBEnableDMAForEndpoint(const U8 bEndpointNumber) {
 
     @return  void
  */
-void USBInitializeISOCFrameArray(U32 isocFrameArr[], const U32 numElements, const U16 startFrameNumber, const U16 defaultFrameLength) {
-	U16 i;
-	U16 frameNumber = startFrameNumber;
+void USBInitializeISOCFrameArray(uint32_t isocFrameArr[], const uint32_t numElements, const uint16_t startFrameNumber, const uint16_t defaultFrameLength) {
+	uint16_t i;
+	uint16_t frameNumber = startFrameNumber;
 	
 	for(i = 0; i < numElements; i++ ) {
 		isocFrameArr[i] = (frameNumber<<16) | (1<<15) | (defaultFrameLength & 0x3FF);
@@ -787,8 +780,8 @@ void USBInitializeISOCFrameArray(U32 isocFrameArr[], const U32 numElements, cons
 
     @return 
  */
-void USBSetHeadDDForDMA(const U8 bEp, volatile U32* udcaHeadArray[32], volatile const U32 *dmaDescriptorPtr) {
-	udcaHeadArray[EP2IDX(bEp)] = (U32) dmaDescriptorPtr;
+void USBSetHeadDDForDMA(const uint8_t bEp, volatile uint32_t* udcaHeadArray[32], volatile const uint32_t *dmaDescriptorPtr) {
+	udcaHeadArray[EP2IDX(bEp)] = (uint32_t*) dmaDescriptorPtr;
 }
 
 /**
@@ -798,13 +791,13 @@ void USBSetHeadDDForDMA(const U8 bEp, volatile U32* udcaHeadArray[32], volatile 
 
     @return 
  */
-void USBInitializeUSBDMA(volatile U32* udcaHeadArray[32]) {
+void USBInitializeUSBDMA(volatile uint32_t* udcaHeadArray[32]) {
 	//set following 32 pointers to be null
 	int i;
 	for(i = 0; i < 32; i++ ) {
 		udcaHeadArray[i] = NULL;
 	}
-	USBUDCAH = (U32) udcaHeadArray;
+	USBUDCAH = (uint32_t) udcaHeadArray;
 }
 
 

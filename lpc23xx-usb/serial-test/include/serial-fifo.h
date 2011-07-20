@@ -25,9 +25,25 @@
 	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define EOF (-1)
+#ifndef _SERIAL_FIFO_H
+#define _SERIAL_FIFO_H
 
-void ConsoleInit(int iDivider);
-int putchar(int c);
-int puts(const char *s);
+#include <stdint.h>
+#include "lpc23xx-types.h"
 
+#define VCOM_FIFO_SIZE	128
+
+typedef struct {
+	int		head;
+	int 	tail;
+	uint8_t		*buf;
+} fifo_t;
+
+void fifo_init(fifo_t *fifo, uint8_t *buf);
+BOOL fifo_put(fifo_t *fifo, uint8_t c);
+BOOL fifo_get(fifo_t *fifo, uint8_t *pc);
+int  fifo_avail(fifo_t *fifo);
+int	 fifo_free(fifo_t *fifo);
+
+
+#endif

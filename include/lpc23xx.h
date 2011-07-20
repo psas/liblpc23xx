@@ -11,7 +11,7 @@
  * System Control Block (SCB) 
  * Chapter 2 p24
  */
-#define         SCB_BASE_ADDR	0xE01FC000
+#define         SCB_BASE_ADDR   0xE01FC000
 
 /*
  * Memory Map Control
@@ -52,7 +52,7 @@
 #define         IRCTRIM                 (*(volatile unsigned int *)(SCB_BASE_ADDR + 0x1A4))
 #define         PCLKSEL0                (*(volatile unsigned int *)(SCB_BASE_ADDR + 0x1A8))
 #define         PCLKSEL1                (*(volatile unsigned int *)(SCB_BASE_ADDR + 0x1AC))
-	
+        
 /* 
  * External Interrupts 
  * Chapter 3 p30
@@ -171,7 +171,7 @@
  * Pin Connect Block 
  * Chapter 9 p155
  */
-#define         PINCONN_BASE_ADDR	0xE002C000
+#define         PINCONN_BASE_ADDR       0xE002C000
 
 #define         PINSEL0                 (*(volatile unsigned int *)(PINCONN_BASE_ADDR + 0x000))
 #define         PINSEL1                 (*(volatile unsigned int *)(PINCONN_BASE_ADDR + 0x004))
@@ -200,7 +200,7 @@
  * General Purpose Input/Output (GPIO) 
  * Chapter 10 p171
  */
-#define         GPIO_BASE_ADDR		0xE0028000
+#define         GPIO_BASE_ADDR          0xE0028000
 
 #define         IOPIN0                  (*(volatile unsigned int *)(GPIO_BASE_ADDR + 0x000))
 #define         IO0PIN                  (*(volatile unsigned int *)(GPIO_BASE_ADDR + 0x000))
@@ -243,14 +243,14 @@
  * Part Configuration Register
  * Chapter 2 p28, no description available
  */
-#define         PARTCFG_BASE_ADDR	0x3FFF8000
+#define         PARTCFG_BASE_ADDR       0x3FFF8000
 #define         PARTCFG                 (*(volatile unsigned int *)(PARTCFG_BASE_ADDR + 0x000)) 
 
 /* 
  * Fast I/O
  * Chapter 9 p173 
  */
-#define         FIO_BASE_ADDR		0x3FFFC000
+#define         FIO_BASE_ADDR           0x3FFFC000
 
 #define         FIO0DIR                 (*(volatile unsigned int *)(FIO_BASE_ADDR + 0x000)) 
 #define         FIO0MASK                (*(volatile unsigned int *)(FIO_BASE_ADDR + 0x010))
@@ -471,7 +471,7 @@
  * EMC registers
  * Chapter 5 p74
  */
-#define         EMC_BASE_ADDR		0xFFE08000
+#define         EMC_BASE_ADDR           0xFFE08000
 
 #define         EMCControl              (*(volatile unsigned int *)(EMC_BASE_ADDR + 0x000))
 #define         EMCStatus               (*(volatile unsigned int *)(EMC_BASE_ADDR + 0x004))
@@ -498,7 +498,7 @@
  * Timer 0 
  * Chapter 23 p552
  */
-#define         TMR0_BASE_ADDR		0xE0004000
+#define         TMR0_BASE_ADDR          0xE0004000
 
 #define         T0IR                    (*(volatile unsigned int *)(TMR0_BASE_ADDR + 0x000))
 #define         T0TCR                   (*(volatile unsigned int *)(TMR0_BASE_ADDR + 0x004))
@@ -519,7 +519,7 @@
 /* 
  * Timer 1 
  */
-#define         TMR1_BASE_ADDR		0xE0008000
+#define         TMR1_BASE_ADDR          0xE0008000
 
 #define         T1IR                    (*(volatile unsigned int *)(TMR1_BASE_ADDR + 0x000))
 #define         T1TCR                   (*(volatile unsigned int *)(TMR1_BASE_ADDR + 0x004))
@@ -540,7 +540,7 @@
 /* 
  * Timer 2 
  */
-#define         TMR2_BASE_ADDR		0xE0070000
+#define         TMR2_BASE_ADDR          0xE0070000
 #define         T2IR                    (*(volatile unsigned int *)(TMR2_BASE_ADDR + 0x00))
 #define         T2TCR                   (*(volatile unsigned int *)(TMR2_BASE_ADDR + 0x04))
 #define         T2TC                    (*(volatile unsigned int *)(TMR2_BASE_ADDR + 0x08))
@@ -560,7 +560,7 @@
 /*
  * Timer 3 
  */
-#define         TMR3_BASE_ADDR  	0xE0074000
+#define         TMR3_BASE_ADDR          0xE0074000
 
 #define         T3IR                    (*(volatile unsigned int *)(TMR3_BASE_ADDR + 0x00))
 #define         T3TCR                   (*(volatile unsigned int *)(TMR3_BASE_ADDR + 0x04))
@@ -582,7 +582,7 @@
  * Pulse Width Modulator (PWM) 
  * Chapter 24 p567
  */
-#define         PWM1_BASE_ADDR		0xE0018000
+#define         PWM1_BASE_ADDR          0xE0018000
 
 #define         PWM1IR                  (*(volatile unsigned int *)(PWM1_BASE_ADDR + 0x000))
 #define         PWM1TCR                 (*(volatile unsigned int *)(PWM1_BASE_ADDR + 0x004))
@@ -612,7 +612,7 @@
  * (UART0/2/3) Universal Asynchronous Receiver Transmitter 0,2,3
  * Chapter 16 p411
  */
-#define         UART0_BASE_ADDR		0xE000C000
+#define         UART0_BASE_ADDR         0xE000C000
 
 #define         U0RBR                   (*(volatile unsigned char *)(UART0_BASE_ADDR + 0x000))
 #define         U0THR                   (*(volatile unsigned char *)(UART0_BASE_ADDR + 0x000))
@@ -629,7 +629,7 @@
 #define         U0TER                   (*(volatile unsigned char *)(UART0_BASE_ADDR + 0x030))
 
 /* UART2 */
-#define         UART2_BASE_ADDR		0xE0078000
+#define         UART2_BASE_ADDR         0xE0078000
 
 #define         U2RBR                   (*(volatile unsigned char *)(UART2_BASE_ADDR + 0x000))
 #define         U2THR                   (*(volatile unsigned char *)(UART2_BASE_ADDR + 0x000))
@@ -646,7 +646,7 @@
 #define         U2TER                   (*(volatile unsigned char *)(UART2_BASE_ADDR + 0x030))
 
 /* UART3 */
-#define         UART3_BASE_ADDR		0xE007C000
+#define         UART3_BASE_ADDR         0xE007C000
 
 #define         U3RBR                   (*(volatile unsigned char *)(UART3_BASE_ADDR + 0x000))
 #define         U3THR                   (*(volatile unsigned char *)(UART3_BASE_ADDR + 0x000))
@@ -668,7 +668,7 @@
  * Universal Asynchronous Receiver Transmitter 1 (UART1) 
  * Chapter 17 p433
  */
-#define         UART1_BASE_ADDR		0xE0010000
+#define         UART1_BASE_ADDR         0xE0010000
 
 #define         U1RBR                   (*(volatile unsigned char *)(UART1_BASE_ADDR + 0x000))
 #define         U1THR                   (*(volatile unsigned char *)(UART1_BASE_ADDR + 0x000))
@@ -691,7 +691,7 @@
  * I2C0
  * Chapter 21 p511
  */
-#define         I2C0_BASE_ADDR		0xE001C000
+#define         I2C0_BASE_ADDR          0xE001C000
 
 #define         I2C0CONSET              (*(volatile unsigned char  *)(I2C0_BASE_ADDR + 0x000))
 #define         I2C0STAT                (*(volatile unsigned char  *)(I2C0_BASE_ADDR + 0x004))
@@ -705,7 +705,7 @@
 /* 
  * I2C1
  */
-#define         I2C1_BASE_ADDR		0xE005C000
+#define         I2C1_BASE_ADDR          0xE005C000
 
 #define         I2C1CONSET              (*(volatile unsigned char  *)(I2C1_BASE_ADDR + 0x000))
 #define         I2C1STAT                (*(volatile unsigned char  *)(I2C1_BASE_ADDR + 0x004))
@@ -718,7 +718,7 @@
 /* 
  * I2C2
  */
-#define         I2C2_BASE_ADDR		0xE0080000
+#define         I2C2_BASE_ADDR          0xE0080000
 
 #define         I2C2CONSET              (*(volatile unsigned char  *)(I2C2_BASE_ADDR + 0x000))
 #define         I2C2STAT                (*(volatile unsigned char  *)(I2C2_BASE_ADDR + 0x004))
@@ -733,7 +733,7 @@
  * SPI0 (Serial Peripheral Interface 0) 
  * Chapter 18 p461
  */
-#define         SPI0_BASE_ADDR	        0xE0020000
+#define         SPI0_BASE_ADDR          0xE0020000
 
 #define         S0SPCR                  (*(volatile unsigned short *)(SPI0_BASE_ADDR + 0x000))
 #define         S0SPSR                  (*(volatile unsigned char  *)(SPI0_BASE_ADDR + 0x004))
@@ -745,7 +745,7 @@
  * SSP0
  * Chapter 19 p474
  */
-#define         SSP0_BASE_ADDR		0xE0068000
+#define         SSP0_BASE_ADDR          0xE0068000
 
 #define         SSP0CR0                 (*(volatile unsigned short *)(SSP0_BASE_ADDR + 0x000))
 #define         SSP0CR1                 (*(volatile unsigned char  *)(SSP0_BASE_ADDR + 0x004))
@@ -761,7 +761,7 @@
 /* 
  * SSP1
  */
-#define         SSP1_BASE_ADDR		0xE0030000
+#define         SSP1_BASE_ADDR          0xE0030000
 
 #define         SSP1CR0                 (*(volatile unsigned short *)(SSP1_BASE_ADDR + 0x000))
 #define         SSP1CR1                 (*(volatile unsigned char  *)(SSP1_BASE_ADDR + 0x004))
@@ -779,7 +779,7 @@
  * Real Time Clock 
  * Chapter 26 p583
  */
-#define         RTC_BASE_ADDR		0xE0024000
+#define         RTC_BASE_ADDR           0xE0024000
 
 #define         RTC_ILR                 (*(volatile unsigned char  *)(RTC_BASE_ADDR + 0x000))
 #define         RTC_CTC                 (*(volatile unsigned short *)(RTC_BASE_ADDR + 0x004))
@@ -815,7 +815,7 @@
  * ADC0
  * Chapter 27 p597
  */
-#define         AD0_BASE_ADDR		0xE0034000
+#define         AD0_BASE_ADDR           0xE0034000
 
 #define         AD0CR                   (*(volatile unsigned int *)(AD0_BASE_ADDR + 0x00))
 #define         AD0GDR                  (*(volatile unsigned int *)(AD0_BASE_ADDR + 0x04))
@@ -835,7 +835,7 @@
  * DAC
  * Chapter 28 p603
  */
-#define DAC_BASE_ADDR		        0xE006C000
+#define DAC_BASE_ADDR                   0xE006C000
 
 #define DACR                            (*(volatile unsigned int *)(DAC_BASE_ADDR + 0x00))
 
@@ -844,7 +844,7 @@
  * WDT WatchDog Timer 
  * Chapter 25 p576
  */
-#define WDG_BASE_ADDR	                0xE0000000
+#define WDG_BASE_ADDR                   0xE0000000
 
 #define         WDMOD                   (*(volatile unsigned char *)(WDG_BASE_ADDR + 0x00))
 #define         WDTC                    (*(volatile unsigned int  *)(WDG_BASE_ADDR + 0x04))
@@ -856,91 +856,91 @@
  * CAN CONTROLLERS / ACCEPTANCE FILTER 
  * Chapter 12 p263
  */
-#define         CAN_ACCEPT_BASE_ADDR	0xE003C000
+#define         CAN_ACCEPT_BASE_ADDR    0xE003C000
 
-#define         CAN_AFMR		(*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x000))  	
-#define         CAN_SFF_sa 		(*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x004))  	
-#define         CAN_SFF_GRP_sa 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x008))
-#define         CAN_EFF_sa 		(*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x00C))
-#define         CAN_EFF_GRP_sa 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x010))  	
-#define         CAN_EOT 		(*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x014))
-#define         CAN_ENDofTable 		(*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x014))
-#define         CAN_LUT_ERR_ADR         (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x018))  	
-#define         CAN_LUTerrAd            (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x018))  	
-#define         CAN_LUT_ERR 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x01C))
-#define         CAN_LUTerr 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x01C))
-#define         CAN_FCANIE 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x020))
-#define         CAN_FCANIC0 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x024))
-#define         CAN_FCANIC1 	        (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x028))
+#define         CAN_AFMR                (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x000))      
+#define         CAN_SFF_sa              (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x004))      
+#define         CAN_SFF_GRP_sa          (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x008))
+#define         CAN_EFF_sa              (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x00C))
+#define         CAN_EFF_GRP_sa          (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x010))      
+#define         CAN_EOT                 (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x014))
+#define         CAN_ENDofTable          (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x014))
+#define         CAN_LUT_ERR_ADR         (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x018))      
+#define         CAN_LUTerrAd            (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x018))      
+#define         CAN_LUT_ERR             (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x01C))
+#define         CAN_LUTerr              (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x01C))
+#define         CAN_FCANIE              (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x020))
+#define         CAN_FCANIC0             (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x024))
+#define         CAN_FCANIC1             (*(volatile unsigned int *)(CAN_ACCEPT_BASE_ADDR + 0x028))
 
-#define         CAN_CENTRAL_BASE_ADDR	0xE0040000  	
+#define         CAN_CENTRAL_BASE_ADDR   0xE0040000      
 
-#define         CANTxSR 	        (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x000))  	
-#define         CANRxSR 	        (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x004))  	
-#define         CANMSR 	                (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x008))
+#define         CANTxSR                 (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x000))     
+#define         CANRxSR                 (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x004))     
+#define         CANMSR                  (*(volatile unsigned int *)(CAN_CENTRAL_BASE_ADDR + 0x008))
 
-#define         CAN1_BASE_ADDR	        0xE0044000
+#define         CAN1_BASE_ADDR          0xE0044000
 
-#define         CAN1MOD 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x000))  	
-#define         CAN1CMR 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x004))  	
-#define         CAN1GSR 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x008))  	
-#define         CAN1ICR 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x00C))  	
-#define         CAN1IER 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x010))
-#define         CAN1BTR 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x014))  	
-#define         CAN1EWL 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x018))  	
-#define         CAN1SR 		        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x01C))  	
-#define         CAN1RFS 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x020))  	
-#define         CAN1RID 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x024))
-#define         CAN1RDA 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x028))  	
-#define         CAN1RDB 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x02C))
-  	        
-#define         CAN1TFI1 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x030))  	
-#define         CAN1TID1 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x034))  	
-#define         CAN1TDA1 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x038))
-#define         CAN1TDB1 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x03C))  	
-#define         CAN1TFI2 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x040))  	
-#define         CAN1TID2 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x044))  	
-#define         CAN1TDA2 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x048))  	
-#define         CAN1TDB2 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x04C))
-#define         CAN1TFI3 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x050))  	
-#define         CAN1TID3 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x054))  	
-#define         CAN1TDA3 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x058))  	
-#define         CAN1TDB3 	        (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x05C))
+#define         CAN1MOD                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x000))    
+#define         CAN1CMR                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x004))    
+#define         CAN1GSR                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x008))    
+#define         CAN1ICR                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x00C))    
+#define         CAN1IER                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x010))
+#define         CAN1BTR                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x014))    
+#define         CAN1EWL                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x018))    
+#define         CAN1SR                  (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x01C))    
+#define         CAN1RFS                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x020))    
+#define         CAN1RID                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x024))
+#define         CAN1RDA                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x028))    
+#define         CAN1RDB                 (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x02C))
+                
+#define         CAN1TFI1                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x030))    
+#define         CAN1TID1                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x034))    
+#define         CAN1TDA1                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x038))
+#define         CAN1TDB1                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x03C))    
+#define         CAN1TFI2                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x040))    
+#define         CAN1TID2                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x044))    
+#define         CAN1TDA2                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x048))    
+#define         CAN1TDB2                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x04C))
+#define         CAN1TFI3                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x050))    
+#define         CAN1TID3                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x054))    
+#define         CAN1TDA3                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x058))    
+#define         CAN1TDB3                (*(volatile unsigned int *)(CAN1_BASE_ADDR + 0x05C))
 
-#define         CAN2_BASE_ADDR	        0xE0048000
+#define         CAN2_BASE_ADDR          0xE0048000
 
-#define         CAN2MOD 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x000))  	
-#define         CAN2CMR 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x004))  	
-#define         CAN2GSR 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x008))  	
-#define         CAN2ICR 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x00C))  	
-#define         CAN2IER 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x010))
-#define         CAN2BTR 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x014))  	
-#define         CAN2EWL 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x018))  	
-#define         CAN2SR 		        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x01C))  	
-#define         CAN2RFS 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x020))  	
-#define         CAN2RID 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x024))
-#define         CAN2RDA 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x028))  	
-#define         CAN2RDB 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x02C))
-  	        
-#define         CAN2TFI1 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x030))  	
-#define         CAN2TID1 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x034))  	
-#define         CAN2TDA1 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x038))
-#define         CAN2TDB1 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x03C))  	
-#define         CAN2TFI2 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x040))  	
-#define         CAN2TID2 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x044))  	
-#define         CAN2TDA2 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x048))  	
-#define         CAN2TDB2 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x04C))
-#define         CAN2TFI3 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x050))  	
-#define         CAN2TID3 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x054))  	
-#define         CAN2TDA3 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x058))  	
-#define         CAN2TDB3 	        (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x05C))
+#define         CAN2MOD                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x000))    
+#define         CAN2CMR                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x004))    
+#define         CAN2GSR                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x008))    
+#define         CAN2ICR                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x00C))    
+#define         CAN2IER                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x010))
+#define         CAN2BTR                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x014))    
+#define         CAN2EWL                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x018))    
+#define         CAN2SR                  (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x01C))    
+#define         CAN2RFS                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x020))    
+#define         CAN2RID                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x024))
+#define         CAN2RDA                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x028))    
+#define         CAN2RDB                 (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x02C))
+                
+#define         CAN2TFI1                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x030))    
+#define         CAN2TID1                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x034))    
+#define         CAN2TDA1                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x038))
+#define         CAN2TDB1                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x03C))    
+#define         CAN2TFI2                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x040))    
+#define         CAN2TID2                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x044))    
+#define         CAN2TDA2                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x048))    
+#define         CAN2TDB2                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x04C))
+#define         CAN2TFI3                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x050))    
+#define         CAN2TID3                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x054))    
+#define         CAN2TDA3                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x058))    
+#define         CAN2TDB3                (*(volatile unsigned int *)(CAN2_BASE_ADDR + 0x05C))
 
 
 /* 
  * MCI
  * Chapter 20 p493
  */
-#define         MCI_BASE_ADDR		0xE008C000
+#define         MCI_BASE_ADDR           0xE008C000
 
 #define         MCIPower                (*(volatile unsigned int *)(MCI_BASE_ADDR + 0x000))
 #define         MCIClock                (*(volatile unsigned int *)(MCI_BASE_ADDR + 0x004))
@@ -967,7 +967,7 @@
  * I2S
  * Chapter 22 p543
  */
-#define         I2S_BASE_ADDR	       0xE0088000
+#define         I2S_BASE_ADDR          0xE0088000
 
 #define         I2SDAO                  (*(volatile unsigned int *)(I2S_BASE_ADDR + 0x000))
 #define         I2SDAI                  (*(volatile unsigned int *)(I2S_BASE_ADDR + 0x004))
@@ -985,7 +985,7 @@
  * GPDMA
  * Chapter 30 p638
  */
-#define         GPDMA_BASE_ADDR		0xFFE04000
+#define         GPDMA_BASE_ADDR         0xFFE04000
 
 #define         DMACIntStatus           (*(volatile unsigned int *)(GPDMA_BASE_ADDR + 0x000))
 #define         DMACIntTCStatus         (*(volatile unsigned int *)(GPDMA_BASE_ADDR + 0x004))
@@ -1017,134 +1017,77 @@
 #define         DMACC1Configuration     (*(volatile unsigned int *)(DMA_BASE_ADDR + 0x130))
 
 
-/* 
- * USB 
+/*
+ * USB
  * Chapter 13, 14, 15 
  */
 
-/* Port select register (lpc2378) */
-#define         USBPortSelect           (*(volatile unsigned int *)(0xFFE0C110))
+/* USB Controller */
+#define         USB_BASE_ADDR           0xFFE0C000
 
-/* Clock Control Registers */
-#define         USB_CLK_BASE_ADDR	0xFFE0CF00
+/* USBPortSel only available on the LPC2378 */
+#define         USBPortSel              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x110))
 
-#define         USBClkCtrl              (*(volatile unsigned int *)(USB_CLK_BASE_ADDR + 0xF4))
-#define         USBClkSt                (*(volatile unsigned int *)(USB_CLK_BASE_ADDR + 0xF8))
+/* USB Clock Control Registers */
+#define         USBClkCtrl              (*(volatile unsigned int *)(USB_BASE_ADDR + 0xFF4))
+#define         USBClkSt                (*(volatile unsigned int *)(USB_BASE_ADDR + 0xFF8))
 
-/* Interrupt Registers */
-#define         USB_INT_BASE_ADDR	0xE01FC1C0
+/* USB Device Interrupt Registers */
+#define         USBIntSt                (*(volatile unsigned int *)(USB_BASE_ADDR + 0x1C0))
+#define         USBDevIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x200))
+#define         USBDevIntEn             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x204))
+#define         USBDevIntClr            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x208))
+#define         USBDevIntSet            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x20C))
+#define         USBDevIntPri            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x22C))
 
-#define         USBIntStat              (*(volatile unsigned int *)(USB_INT_BASE_ADDR + 0x00))
+/* USB Device Endpoint Interrupt Registers */
+#define         USBEpIntSt              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x230))
+#define         USBEpIntEn              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x234))
+#define         USBEpIntClr             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x238))
+#define         USBEpIntSet             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x23C))
+#define         USBEpIntPri             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x240))
 
-#define         USB_BASE_ADDR		0xFFE0C200
+/* USB Device Endpoint Realization Registers */
+#define         USBReEp                 (*(volatile unsigned int *)(USB_BASE_ADDR + 0x244))
+#define         USBEpInd                (*(volatile unsigned int *)(USB_BASE_ADDR + 0x248))
+#define         USBMaxPSize             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x24C))
 
-#define         USBDevIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x00))
-#define         USBDevIntEn             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x04))
-#define         USBDevIntClr            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x08))
-#define         USBDevIntSet            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x0C))
-#define         USBDevIntPri            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2C))
+/* USB Device Data Transfer Registers */
+#define         USBRxData               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x218))
+#define         USBRxPLen               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x220))
+#define         USBTxData               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x21C))
+#define         USBTxPLen               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x224))
+#define         USBCtrl                 (*(volatile unsigned int *)(USB_BASE_ADDR + 0x228))
 
-/* Endpoint Interrupt Registers */
-#define         USBEpIntSt              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x30))
-#define         USBEpIntEn              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x34))
-#define         USBEpIntClr             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x38))
-#define         USBEpIntSet             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x3C))
-#define         USBEpIntPri             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x40))
+/* USB SIE Command Reagisters */
+#define         USBCmdCode              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x210))
+#define         USBCmdData              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x214))
 
-/* Endpoint Realization Registers */
-#define         USBReEp                 (*(volatile unsigned int *)(USB_BASE_ADDR + 0x44))
-#define         USBEpInd                (*(volatile unsigned int *)(USB_BASE_ADDR + 0x48))
-#define         USBMaxPSize             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x4C))
-
-/* SIE Command Registers */
-#define         USBCmdCode              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x10))
-#define         USBCmdData              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x14))
-
-/* Data Transfer Registers */
-#define         USBRxData               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x18))
-#define         USBRxPLen               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x1C))
-#define         USBTxData               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x20))
-#define         USBTxPLen               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x24))
-#define         USBCtrl                 (*(volatile unsigned int *)(USB_BASE_ADDR + 0x28))
-
-/* DMA Registers */
-#define         USBDMARSt               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x50))
-#define         USBDMARClr              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x54))
-#define         USBDMARSet              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x58))
-#define         USBUDCAH                (*(volatile unsigned int *)(USB_BASE_ADDR + 0x80))
-#define         USBEpDMASt              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x84))
-#define         USBEpDMAEn              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x88))
-#define         USBEpDMADis             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x8C))
-#define         USBDMAIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x90))
-#define         USBDMAIntEn             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x94))
-#define         USBEoTIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0xA0))
-#define         USBEoTIntClr            (*(volatile unsigned int *)(USB_BASE_ADDR + 0xA4))
-#define         USBEoTIntSet            (*(volatile unsigned int *)(USB_BASE_ADDR + 0xA8))
-#define         USBNDDRIntSt            (*(volatile unsigned int *)(USB_BASE_ADDR + 0xAC))
-#define         USBNDDRIntClr           (*(volatile unsigned int *)(USB_BASE_ADDR + 0xB0))
-#define         USBNDDRIntSet           (*(volatile unsigned int *)(USB_BASE_ADDR + 0xB4))
-#define         USBSysErrIntSt          (*(volatile unsigned int *)(USB_BASE_ADDR + 0xB8))
-#define         USBSysErrIntClr         (*(volatile unsigned int *)(USB_BASE_ADDR + 0xBC))
-#define         USBSysErrIntSet         (*(volatile unsigned int *)(USB_BASE_ADDR + 0xC0))
-
-/* Host Controller */
-#define         USB_HC_BASE_ADDR	0xFFE0C000
-
-#define         HcRevision              (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x00))
-#define         HcControl               (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x04))
-#define         HcCommandStatus         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x08))
-#define         HcInterruptStatus       (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x0C))
-#define         HcInterruptEnable       (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x10))
-#define         HcInterruptDisable      (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x14))
-#define         HcHCCA                  (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x18))
-#define         HcPeriodCurrentED       (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x1C))
-#define         HcControlHeadED         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x20))
-#define         HcControlCurrentED      (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x24))
-#define         HcBulkHeadED            (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x28))
-#define         HcBulkCurrentED         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x2C))
-#define         HcDoneHead              (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x30))
-#define         HcFmInterval            (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x34))
-#define         HcFmRemaining           (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x38))
-#define         HcFmNumber              (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x3C))
-#define         HcPeriodicStart         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x40))
-#define         HcLSThreshold           (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x44))
-#define         HcRhDescriptorA         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x48))
-#define         HcRhDescriptorB         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x4C))
-#define         HcRhStatus              (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x50))
-#define         HcRhPortStatus1         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x54))
-#define         HcRhPortStatus2         (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0x58))
-#define         HcModule_ID             (*(volatile unsigned int *)(USB_HC_BASE_ADDR + 0xFC))
-
-/* USB OTG Controller */
-#define         USB_OTG_BASE_ADDR	0xFFE0C100
-
-#define         OTGIntSt                (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x00))
-#define         OTGIntEn                (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x04))
-#define         OTGIntSet               (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x08))
-#define         OTGIntClr               (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x0C))
-#define         OTGStCtrl               (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x10))
-#define         OTGTmr                  (*(volatile unsigned int *)(USB_OTG_BASE_ADDR + 0x14))
-
-#define         USBOTG_I2C_BASE_ADDR	0xFFE0C300
-
-#define         OTG_I2C_RX              (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x00))
-#define         OTG_I2C_TX              (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x00))
-#define         OTG_I2C_STS             (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x04))
-#define         OTG_I2C_CTL             (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x08))
-#define         OTG_I2C_CLKHI           (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x0C))
-#define         OTG_I2C_CLKLO           (*(volatile unsigned int *)(USBOTG_I2C_BASE_ADDR + 0x10))
-
-#define         USBOTG_CLK_BASE_ADDR	0xFFE0CFF0
-
-#define         OTGClkCtrl              (*(volatile unsigned int *)(USBOTG_CLK_BASE_ADDR + 0x04))
-#define         OTGClkSt                (*(volatile unsigned int *)(USBOTG_CLK_BASE_ADDR + 0x08))
-
+/* USB Device DMA Registers */
+#define         USBDMARSt               (*(volatile unsigned int *)(USB_BASE_ADDR + 0x250))
+#define         USBDMARClr              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x254))
+#define         USBDMARSet              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x258))
+#define         USBUDCAH                (*(volatile unsigned int *)(USB_BASE_ADDR + 0x280))
+#define         USBEpDMASt              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x284))
+#define         USBEpDMAEn              (*(volatile unsigned int *)(USB_BASE_ADDR + 0x288))
+#define         USBEpDMADis             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x28C))
+#define         USBDMAIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x290))
+#define         USBDMAIntEn             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x294))
+#define         USBEoTIntSt             (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2A0))
+#define         USBEoTIntClr            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2A4))
+#define         USBEoTIntSet            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2A8))
+#define         USBNDDRIntSt            (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2AC))
+#define         USBNDDRIntClr           (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2B0))
+#define         USBNDDRIntSet           (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2B4))
+#define         USBSysErrIntSt          (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2B8))
+#define         USBSysErrIntClr         (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2BC))
+#define         USBSysErrIntSet         (*(volatile unsigned int *)(USB_BASE_ADDR + 0x2C0))
 
 /* 
  * Ethernet MAC 
  * Chapter 11 p193
  */
-#define         MAC_BASE_ADDR	        0xFFE00000
+#define         MAC_BASE_ADDR           0xFFE00000
 
 #define         MAC1                    (*(volatile unsigned int *)(MAC_BASE_ADDR + 0x000)) 
 #define         MAC2                    (*(volatile unsigned int *)(MAC_BASE_ADDR + 0x004)) 

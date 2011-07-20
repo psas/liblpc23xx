@@ -88,7 +88,7 @@ void pllstart_seventytwomhz(void) {
 
     while(!PLOCK);
 
-    SET_PLLC;
+    SET_PLLCE;
     pllfeed();
     pllstat.cclk_mhz = SEVENTY_TWO_MHZ;
     pllstat.fcco_mhz = TWO_EIGHTY_EIGHT_MHZ;
@@ -121,7 +121,7 @@ void pllstart_sixtymhz(void) {
 
     while(!PLOCK);
 
-    SET_PLLC;
+    SET_PLLCE;
     pllfeed();
     pllstat.cclk_mhz = SIXTY_MHZ;
     pllstat.fcco_mhz = FOUR_EIGHTY_MHZ;
@@ -154,7 +154,7 @@ void pllstart_fourtyeightmhz(void) {
 
     while(!PLOCK);
 
-    SET_PLLC;
+    SET_PLLCE;
     pllfeed();
     pllstat.cclk_mhz = FOURTY_EIGHT_MHZ;
     pllstat.fcco_mhz = FOUR_EIGHTY_MHZ;

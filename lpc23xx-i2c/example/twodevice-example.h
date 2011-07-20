@@ -1,17 +1,24 @@
 
 /*
- * eeprom-test.h
+ * twodevice-test.h
  */
 
 
-#ifndef _EEPROM_TEST_H
-#define _EEPROM_TEST_H
+#ifndef _TWODEVICE_TEST_H
+#define _TWODEVICE_TEST_H
 
 #include "lpc23xx-i2c.h"
 
-/* blinkm i2c address */
+
+/* i2c address */
+
+#define BLINKM_ADDR                   0x09
+
 #define EEPROM_ADDR                   0x50  // 0b0101_000
+
 #define EEPROM_POLL_WAITTICKS         500000
+
+#define BLINKM_POLL_WAITTICKS         500000
 
 extern i2c_master_xact_t       xact_s;
 

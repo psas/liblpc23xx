@@ -1,1 +1,0 @@
-../../startup/lpc23xx.ld

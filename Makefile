@@ -5,17 +5,17 @@
 
 NAME            := liblpc23xx
 
-CROSS           := /opt/cross
+CROSSCMP        := /opt/cross
 
-CC              := $(CROSS)/bin/arm-elf-gcc
-LD              := $(CROSS)/bin/arm-elf-ld
-AR              := $(CROSS)/bin/arm-elf-ar
-AS              := $(CROSS)/bin/arm-elf-as
-CP              := $(CROSS)/bin/arm-elf-objcopy
-OD              := $(CROSS)/bin/arm-elf-objdump
+CC              := $(CROSSCMP)/bin/arm-elf-gcc
+LD              := $(CROSSCMP)/bin/arm-elf-ld
+AR              := $(CROSSCMP)/bin/arm-elf-ar
+AS              := $(CROSSCMP)/bin/arm-elf-as
+CP              := $(CROSSCMP)/bin/arm-elf-objcopy
+OD              := $(CROSSCMP)/bin/arm-elf-objdump
 
 DEBUG           ?=
-#DEBUG           = -DDEBUG
+#DEBUG           = -DDEBUG_USB
  
 INCLUDE         := -I.\
                    -I./include\
@@ -34,16 +34,12 @@ HS              :=  $(wildcard ./include/*.h)\
 
 TOPLIB          = $(NAME).a
 
-TARGET          = LPC23xx
-# If you are using port B on the LPC2378 uncomment out the next line (Used on the Olimex 2378 Dev Board)
+# If you are using port B on the LPC2378 uncomment out the next line.
 LPC2378_PORT    = -DLPC2378_PORTB
-
-USBLIB          = ./lpcusb/usbstack.a
-
-USBTESTS        = ./lpcusb/examples/serial.hex
 
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-binsem/test/lpc23xx-binsem-test.hex\
+	          ./lpc23xx-usb/serial-test/serial-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
 
 ASRCS           := $(wildcard lpc23xx-*/*.s)
@@ -54,8 +50,7 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-#CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(TARGET) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
-CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(TARGET) -ggdb -c -Wall -mfloat-abi=softfp -fno-common -O2 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rvs
 
@@ -67,37 +62,28 @@ ASFLAGS         = -ggdb -ahls -mfloat-abi=softfp $(INCLUDE)
 
 .c.o :
 	@echo "======== COMPILING $@ ========================"
-	$(CC) $(CFLAGS) -o $(<:.c=.o) -c $<
+	@$(CC) $(CFLAGS) -o $(<:.c=.o) -c $<
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
+	@$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
 all: $(TOPLIB) Makefile
 
-tests: $(TESTS) $(USBTESTS)
+tests: $(TESTS)
 
 $(COBJS): $(HS)
 
-$(USBLIB):
-	@echo "========= Recursive make: $(@D)    ========================"
-	$(MAKE) -s -C $(@D) $(@F)
-
 $(TOPLIB): $(AOBJS) $(COBJS)
 	@echo "========= Making Library $@ ========================"
-	$(AR) $(ARCHIVEFLAGS) $@ $(AOBJS) $(COBJS)
-
-$(USBTESTS): $(USBLIB)
-	@echo "========= Recursive make: $(@D) ========================"
-	$(MAKE) -s -C $(@D)
-
+	@$(AR) $(ARCHIVEFLAGS) $@ $(AOBJS) $(COBJS)
 
 $(TESTS): $(LIB)
 	@echo "========= Recursive make: $(@D) ========================"
-	$(MAKE) -s -C $(@D) $(@F)
+	@$(MAKE) -s -C $(@D) $(@F)
 
 clean:
-	$(RM)  $(LIB) $(AOBJS) $(COBJS) $(COBJS) $(USBLIB)\
+	@$(RM)  $(LIB) $(AOBJS) $(COBJS) $(COBJS) $(USBLIB)\
 	lpc23xx*/*.lst *.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
