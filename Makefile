@@ -24,7 +24,7 @@ AS              := $(CROSSCMP)/bin/arm-elf-as
 CP              := $(CROSSCMP)/bin/arm-elf-objcopy
 OD              := $(CROSSCMP)/bin/arm-elf-objdump
 
-DEBUG           ?=
+DEBUG           ?= -DDEBUG_ADC
 #DEBUG           = -DDEBUG_USB
  
 INCLUDE         := -I.\

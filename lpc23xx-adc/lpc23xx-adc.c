@@ -8,6 +8,7 @@
 
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
+#include "printf-lpc.h"
 
 #include "lpc23xx-adc.h"
 
@@ -46,16 +47,20 @@ void adc_init_cont(adc_channelmask channels) {
             break;
     }
 
-    AD0CR = (AD0CR | (cdiv << CLKDIV) | (1<<BURST) | channels ); // 11 clocks/channel
+    AD0CR = (AD0CR & ~(111 << AD0CR_START));
+    AD0CR = (AD0CR | (cdiv << AD0CR_CLKDIV) | (1 << AD0CR_BURST) | channels ); // 11 clocks/channel
+#ifdef DEBUG_ADC
+    printf_lpc(UART0,"AD0CR is: 0x%x\n", AD0CR);
+#endif
 }
 
 /*
  * adc_disable
  */
 void adc_disable(void) {
-	// order matters see page 596 of user manual v3.
-	ADC_DISABLE;
-	ADC_PWR_OFF;
+    // order matters see page 596 of user manual v3.
+    ADC_DISABLE;
+    ADC_PWR_OFF;
 }
 
 /*
@@ -64,50 +69,53 @@ void adc_disable(void) {
  */
 
 uint16_t adc_read(adc_channel ch) {
-	uint32_t value= 0;
+    uint32_t value= 0;
 
-	switch(ch) {
-	case ADC0:
-		do {
-			value = AD0DR0;
-		} while (AD0DR0_DONE == 0);
-		break;
-	case ADC1:
-		do {
-			value = AD0DR1;
-		} while (AD0DR1_DONE == 0);
-		break;
-	case ADC2:
-		do {
-			value = AD0DR2;
-		} while (AD0DR2_DONE == 0);
-		break;
-	case ADC3:
-		do {
-			value = AD0DR3;
-		} while (AD0DR3_DONE == 0);
-		break;
-	case ADC4:
-		do {
-			value = AD0DR4;
-		} while (AD0DR4_DONE == 0);
-		break;
-	case ADC6:
-		do {
-			value = AD0DR6;
-		} while (AD0DR6_DONE == 0);
-		break;
-	case ADC7:
-		do {
-			value = AD0DR7;
-		} while (AD0DR7_DONE == 0);
-		break;
-	default:
-		break;
-	}
+    switch(ch) {
+        case ADC0_0:
+            do {
+                value = AD0DR0;
+            } while (AD0DR0_DONE == 0);
+            break;
+        case ADC0_1:
+            do {
+                value = AD0DR1;
+            } while (AD0DR1_DONE == 0);
+            break;
+        case ADC0_2:
+            do {
+                value = AD0DR2;
+            } while (AD0DR2_DONE == 0);
+            break;
+        case ADC0_3:
+            do {
+                value = AD0DR3;
+            } while (AD0DR3_DONE == 0);
+            break;
+        case ADC0_4:
+            do {
+                value = AD0DR4;
+            } while (AD0DR4_DONE == 0);
+            break;
+        case ADC0_6:
+            do {
+                value = AD0DR6;
+            } while (AD0DR6_DONE == 0);
+            break;
+        case ADC0_7:
+            do {
+                value = AD0DR7;
+            } while (AD0DR7_DONE == 0);
+            break;
+        default:
+            break;
+    }
 
-	value=(value>>6) & 0x03FF;
+#ifdef DEBUG_ADC
+    printf_lpc(UART0, "value of ADC0_0 is: 0x%x\n",value);
+#endif
+    value=(value>>6) & 0x03FF;
 
-	return(value);
+    return(value);
 }
 
