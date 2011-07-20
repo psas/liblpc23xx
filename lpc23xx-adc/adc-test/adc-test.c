@@ -20,7 +20,7 @@
  */
 void conf_adc_pins() {
 
-    PINSEL0   = ((PINSEL0 & ~(0x00 << 14)) | (0x01 << 14));
+    PINSEL1   = ((PINSEL1 & ~(0x00 << 14)) | (0x01 << 14));
     PINMODE1  = ((PINMODE1 & ~(0x00 << 14)) | (0x2 << 14)); // no pullup or pulldown.
 }
 
@@ -44,7 +44,7 @@ int main (void) {
     adc_init_cont(cmask) ;
 
     while(1) {
-        val = adc_read(ADC0) ;
+        val = adc_read(ADC0_0) ;
         printf_lpc(UART0, "Value is: 0x%x\n", val);
         util_waitticks(200000);
     }
