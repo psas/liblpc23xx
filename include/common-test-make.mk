@@ -8,6 +8,11 @@
 CROSS           ?= /opt/cross
 GCC_VERSION     ?= 4.5.2
 
+#########
+# this is the default, make LPC23XX_PART=LPC2368 will over-ride
+LPC23XX_PART    ?= LPC2378
+#LPC23XX_PART   ?= LPC2368
+
 CC              := $(CROSS)/bin/arm-elf-gcc
 LD              := $(CROSS)/bin/arm-elf-ld -v
 AR              := $(CROSS)/bin/arm-elf-ar rvs
@@ -21,7 +26,7 @@ DEBUG           ?=
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
-CFLAGS          ?= $(INCLUDE) $(DEBUG) -g -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
+CFLAGS          ?= $(INCLUDE) $(DEBUG) -D$(LPC23XX_PART) -g -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
 
 ASFLAGS         ?= -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
@@ -61,7 +66,7 @@ $(COBJS): include/*.h
 
 $(EXLIBS):
 	@echo "========= Recursive make: $(@D)    ========================"
-	$(MAKE) -s -C $(@D) $(@F)
+	$(MAKE) DEBUG=$(DEBUG) LPC23XX_PART=$(LPC23XX_PART) -s -C $(@D) $(@F)
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"

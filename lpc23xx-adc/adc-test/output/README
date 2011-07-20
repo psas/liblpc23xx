@@ -1,0 +1,9 @@
+
+Wed 20 July 2011 15:32:37 (PDT)
+Captured with power supply (+) connected
+to ADC0_0 and power supply (-) connected
+to LPC2378 Vss. Vref was 3.3V.
+
+uVolts are used to generate integer values since
+library does not have a floating point printf
+routine.
