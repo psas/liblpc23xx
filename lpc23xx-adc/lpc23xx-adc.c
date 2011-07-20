@@ -19,38 +19,40 @@
  * 11 clocks/sample.
  */
 void adc_init_cont(adc_channelmask channels) {
-	uint8_t cdiv=0;
+    Freq     cclk;
 
-	// turn on power
-   ADC_PWR_ON;
-   // then enable ADC
-   ADC_ENABLE;
+    uint16_t cdiv=0;
 
-   // cclk value
-   cclk = pllquery_cclk_mhz();
+    // turn on power
+    ADC_PWR_ON;
+    // then enable ADC
+    ADC_ENABLE;
 
-   switch(cclk) {
-   case FOURTY_EIGHT_MHZ:
-	   cdiv = 11; // ~4.36Mhz
-	   break;
-   case SIXTY_MHZ:
-	   cdiv = 14; // ~4.28Mhz
-	   break;
-   case SEVENTY_TWO_MHZ:
-	   cdiv = 17; // ~4.23Mhz
-	   break;
-   default:
-	   while(1);
-	   break;
-   }
+    // cclk value
+    cclk = pllquery_cclk_mhz();
 
-   AD0CR = (AD0CR | (cdiv << CLKDIV) | (1<<BURST) | channels ); // 11 clocks/channel
+    switch(cclk) {
+        case FOURTY_EIGHT_MHZ:
+            cdiv = 11; // ~4.36Mhz
+            break;
+        case SIXTY_MHZ:
+            cdiv = 14; // ~4.28Mhz
+            break;
+        case SEVENTY_TWO_MHZ:
+            cdiv = 17; // ~4.23Mhz
+            break;
+        default:
+            while(1);
+            break;
+    }
+
+    AD0CR = (AD0CR | (cdiv << CLKDIV) | (1<<BURST) | channels ); // 11 clocks/channel
 }
 
 /*
  * adc_disable
  */
-void adc_disable(ADC_CHANNEL) {
+void adc_disable(void) {
 	// order matters see page 596 of user manual v3.
 	ADC_DISABLE;
 	ADC_PWR_OFF;
@@ -62,7 +64,7 @@ void adc_disable(ADC_CHANNEL) {
  */
 
 uint16_t adc_read(adc_channel ch) {
-	uint16_t value= 0;
+	uint32_t value= 0;
 
 	switch(ch) {
 	case ADC0:
@@ -108,7 +110,4 @@ uint16_t adc_read(adc_channel ch) {
 
 	return(value);
 }
-
-
-
 

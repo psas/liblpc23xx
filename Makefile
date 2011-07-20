@@ -30,6 +30,7 @@ DEBUG           ?=
 INCLUDE         := -I.\
                    -I./include\
                    -I./lpc23xx-info/include\
+                   -I./lpc23xx-adc/include\
                    -I./lpc23xx-i2c/include\
                    -I./lpc23xx-mam/include\
                    -I./lpc23xx-pll/include\

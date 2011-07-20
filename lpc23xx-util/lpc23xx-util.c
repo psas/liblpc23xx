@@ -229,8 +229,10 @@ void putchar_lpc(uartport p,  char c) {
  * Spin in a loop for ticks ..
  */
 void util_waitticks(uint32_t ticks) {
-    uint32_t j;
+    volatile uint32_t j;
+    volatile uint32_t k;
 
-    for(j=ticks; j>0; --j);
+    k=0;
+    for(j=ticks; j>0; --j) k++;
 }
 

@@ -13,7 +13,7 @@
 
 // AD0CR
 #define     PDN             21
-#define     CLKDIV          08
+#define     CLKDIV          8
 #define     BURST           16
 
 
@@ -36,6 +36,9 @@ typedef     uint8_t 		adc_channelmask;
 
 typedef enum {ADC0=0, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6, ADC7} adc_channel;
 
+void            adc_init_cont(adc_channelmask channels) ;
+void            adc_disable(void) ;
+uint16_t        adc_read(adc_channel ch) ;
 
 
 #endif
