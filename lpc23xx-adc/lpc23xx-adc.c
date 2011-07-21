@@ -27,9 +27,9 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
     uint16_t cdiv=0;
 
     // adc clock
-    mam_enable();           // At CCLK/1 must use mam for consistent behavior   
     switch(scale) {
     case CCLK_DIV1:
+        mam_enable();           // At CCLK/1 must use mam for consistent behavior?   
     	ADC_CLK_IS_CCLK_DIV1;
     	break;
     case CCLK_DIV2:

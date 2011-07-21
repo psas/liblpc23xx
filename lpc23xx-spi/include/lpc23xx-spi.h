@@ -6,7 +6,7 @@
 #ifndef _LPC23XX_SPI_H
 #define _LPC23XX_SPI_H
 
-PINSEL_ADC0_1(PINSEL1  = (PINSEL1 & ~(0x3 << 16)) | (0x01 << 16))
+// PINSEL_ADC0_1(PINSEL1  = (PINSEL1 & ~(0x3 << 16)) | (0x01 << 16))
 
 #define     PINSEL_SPI_SCK    (PINSEL0 & ~(0x0030
 #define 	PCONP_PCSPI       8
