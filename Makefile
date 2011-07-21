@@ -35,6 +35,7 @@ INCLUDE         := -I.\
                    -I./lpc23xx-i2c/include\
                    -I./lpc23xx-mam/include\
                    -I./lpc23xx-pll/include\
+                   -I./lpc23xx-spi/include\
                    -I./lpc23xx-uart/include\
                    -I./lpc23xx-util/include\
                    -I./lpc23xx-vic/include\

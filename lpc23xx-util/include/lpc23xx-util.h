@@ -42,6 +42,8 @@
 
 enum {BIN=2, OCT=8, DEC=10, HEX=16} ;
 
+typedef enum {CCLK_DIV1=0, CCLK_DIV2, CCLK_DIV4, CCLK_DIV6, CCLK_DIV8} pclk_scale;
+
 /*
  * __get_cpsr
  * ---------------------------------------

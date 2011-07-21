@@ -45,7 +45,7 @@ int main (void) {
     PINSEL_ADC0_0;
     ADC0_0_NOPULLUP_NOPULLDOWN;
 
-    adc_init_cont(cmask) ;  // continuous read in burst mode
+    adc_init_cont(cmask, CCLK_DIV1) ;  // continuous read in burst mode
 
     while(1) {
         val = adc_read(ADC0_0) ;

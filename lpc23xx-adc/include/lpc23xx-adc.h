@@ -6,6 +6,15 @@
 #ifndef _LPC23XX_ADC_H
 #define _LPC23XX_ADC_H
 
+#include "lpc23xx-util.h"
+// Clock
+#define     PCLKSEL0_PCLK_ADC     24
+
+#define     ADC_CLK_IS_CCLK_DIV1  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x1 << PCLKSEL0_PCLK_ADC)) )
+#define     ADC_CLK_IS_CCLK_DIV2  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x2 << PCLKSEL0_PCLK_ADC)) )
+#define     ADC_CLK_IS_CCLK_DIV4  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x0 << PCLKSEL0_PCLK_ADC)) )
+#define     ADC_CLK_IS_CCLK_DIV8  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x3 << PCLKSEL0_PCLK_ADC)) )
+
 // PCONP
 #define     PCONP_PCAD            12
 
@@ -75,7 +84,7 @@ typedef     enum {ADC0_0=0, ADC0_1, ADC0_2,
                   ADC0_3,   ADC0_4, ADC0_5, 
                   ADC0_6,   ADC0_7} adc_channel;
 
-void        adc_init_cont(adc_channelmask channels) ;
+void        adc_init_cont(adc_channelmask channels, pclk_scale scale) ;
 void        adc_disable(void) ;
 uint16_t    adc_read(adc_channel ch) ;
 

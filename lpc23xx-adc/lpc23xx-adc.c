@@ -8,6 +8,7 @@
 #include "lpc23xx.h"
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
+#include "lpc23xx-util.h"
 #include "printf-lpc.h"
 
 #include "lpc23xx-adc.h"
@@ -19,13 +20,33 @@
  * this initializes continuous sampling at
  * 11 clocks/sample.
  */
-void adc_init_cont(adc_channelmask channels) {
+void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
     Freq     cclk;
 
     uint16_t cdiv=0;
 
+    // adc clock
+    switch(scale) {
+    case CCLK_DIV1:
+    	ADC_CLK_IS_CCLK_DIV1;
+    	break;
+    case CCLK_DIV2:
+    	ADC_CLK_IS_CCLK_DIV2;
+    	break;
+    case CCLK_DIV4:
+    	ADC_CLK_IS_CCLK_DIV4;
+    	break;
+    case CCLK_DIV8:
+    	ADC_CLK_IS_CCLK_DIV8;
+    	break;
+    default:
+    	while(1);  // not a valid choice, stop.
+    	break;
+    }
+
     // turn on power
     ADC_PWR_ON;
+
     // then enable ADC
     ADC_ENABLE;
 
@@ -34,13 +55,13 @@ void adc_init_cont(adc_channelmask channels) {
 
     switch(cclk) {
         case FOURTY_EIGHT_MHZ:
-            cdiv = 11; // ~4.36Mhz
+            cdiv = 11; // ~4.36Mhz @ CCLK_DIV1
             break;
         case SIXTY_MHZ:
-            cdiv = 14; // ~4.28Mhz
+            cdiv = 14; // ~4.28Mhz @ CCLK_DIV1
             break;
         case SEVENTY_TWO_MHZ:
-            cdiv = 17; // ~4.23Mhz
+            cdiv = 17; // ~4.23Mhz @ CCLK_DIV1
             break;
         default:
             while(1);
