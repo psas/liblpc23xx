@@ -14,8 +14,8 @@ LPC23XX_PART    ?= LPC2378
 #LPC23XX_PART   ?= LPC2368
 
 CC              := $(CROSS)/bin/arm-elf-gcc
-LD              := $(CROSS)/bin/arm-elf-ld -v
-AR              := $(CROSS)/bin/arm-elf-ar rvs
+LD              := $(CROSS)/bin/arm-elf-ld
+AR              := $(CROSS)/bin/arm-elf-ar
 AS              := $(CROSS)/bin/arm-elf-as
 CP              := $(CROSS)/bin/arm-elf-objcopy
 OD              := $(CROSS)/bin/arm-elf-objdump
@@ -66,28 +66,28 @@ $(COBJS): include/*.h
 
 $(EXLIBS):
 	@echo "========= Recursive make: $(@D)    ========================"
-	$(MAKE) DEBUG=$(DEBUG) LPC23XX_PART=$(LPC23XX_PART) -s -C $(@D) $(@F)
+	@$(MAKE) DEBUG=$(DEBUG) LPC23XX_PART=$(LPC23XX_PART) -s -C $(@D) $(@F)
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
+	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).sdump: $(NAME).c
 	@echo "========= Combined Assembler and Source for $< =================="
-	$(CC) -c -g $(INCLUDE) -Wa,-ahl=$@ $<
+	@$(CC) -c -g $(INCLUDE) -Wa,-ahl=$@ $<
 
 $(NAME).hex: $(NAME).out
 	@echo "========= hex file for $< =================="
-	$(CP) $(HEXFLAGS) $< $@
+	@$(CP) $(HEXFLAGS) $< $@
 
 $(NAME).dump: $(NAME).out
 	@echo "========= dump file for $< =================="
-	$(OD) $(ODFLAGS) $< > $@
+	@$(OD) $(ODFLAGS) $< > $@
 
 $(NAME).bin: $(NAME).out
 	@echo "========= bin file for $< =================="
-	$(CP) $(CPFLAGS) $< $@
-	$(OD) $(ODFLAGS) $< > $(NAME).dmp
+	@$(CP) $(CPFLAGS) $< $@
+	@$(OD) $(ODFLAGS) $< > $(NAME).dmp
 
 clean:
 	$(RM) $(EXLIBS) $(PROGS) $(AOBJS) $(COBJS) $(NAME).*dump \
