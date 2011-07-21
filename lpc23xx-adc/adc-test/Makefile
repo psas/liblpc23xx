@@ -10,6 +10,7 @@ INCLUDE         := -I.\
                    -I./include\
                    -I../include\
                    -I$(LIBDIR)/include\
+                   -I$(LIBDIR)/lpc23xx-mam/include\
                    -I$(LIBDIR)/lpc23xx-pll/include\
                    -I$(LIBDIR)/lpc23xx-util/include\
                    -I$(LIBDIR)/lpc23xx-uart/include

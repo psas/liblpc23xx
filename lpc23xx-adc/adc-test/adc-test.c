@@ -7,6 +7,7 @@
 
 #include "lpc23xx.h"
 #include "lpc23xx-adc.h"
+#include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
@@ -21,7 +22,7 @@
  * printf.
  */
 uint32_t calc_voltage(uint16_t in) {
-    uint32_t ref = 3230; // microVolts per division at 11 bits
+    uint32_t ref = 3223; // microVolts per division at 11 bits
 
     return(in*ref);
 
@@ -34,11 +35,11 @@ int main (void) {
     uint16_t        val   = 0;
 
     pllstart_seventytwomhz() ;
-    //pllstart_sixtymhz() ;
-    //pllstart_fourtyeightmhz() ;
+    // pllstart_sixtymhz() ;
+    // pllstart_fourtyeightmhz() ;
 
     uart0_init_115200() ;
-    //uart0_init_9600() ;
+    // uart0_init_9600() ;
 
     uart0_putstring("\n***Starting adc test.***\n\n");
 

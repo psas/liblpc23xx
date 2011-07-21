@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "lpc23xx.h"
+#include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
@@ -26,6 +27,7 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
     uint16_t cdiv=0;
 
     // adc clock
+    mam_enable();           // At CCLK/1 must use mam for consistent behavior   
     switch(scale) {
     case CCLK_DIV1:
     	ADC_CLK_IS_CCLK_DIV1;
@@ -55,13 +57,13 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
 
     switch(cclk) {
         case FOURTY_EIGHT_MHZ:
-            cdiv = 11; // ~4.36Mhz @ CCLK_DIV1
+            cdiv = 10; // 11 ~4.36Mhz @ CCLK_DIV1
             break;
         case SIXTY_MHZ:
-            cdiv = 14; // ~4.28Mhz @ CCLK_DIV1
+            cdiv = 13; // 14 ~4.28Mhz @ CCLK_DIV1
             break;
         case SEVENTY_TWO_MHZ:
-            cdiv = 17; // ~4.23Mhz @ CCLK_DIV1
+            cdiv = 16; // 17 ~4.23Mhz @ CCLK_DIV1
             break;
         default:
             while(1);
