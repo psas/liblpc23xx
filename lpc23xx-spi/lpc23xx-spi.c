@@ -19,15 +19,32 @@
 /*
  * spi_init
  */
-void spi_init(void)
+void spi_init(pckl_scale scale)
 {
 
-	FIO_ENABLE;
+    FIO_ENABLE;
+
+    mam_enable();
 
     SPI_PWR_ON;
 
-    //Clock
-    PCLKSEL0 |= (1<<17) | (1<<16);//=48Mhz/8  pg.63
+    switch(scale) {
+       case CCLK_DIV1:
+       	SPI_CLK_IS_CCLK_DIV1;
+       	break;
+       case CCLK_DIV2:
+       	SPI_CLK_IS_CCLK_DIV2;
+       	break;
+       case CCLK_DIV4:
+       	SPI_CLK_IS_CCLK_DIV4;
+       	break;
+       case CCLK_DIV8:
+       	SPI_CLK_IS_CCLK_DIV8;
+       	break;
+       default:
+       	while(1);  // not a valid choice, stop.
+       	break;
+       }
 
     //Pin Function
     PINSEL0 |= (1<<31) | (1<<30);
@@ -43,8 +60,6 @@ void spi_init(void)
 
     //SPI Settings
     S0SPCR = 0x24;//Master Mode, MSB First, variable Bit transfers, POL=PHA=0.
-
-
 
     S0SPCCR = 0x0C;//500Khz
 

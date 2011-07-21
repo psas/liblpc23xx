@@ -33,28 +33,28 @@
 #define     ADC_DISABLE           (AD0CR = (AD0CR & ~(1 << AD0CR_PDN)))
 
 // P0.23
-#define     PINSEL_ADC0_0                (PINSEL1  = (PINSEL1 & ~(0x00 << 14)) | (0x01 << 14))
-#define     ADC0_0_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x00 << 14)) | (0x2 << 14))
+#define     PINSEL_ADC0_0                (PINSEL1  = (PINSEL1 & ~(0x3 << 14)) | (0x01 << 14))
+#define     ADC0_0_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x3 << 14)) | (0x2 << 14))
 
 // P0.24
-#define     PINSEL_ADC0_1                (PINSEL1  = (PINSEL1 & ~(0x00 << 16)) | (0x01 << 16))
-#define     ADC0_1_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x00 << 16)) | (0x2 << 16))
+#define     PINSEL_ADC0_1                (PINSEL1  = (PINSEL1 & ~(0x3 << 16)) | (0x01 << 16))
+#define     ADC0_1_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x3 << 16)) | (0x2 << 16))
 
 // P0.25
-#define     PINSEL_ADC0_2                (PINSEL1  = (PINSEL1 & ~(0x00 << 18)) | (0x01 << 18))
-#define     ADC0_2_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x00 << 18)) | (0x2 << 18))
+#define     PINSEL_ADC0_2                (PINSEL1  = (PINSEL1 & ~(0x3 << 18)) | (0x01 << 18))
+#define     ADC0_2_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x3 << 18)) | (0x2 << 18))
 
 // P0.26
-#define     PINSEL_ADC0_3                (PINSEL1  = (PINSEL1 & ~(0x00 << 20)) | (0x01 << 20))
-#define     ADC0_3_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x00 << 20)) | (0x2 << 20))
+#define     PINSEL_ADC0_3                (PINSEL1  = (PINSEL1 & ~(0x3 << 20)) | (0x01 << 20))
+#define     ADC0_3_NOPULLUP_NOPULLDOWN   (PINMODE1 = (PINMODE1 & ~(0x3 << 20)) | (0x2 << 20))
 
 // P1.30
-#define     PINSEL_ADC0_4                (PINSEL3  = (PINSEL3 & ~(0x00 << 28)) | (0x03 << 28))
-#define     ADC0_4_NOPULLUP_NOPULLDOWN   (PINMODE3 = (PINMODE3 & ~(0x00 << 28)) | (0x2 << 28))
+#define     PINSEL_ADC0_4                (PINSEL3  = (PINSEL3 & ~(0x3 << 28)) | (0x03 << 28))
+#define     ADC0_4_NOPULLUP_NOPULLDOWN   (PINMODE3 = (PINMODE3 & ~(0x3 << 28)) | (0x2 << 28))
 
 // P1.31
-#define     PINSEL_ADC0_5                (PINSEL3  = (PINSEL3 & ~(0x00 << 30)) | (0x03 << 30))
-#define     ADC0_5_NOPULLUP_NOPULLDOWN   (PINMODE3 = (PINMODE3 & ~(0x00 << 30)) | (0x2 << 30))
+#define     PINSEL_ADC0_5                (PINSEL3  = (PINSEL3 & ~(0x3 << 30)) | (0x03 << 30))
+#define     ADC0_5_NOPULLUP_NOPULLDOWN   (PINMODE3 = (PINMODE3 & ~(0x3 << 30)) | (0x2 << 30))
 
 
 #if defined (LPC2378) || defined (LPC2388)
