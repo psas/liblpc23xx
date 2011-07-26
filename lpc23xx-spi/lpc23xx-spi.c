@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "lpc23xx.h"
+#include "lpc23xx-types.h"
 
 #include "lpc23xx-pll.h"
 #include "lpc23xx-mam.h"
@@ -16,6 +17,87 @@
 
 #include "lpc23xx-spi.h"
 
+// Inline functions local to this module. 
+
+/*
+ * spi_abrt
+ */
+inline BOOL spi_abrt(uint8_t spi_status) {
+    return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
+}
+
+/*
+ * spi_modf
+ */
+inline BOOL spi_modf(uint8_t spi_status) {
+    return( ((spi_status & (0x1 << SPI_SR_MODF)) >> SPI_SR_MODF) );
+}
+
+/*
+ * spi_rovr
+ */
+inline BOOL spi_rovr(uint8_t spi_status) {
+    return( ((spi_status & (0x1 << SPI_SR_ROVR)) >> SPI_SR_ROVR) );
+}
+
+/*
+ * spi_wcol
+ */
+inline BOOL spi_wcol(uint8_t spi_status) {
+    return( ((spi_status & (0x1 << SPI_SR_WCOL)) >> SPI_SR_WCOL) );
+}
+
+/*
+ * spi_spif
+ */
+inline BOOL spi_spif(uint8_t spi_status) {
+    return( ((spi_status & (0x1 << SPI_SR_SPIF)) >> SPI_SR_SPIF) );
+}
+
+/*
+ * spi_status
+ */
+uint8_t spi_readstatus() {
+    uint8_t spi_status;
+
+    spi_status = S0SPSR;
+
+#ifdef DEBUG_SPI
+    if(spi_abrt(spi_status)) printf_lpc(UART0,"ABRT set\n");
+    if(spi_modf(spi_status)) printf_lpc(UART0,"MODF set\n");
+    if(spi_rovr(spi_status)) printf_lpc(UART0,"ROVR set\n");
+    if(spi_wcol(spi_status)) printf_lpc(UART0,"WCOL set\n");
+    if(spi_spif(spi_status)) printf_lpc(UART0,"SPIF set\n");
+#endif
+
+    return (spi_status);
+}
+
+
+/*
+ * spi_waitSPIF
+ * 200000000 count here is about 10 second wait at pclk 72Mhz?
+ * Shouldn't hang here forever...
+ * Alternative is to use interrupt instead of polling.
+ */
+void spi_waitSPIF() {
+    uint32_t waitcount = 200000000;
+    while ((spi_spif(S0SPSR)==FALSE) && (waitcount > 0 )) {
+        waitcount--;
+    }
+}
+
+/*
+ * spi_transfer_size
+ */
+void spi_transact(uint16_t data, spi_numbits bits) {
+
+    // set number of bits to transfer.
+    S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
+
+    S0SPDR = data; // this starts transaction.
+
+}
 
 /*
  * spi_init
@@ -25,9 +107,10 @@
  */
 void spi_init(pclk_scale scale, spi_freq spifreq) {
 
-    Freq     cclk;
-    uint32_t spi_pclk = 0;
-    uint32_t ccount;
+    Freq             cclk;
+    uint32_t         spi_pclk = 0;
+    uint32_t         ccount;
+    volatile uint8_t spi_status;
 
     FIO_ENABLE;
 
@@ -94,35 +177,20 @@ void spi_init(pclk_scale scale, spi_freq spifreq) {
     }
 #endif
 
-    if(ccount % 2) ccount -= 1; // must be even number
+    if(ccount % 2) ccount   -= 1; // must be even number
 
     if(ccount > 254) ccount = 254; // max value for ccr
 
-    S0SPCCR = (uint8_t) ccount;
+    S0SPCCR                 = (uint8_t) ccount;
+
+    spi_status              = spi_readstatus();
 
 #ifdef DEBUG_SPI
     printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
     printf_lpc(UART0, "spifreq is  %u\n", spifreq);
     printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+    printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
 #endif
 
 }
-
-/*
- * spi_waitSPIF
- */
-void spi_waitSPIF() {
-
-}
-
-
-typedef enum {SPI_8BITS=8, SPI_16BITS...} spi_numbits ;
-/*
- * spi_transfer_size
- */
-void spi_transfer_size(spi_numbits bits) {
-
-
-}
-
 

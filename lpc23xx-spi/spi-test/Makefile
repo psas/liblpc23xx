@@ -16,7 +16,6 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/lpc23xx-util/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
-#LPC23XX_PART    = LPC2378
 #DEBUG           = -DDEBUG_SPI
 
 include $(LIBDIR)/include/common-test-make.mk

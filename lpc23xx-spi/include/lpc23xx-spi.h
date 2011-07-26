@@ -63,7 +63,28 @@
 #define     SPI_CR_SPIE                7
 #define     SPI_CR_BITS                8
 
-typedef enum {SPI_50KHZ=50000, SPI_100KHZ=100000, SPI_250KHZ=250000, SPI_500KHZ=500000} spi_freq;
+// spi status register
+#define     SPI_SR_ABRT                3
+#define     SPI_SR_MODF                4
+#define     SPI_SR_ROVR                5
+#define     SPI_SR_WCOL                6
+#define     SPI_SR_SPIF                7
+
+typedef enum {SPI_50KHZ=50000,
+    SPI_100KHZ=100000,
+    SPI_250KHZ=250000,
+    SPI_500KHZ=500000} spi_freq;
+
+// lpc23xx_um v3 p462
+typedef enum {SPI_8BITS =0x8,
+    SPI_9BITS =0x9,
+    SPI_10BITS=0xa,
+    SPI_11BITS=0xb,
+    SPI_12BITS=0xc,
+    SPI_13BITS=0xd,
+    SPI_14BITS=0xe,
+    SPI_15BITS=0xf,
+    SPI_16BITS=0x0} spi_numbits ;
 
 void spi_init(pclk_scale scale, spi_freq spifreq) ;
 #endif

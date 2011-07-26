@@ -50,6 +50,7 @@ TOPLIB          = $(NAME).a
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-binsem/test/lpc23xx-binsem-test.hex\
 	          ./lpc23xx-adc/adc-test/adc-test.hex\
+	          ./lpc23xx-spi/spi-test/spi-test.hex\
 	          ./lpc23xx-usb/serial-test/serial-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
 
@@ -101,6 +102,7 @@ clean:
 	$(MAKE) -s -C lpc23xx-binsem/test clean
 	$(MAKE) -s -C lpc23xx-usb/serial-test clean
 	$(MAKE) -s -C lpc23xx-adc/adc-test clean
+	$(MAKE) -s -C lpc23xx-spi/spi-test clean
 	
 allclean: clean
 	
