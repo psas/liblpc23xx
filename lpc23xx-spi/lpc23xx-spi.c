@@ -19,6 +19,9 @@
 
 /*
  * spi_init
+ * scale:   factor to divide cclk for spi peripheral
+ * spifreq: frequency to run SCLK. 
+ * example:  spi_init(CCLK_DIV8, SPI_100KHZ) ;
  */
 void spi_init(pclk_scale scale, spi_freq spifreq) {
 
@@ -54,7 +57,7 @@ void spi_init(pclk_scale scale, spi_freq spifreq) {
             break;
         default:
 #ifdef DEBUG_SPI
-            printf_lpc(UART0,"OOPS, bad choce for CLK DIVIDE\n");
+            printf_lpc(UART0,"Bad choice for scale value.\n");
 #endif
             while(1);  // not a valid choice, stop.
             break;
@@ -102,6 +105,23 @@ void spi_init(pclk_scale scale, spi_freq spifreq) {
     printf_lpc(UART0, "spifreq is  %u\n", spifreq);
     printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
 #endif
+
+}
+
+/*
+ * spi_waitSPIF
+ */
+void spi_waitSPIF() {
+
+}
+
+
+typedef enum {SPI_8BITS=8, SPI_16BITS...} spi_numbits ;
+/*
+ * spi_transfer_size
+ */
+void spi_transfer_size(spi_numbits bits) {
+
 
 }
 
