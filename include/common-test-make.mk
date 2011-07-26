@@ -54,11 +54,11 @@ PROGS           = $(NAME).out
 
 .c.o :
 	@echo "======== COMPILING $@ ========================"
-	$(CC) $(CFLAGS) -c $<
+	@$(CC) $(CFLAGS) -c $<
 
 .s.o :
 	@echo "======== COMPILING $@ ========================"
-	$(AS) $(ASFLAGS) -o $@ $< > $*.lst
+	@$(AS) $(ASFLAGS) -o $@ $< > $*.lst
 
 all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).dump Makefile
 
@@ -70,7 +70,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "========= LINKING $@ ========================"
-	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
+	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -lm -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).sdump: $(NAME).c
 	@echo "========= Combined Assembler and Source for $< =================="
@@ -94,7 +94,7 @@ clean:
 	*.map *.hex *.bin *.lst *~ ./include/*~ a.out 
 
 allclean: clean
-	$(MAKE)  -s -C $(LIBDIR) allclean
+	$(MAKE) -s -C $(LIBDIR) allclean
 
 rebuild: allclean
 	$(MAKE)
