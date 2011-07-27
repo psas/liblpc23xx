@@ -17,14 +17,13 @@
 
 #include "lpc23xx-spi.h"
 
-// Inline functions local to this module. 
-
 /*
  * spi_abrt
  */
 inline BOOL spi_abrt(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
 }
+
 
 /*
  * spi_modf
@@ -85,6 +84,7 @@ void spi_waitSPIF() {
     while ((spi_spif(S0SPSR)==FALSE) && (waitcount > 0 )) {
         waitcount--;
     }
+   // printf_lpc(UART0, "spi_spif count is: %u\n",waitcount);
 }
 
 /*
@@ -94,7 +94,6 @@ void spi_transact(uint16_t data, spi_numbits bits) {
 
     // set number of bits to transfer.
     S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
-
     S0SPDR = data; // this starts transaction.
 
 }
@@ -159,7 +158,7 @@ void spi_init(pclk_scale scale, spi_freq spifreq) {
     PINSEL_SPI_MASTERM_SSEL_0 ;
     PINMODE_SPI_SSEL_NOPULL ;
     FIO_SPI_SSEL;
-    SSEL_1_HIGH;
+    SSEL_HIGH;
 
     // no second device pin initialized.
     // PINSEL_SPI_MASTERM_SSEL_1         // P1.0

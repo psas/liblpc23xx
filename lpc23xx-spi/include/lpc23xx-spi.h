@@ -6,6 +6,9 @@
 #ifndef _LPC23XX_SPI_H
 #define _LPC23XX_SPI_H
 
+#include "lpc23xx.h"
+#include "lpc23xx-types.h"
+
 #include "lpc23xx-pll.h"
 #include "lpc23xx-util.h"
 
@@ -22,9 +25,9 @@
 #define     PINMODE_SPI_MOSI_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << 4)) | (0x2 << 4))
 
 // P0.16 is SSEL, use as GPIO in master mode SPI
-#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  & ~(0x11)    ) | (0x3))
-#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  & ~(0x11)    ) | (0x00))
-#define     PINMODE_SPI_SSEL_NOPULL    (PINSEL1  = (PINMODE1 & ~(0x3))      | (0x2 ))
+#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  & ~(0x3)    ) | (0x3))
+#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  & ~(0x3)    ) )
+#define     PINMODE_SPI_SSEL_NOPULL    (PINMODE1  = (PINMODE1 & ~(0x3))     | (0x2 ))
 
 #define     FIO_SPI_SSEL               (FIO0DIR |= (1<<16))
 #define     SSEL_HIGH                  (FIO0SET |= (1<<16))
@@ -86,5 +89,11 @@ typedef enum {SPI_8BITS =0x8,
     SPI_15BITS=0xf,
     SPI_16BITS=0x0} spi_numbits ;
 
+uint8_t spi_readstatus();
+
+void spi_waitSPIF() ;
+void spi_transact(uint16_t data, spi_numbits bits) ;
 void spi_init(pclk_scale scale, spi_freq spifreq) ;
+
+
 #endif
