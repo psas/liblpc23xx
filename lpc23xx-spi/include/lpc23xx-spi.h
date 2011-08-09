@@ -87,12 +87,12 @@ typedef enum {SPI_8BITS =0x8,
     SPI_13BITS=0xd,
     SPI_14BITS=0xe,
     SPI_15BITS=0xf,
-    SPI_16BITS=0x0} spi_numbits ;
+    SPI_16BITS=0x0} spi_xfernumbits ;
 
 uint8_t spi_readstatus();
 
 void spi_waitSPIF() ;
-void spi_transact(uint16_t data, spi_numbits bits) ;
+void spi_transact(uint16_t data, spi_xfernumbits bits) ;
 void spi_init(pclk_scale scale, spi_freq spifreq) ;
 
 

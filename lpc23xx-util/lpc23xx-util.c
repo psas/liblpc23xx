@@ -229,10 +229,29 @@ void putchar_lpc(uartport p,  char c) {
  * Spin in a loop for ticks ..
  */
 void util_waitticks(uint32_t ticks) {
-    volatile uint32_t j;
-    volatile uint32_t k;
+    volatile uint32_t j=0;
+    volatile uint32_t k=0;
 
     k=0;
     for(j=ticks; j>0; --j) k++;
+}
+
+/*
+ * util_wait_msecs
+ * wait n millisecs
+ */
+void util_wait_msecs(uint32_t msecs) {
+	uint32_t ticks;
+
+#ifdef DEBUG_UTIL
+	/* get counter value */
+#endif
+	ticks = millisecondsToCPUTicks(msecs);
+	util_waitticks(ticks);
+
+#ifdef DEBUG_UTIL
+	/* get counter value and subtract */
+#endif
+
 }
 

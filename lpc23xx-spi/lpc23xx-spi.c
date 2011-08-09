@@ -90,7 +90,7 @@ void spi_waitSPIF() {
 /*
  * spi_transact
  */
-void spi_transact(uint16_t data, spi_numbits bits) {
+void spi_transact(uint16_t data, spi_xfernumbits bits) {
 
     // set number of bits to transfer.
     S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
@@ -106,10 +106,10 @@ void spi_transact(uint16_t data, spi_numbits bits) {
  */
 void spi_init(pclk_scale scale, spi_freq spifreq) {
 
-    Freq             cclk;
-    uint32_t         spi_pclk = 0;
-    uint32_t         ccount;
-    volatile uint8_t spi_status;
+    Freq                cclk;
+    uint32_t            spi_pclk = 0;
+    uint32_t            ccount;
+    volatile uint8_t    spi_status;
 
     FIO_ENABLE;
 
@@ -182,9 +182,12 @@ void spi_init(pclk_scale scale, spi_freq spifreq) {
 
     S0SPCCR                 = (uint8_t) ccount;
 
-    spi_status              = spi_readstatus();
 
+    spi_status              = spi_readstatus();
 #ifdef DEBUG_SPI
+
+    printf_lpc(UART0, "spi_status is %u\n", spi_status);
+
     printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
     printf_lpc(UART0, "spifreq is  %u\n", spifreq);
     printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
