@@ -88,7 +88,7 @@ void spi_waitSPIF() {
 }
 
 /*
- * spi_transfer_size
+ * spi_transact
  */
 void spi_transact(uint16_t data, spi_numbits bits) {
 
