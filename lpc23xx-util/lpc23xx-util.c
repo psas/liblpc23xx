@@ -11,6 +11,8 @@
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-vic.h"
+#include "lpc23xx-timer.h"
+
 #include "printf-lpc.h"
 
 #include "lpc23xx-util.h"
@@ -241,17 +243,25 @@ void util_waitticks(uint32_t ticks) {
  * wait n millisecs
  */
 void util_wait_msecs(uint32_t msecs) {
+	uint32_t start=0;
+	uint32_t stop=0;
+	uint32_t difftime=0;
+
 	uint32_t ticks;
 
-#ifdef DEBUG_UTIL
 	/* get counter value */
-#endif
-	ticks = millisecondsToCPUTicks(msecs);
-	util_waitticks(ticks);
+        timer_init(TIMER_0,  (uint32_t) 0x0 , CCLK_DIV1);
+        RESET_TIMER0;
 
-#ifdef DEBUG_UTIL
-	/* get counter value and subtract */
-#endif
+	ticks = millisecondsToCPUTicks(msecs);
+	printf_lpc(UART0,"--> ticks in %u msecs are %u\n",ticks, msecs);
+
+        start = T0TC;
+	util_waitticks(ticks);
+        stop  = T0TC;
+
+        difftime = stop - start;
+        printf_lpc(UART0, "difftime is: %u\n", difftime);
 
 }
 

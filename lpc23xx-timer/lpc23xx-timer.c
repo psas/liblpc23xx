@@ -9,7 +9,6 @@
 #include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
-#include "lpc23xx-util.h"
 #include "printf-lpc.h"
 
 #include "lpc23xx-timer.h"

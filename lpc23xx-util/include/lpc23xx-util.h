@@ -42,7 +42,6 @@
 
 enum {BIN=2, OCT=8, DEC=10, HEX=16} ;
 
-typedef enum {CCLK_DIV1=0, CCLK_DIV2, CCLK_DIV4, CCLK_DIV6, CCLK_DIV8} pclk_scale;
 
 /*
  * __get_cpsr
@@ -98,5 +97,6 @@ void            putchar_lpc(uartport p,  char c) ;
 
 void            util_waitticks(uint32_t ticks) ;
 
+void            util_wait_msecs(uint32_t msecs) ;
 
 #endif
