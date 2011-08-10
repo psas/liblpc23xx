@@ -243,25 +243,41 @@ void util_waitticks(uint32_t ticks) {
  * wait n millisecs
  */
 void util_wait_msecs(uint32_t msecs) {
-	uint32_t start=0;
-	uint32_t stop=0;
-	uint32_t difftime=0;
 
-	uint32_t ticks;
-
-	/* get counter value */
-        timer_init(TIMER_0,  (uint32_t) 0x0 , CCLK_DIV1);
-        RESET_TIMER0;
+        uint32_t ticks = 0;
+        /* 
+         * scale is an empirically derived number.
+         * It adjusts for the number of tics to execute
+         * the loop and call to util_waitticks at optimization
+         * -O3. Other optimizations will have different timings.
+         * The error was measured at +1.9msecs for a 200msec test.
+         * This is about 1%...
+         */
+        uint32_t scale = 85;
 
 	ticks = millisecondsToCPUTicks(msecs);
-	printf_lpc(UART0,"--> ticks in %u msecs are %u\n",ticks, msecs);
 
-        start = T0TC;
-	util_waitticks(ticks);
-        stop  = T0TC;
+	util_waitticks(ticks / scale);
 
-        difftime = stop - start;
-        printf_lpc(UART0, "difftime is: %u\n", difftime);
+}
+
+/*
+ * util_wait_usecs
+ * wait n uillisecs
+ */
+void util_wait_usecs(uint32_t usecs) {
+
+        uint32_t ticks = 0;
+        /* 
+         * scale is an empirically derived number.
+         * see notes in util_wait_msecs. Not as well 
+         * tested for usecs.
+         */
+        uint32_t scale = 85;
+
+	ticks = microsecondsToCPUTicks(usecs);
+
+	util_waitticks(ticks / scale);
 
 }
 

@@ -98,5 +98,6 @@ void            putchar_lpc(uartport p,  char c) ;
 void            util_waitticks(uint32_t ticks) ;
 
 void            util_wait_msecs(uint32_t msecs) ;
+void            util_wait_usecs(uint32_t usecs) ;
 
 #endif

@@ -51,6 +51,7 @@ TOPLIB          = $(NAME).a
 TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-binsem/test/lpc23xx-binsem-test.hex\
 	          ./lpc23xx-adc/adc-test/adc-test.hex\
+	          ./lpc23xx-util/util-test/util-test.hex\
 	          ./lpc23xx-spi/spi-test/spi-test.hex\
 	          ./lpc23xx-usb/serial-test/serial-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex

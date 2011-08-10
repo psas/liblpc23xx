@@ -7,6 +7,7 @@
 #define _LPC23XX_ADC_H
 
 #include "lpc23xx-util.h"
+#include "lpc23xx-pll.h"
 // Clock
 #define     PCLKSEL0_PCLK_ADC     24
 
