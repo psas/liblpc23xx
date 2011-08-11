@@ -76,11 +76,11 @@ ASFLAGS         = -ggdb -ahls -mfloat-abi=softfp $(INCLUDE)
 .SUFFIXES : .c .cpp .s
 
 .c.o :
-	@echo "======== COMPILING $@ ========================"
+	@echo "-------- COMPILING $@ ------------------------"
 	@$(CC) $(CFLAGS) -o $(<:.c=.o) -c $<
 
 .s.o :
-	@echo "======== COMPILING $@ ========================"
+	@echo "-------- COMPILING $@ ------------------------"
 	@$(AS) $(ASFLAGS) -o $@ $< > $*.lst
         
 all: $(TOPLIB) Makefile
@@ -90,11 +90,11 @@ tests: $(TESTS)
 $(COBJS): $(HS)
 
 $(TOPLIB): $(AOBJS) $(COBJS)
-	@echo "========= Making Library $@ ========================"
+	@echo "--------- Making Library $@ ------------------------"
 	@$(AR) $(ARCHIVEFLAGS) $@ $(AOBJS) $(COBJS)
 
 $(TESTS): $(LIB)
-	@echo "========= Recursive make: $(@D) ========================"
+	@echo "--------- Recursive make: $(@D) ------------------------"
 	@$(MAKE) -s -C $(@D) $(@F)
 
 clean:

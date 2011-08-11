@@ -103,8 +103,11 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
  * scale:   factor to divide cclk for spi peripheral
  * spifreq: frequency to run SCLK. 
  * example:  spi_init(CCLK_DIV8, SPI_100KHZ) ;
+ * 
+ * master mode, MSB first, 16 bits per transfer
+ *
  */
-void spi_init(pclk_scale scale, spi_freq spifreq) {
+void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     Freq                cclk;
     uint32_t            spi_pclk = 0;

@@ -93,7 +93,7 @@ uint8_t spi_readstatus();
 
 void spi_waitSPIF() ;
 void spi_transact(uint16_t data, spi_xfernumbits bits) ;
-void spi_init(pclk_scale scale, spi_freq spifreq) ;
+void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) ;
 
 
 #endif

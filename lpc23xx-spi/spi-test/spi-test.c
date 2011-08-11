@@ -29,7 +29,7 @@ int main (void) {
 #ifdef DEBUG_SPI
     uart0_putstring("\n*** DEBUG_SPI ***\n");
 #endif
-    spi_init(CCLK_DIV8, SPI_100KHZ) ;
+    spi_init_master_MSB_16(CCLK_DIV8, SPI_100KHZ) ;
 
     uart0_putstring("\n***Done .***\n\n");
     return(0);
