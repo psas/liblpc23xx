@@ -53,11 +53,11 @@ PROGS           = $(NAME).out
 .SUFFIXES : .c .cpp .s
 
 .c.o :
-	@echo "-------- COMPILING $@ ------------------------"
+	@echo "-------- COMPILING $@ "
 	@$(CC) $(CFLAGS) -c $<
 
 .s.o :
-	@echo "-------- COMPILING $@ ------------------------"
+	@echo "-------- COMPILING $@ "
 	@$(AS) $(ASFLAGS) -o $@ $< > $*.lst
 
 all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).dump Makefile
@@ -65,27 +65,27 @@ all:  $(PROGS) $(EXLIBS) $(NAME).hex $(NAME).dump Makefile
 $(COBJS): include/*.h
 
 $(EXLIBS):
-	@echo "--------- Recursive make: $(@D) ------------------------"
+	@echo "------- Recursive make: $(@D) --------------------"
 	@$(MAKE) DEBUG=$(DEBUG) LPC23XX_PART=$(LPC23XX_PART) -s -C $(@D) $(@F)
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
-	@echo "--------- LINKING $@ ------------------------"
+	@echo "--------- LINKING $@ "
 	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -lm -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
 
 $(NAME).sdump: $(NAME).c
-	@echo "--------- Combined Assembler and Source for $< ----------------"
+	@echo "--------- Combined Assembler and Source for $< "
 	@$(CC) -c -g $(INCLUDE) -Wa,-ahl=$@ $<
 
 $(NAME).hex: $(NAME).out
-	@echo "--------- hex file for $< ------------------"
+	@echo "----------- hex file for $< "
 	@$(CP) $(HEXFLAGS) $< $@
 
 $(NAME).dump: $(NAME).out
-	@echo "--------- dump file for $< ------------------"
+	@echo "--------- dump file for $< "
 	@$(OD) $(ODFLAGS) $< > $@
 
 $(NAME).bin: $(NAME).out
-	@echo "--------- bin file for $< ------------------"
+	@echo "--------- bin file for $< "
 	@$(CP) $(CPFLAGS) $< $@
 	@$(OD) $(ODFLAGS) $< > $(NAME).dmp
 
