@@ -54,7 +54,8 @@ TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-util/util-test/util-test.hex\
 	          ./lpc23xx-spi/spi-test/spi-test.hex\
 	          ./lpc23xx-usb/serial-test/serial-test.hex\
-	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex
+	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex\
+	          ./lpc23xx-timer/timer-test/timer-test.hex
 
 ASRCS           := $(wildcard lpc23xx-*/*.s)
 
@@ -105,6 +106,8 @@ clean:
 	$(MAKE) -s -C lpc23xx-usb/serial-test clean
 	$(MAKE) -s -C lpc23xx-adc/adc-test clean
 	$(MAKE) -s -C lpc23xx-spi/spi-test clean
+	$(MAKE) -s -C lpc23xx-timer/timer-test clean
+	$(MAKE) -s -C lpc23xx-util/util-test clean
 	
 allclean: clean
 	

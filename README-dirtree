@@ -71,6 +71,40 @@
 |       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
 |       |-- lpc23xx-pll-test.c
 |       `-- Makefile
+|-- lpc23xx-spi
+|   |-- include
+|   |   `-- lpc23xx-spi.h
+|   |-- lpc23xx-spi.c
+|   |-- README
+|   `-- spi-test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- spi-test.h
+|       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
+|       |-- Makefile
+|       |-- oocd_flash_lpc23xx.script
+|       |-- openocd_lpc23xx.cfg
+|       |-- output
+|       |   |-- adc-capture.txt
+|       |   `-- README
+|       `-- spi-test.c
+|-- lpc23xx-timer
+|   |-- include
+|   |   `-- lpc23xx-timer.h
+|   |-- lpc23xx-timer.c
+|   `-- timer-test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- timer-test.h
+|       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
+|       |-- Makefile
+|       |-- oocd_flash_lpc23xx.script
+|       |-- openocd_lpc23xx.cfg
+|       `-- timer-test.c
 |-- lpc23xx-uart
 |   |-- include
 |   |   `-- lpc23xx-uart.h
@@ -88,8 +122,6 @@
 |       |-- oocd_flash_lpc2378.script
 |       `-- openocd_lpc2378.cfg
 |-- lpc23xx-usb
-|   |-- hostexamples
-|   |   `-- linux_isoc_sample
 |   |-- include
 |   |   |-- usbapi.h
 |   |   |-- usbhw_lpc.h
@@ -106,24 +138,6 @@
 |   |   |-- openocd_lpc2378.cfg
 |   |   |-- serial-fifo.c
 |   |   `-- serial-test.c
-|   |-- targetexamples
-|   |   |-- armVIC.o
-|   |   |-- blockdev_sd.o
-|   |   |-- console.o
-|   |   |-- crt.o
-|   |   |-- halsys.o
-|   |   |-- isoc_io_dma_sample.o
-|   |   |-- isoc_io_sample.o
-|   |   |-- lpc2000_spi.o
-|   |   |-- main_custom.o
-|   |   |-- main_hid.o
-|   |   |-- main_msc.o
-|   |   |-- main_serial.o
-|   |   |-- msc_bot.o
-|   |   |-- msc_scsi.o
-|   |   |-- printf.o
-|   |   |-- sdcard.o
-|   |   `-- serial_fifo.o
 |   |-- usbcontrol.c
 |   |-- usbhw_lpc.c
 |   |-- usbinit.c
@@ -135,8 +149,18 @@
 |   |-- lpc23xx-util.c
 |   |-- printf-lpc.c
 |   |-- README
-|   |-- serial_fifo.o
-|   `-- tolib.sed
+|   |-- tolib.sed
+|   `-- util-test
+|       |-- boot.s -> ../../startup/boot.s
+|       |-- hwsys.c -> ../../startup/hwsys.c
+|       |-- include
+|       |   |-- hwsys.h -> ../../../startup/include/hwsys.h
+|       |   `-- util-test.h
+|       |-- lpc23xx.ld -> ../../startup/lpc2368.ld
+|       |-- Makefile
+|       |-- oocd_flash_lpc23xx.script
+|       |-- openocd_lpc23xx.cfg
+|       `-- util-test.c
 |-- lpc23xx-vic
 |   |-- include
 |   |   `-- lpc23xx-vic.h
@@ -167,9 +191,11 @@
     |-- lpc2378.ld
     |-- lpc23xx.ld -> lpc2378.ld
     |-- oocd_flash_lpc2378.script -> oocd_flash_v0.3.1-1.script
+    |-- oocd_flash_lpc23xx.script
     |-- oocd_flash_v0.3.1-1.script
     |-- oocd_flash_v0.3.script
     |-- openocd_lpc2378.cfg
+    |-- openocd_lpc23xx.cfg
     `-- README
 
-42 directories, 130 files
+50 directories, 148 files
