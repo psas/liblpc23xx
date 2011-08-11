@@ -70,6 +70,7 @@
 typedef enum { TIMER_0, TIMER_1, TIMER_2, TIMER_3 } timer_channel;
 
 void timer_init(timer_channel channel, uint32_t prescale, pclk_scale scale) ;
+void timer_disable(timer_channel channel) ;
 
 
 #endif

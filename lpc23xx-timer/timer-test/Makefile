@@ -1,9 +1,9 @@
 
 #
-# Makefile for util-test
+# Makefile for timer-test
 #
 
-NAME            := util-test
+NAME            := timer-test
 LIBDIR          := ../..
 
 INCLUDE         := -I.\

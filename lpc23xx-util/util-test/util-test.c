@@ -26,8 +26,8 @@ int main (void) {
     int32_t error=0;
 
     //pllstart_seventytwomhz() ;
-    pllstart_sixtymhz() ;
-    //pllstart_fourtyeightmhz() ;
+    // pllstart_sixtymhz() ;
+    pllstart_fourtyeightmhz() ;
 
     uart0_init_115200() ;
     //uart0_init_9600() ;
