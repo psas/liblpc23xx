@@ -84,7 +84,6 @@ void spi_waitSPIF() {
     while ((spi_spif(S0SPSR)==FALSE) && (waitcount > 0 )) {
         waitcount--;
     }
-   // printf_lpc(UART0, "spi_spif count is: %u\n",waitcount);
 }
 
 /*
@@ -94,8 +93,9 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
 
     // set number of bits to transfer.
     S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
-    S0SPDR = data; // this starts transaction.
 
+    // this starts the transaction.
+    S0SPDR = data;
 }
 
 /*
@@ -144,7 +144,6 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 #ifdef DEBUG_SPI
             printf_lpc(UART0,"Bad choice for scale value.\n");
 #endif
-            while(1);  // not a valid choice, stop.
             break;
     }
 
@@ -179,16 +178,15 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     }
 #endif
 
-    if(ccount % 2) ccount   -= 1; // must be even number
+    if(ccount % 2)   ccount -= 1;  // must be even number
 
     if(ccount > 254) ccount = 254; // max value for ccr
 
     S0SPCCR                 = (uint8_t) ccount;
 
-
     spi_status              = spi_readstatus();
-#ifdef DEBUG_SPI
 
+#ifdef DEBUG_SPI
     printf_lpc(UART0, "spi_status is %u\n", spi_status);
 
     printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);

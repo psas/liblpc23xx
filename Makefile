@@ -100,6 +100,8 @@ $(TESTS): $(LIB)
 clean:
 	@$(RM)  $(LIB) $(AOBJS) $(COBJS) $(COBJS) $(USBLIB)\
 	lpc23xx*/*.lst *.map *.hex *.bin *.lst *~ ./include/*~ a.out 
+
+allclean: clean
 	$(MAKE) -s -C lpc23xx-pll/test clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
 	$(MAKE) -s -C lpc23xx-binsem/test clean
@@ -108,8 +110,6 @@ clean:
 	$(MAKE) -s -C lpc23xx-spi/spi-test clean
 	$(MAKE) -s -C lpc23xx-timer/timer-test clean
 	$(MAKE) -s -C lpc23xx-util/util-test clean
-	
-allclean: clean
 	
 rebuild: allclean
 	$(MAKE)

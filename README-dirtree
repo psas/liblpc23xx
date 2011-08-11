@@ -122,6 +122,8 @@
 |       |-- oocd_flash_lpc2378.script
 |       `-- openocd_lpc2378.cfg
 |-- lpc23xx-usb
+|   |-- hostexamples
+|   |   `-- linux_isoc_sample
 |   |-- include
 |   |   |-- usbapi.h
 |   |   |-- usbhw_lpc.h
@@ -138,6 +140,24 @@
 |   |   |-- openocd_lpc2378.cfg
 |   |   |-- serial-fifo.c
 |   |   `-- serial-test.c
+|   |-- targetexamples
+|   |   |-- armVIC.o
+|   |   |-- blockdev_sd.o
+|   |   |-- console.o
+|   |   |-- crt.o
+|   |   |-- halsys.o
+|   |   |-- isoc_io_dma_sample.o
+|   |   |-- isoc_io_sample.o
+|   |   |-- lpc2000_spi.o
+|   |   |-- main_custom.o
+|   |   |-- main_hid.o
+|   |   |-- main_msc.o
+|   |   |-- main_serial.o
+|   |   |-- msc_bot.o
+|   |   |-- msc_scsi.o
+|   |   |-- printf.o
+|   |   |-- sdcard.o
+|   |   `-- serial_fifo.o
 |   |-- usbcontrol.c
 |   |-- usbhw_lpc.c
 |   |-- usbinit.c
@@ -198,4 +218,4 @@
     |-- openocd_lpc23xx.cfg
     `-- README
 
-50 directories, 148 files
+53 directories, 165 files

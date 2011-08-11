@@ -1,17 +1,46 @@
 
-
-PSAS utility library for NXP LPC23xx uControllers.
+PSAS utility library for NXP LPC23xx uControllers (http://www.nxp.com/).
 
 Top level Makefile builds liblpc23xx.a.
 
 ------- gcc version note
 
-export GCC_VERSION=4.x.x to override default in makefile.
+export GCC_VERSION=4.x.x to override default gcc version in makefile.
 
 ------- usb note
 
 In makefile:
 
-# If you are using port B on the LPC2378 uncomment out the next line (Used on the Olimex 2378 Dev Board)
-LPC2378_PORT    = -DLPC2378_PORTB
+# If you are using port B on the LPC2378 uncomment this line
+# LPC2378_PORT    = -DLPC2378_PORTB
+
+------------- Basic targets
+
+make will create liblpc23xx.a
+
+make tests will make hex files for library tests
+
+make clean will clean objects from subdirectories.
+
+make allclean will clean objects and all test directories.
+
+
+------------- SCM: git Submodules
+
+Adding this library to superproject as a git submodule.
+
+(https://git.wiki.kernel.org/index.php/GitSubmoduleTutorial)
+
+git submodule add git://git.psas.pdx.edu/git/liblpc23xx.git
+
+git commit -m"Added submodule liblpc23xx.git"
+
+git submodule init
+   
+
+    --- As user of a superproject
+    git clone git://serverwherever/path.../superproject.git
+    git submodule init
+    git submodule update
+    
 
