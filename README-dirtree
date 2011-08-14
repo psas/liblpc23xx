@@ -72,6 +72,11 @@
 |       |-- lpc23xx-pll-test.c
 |       `-- Makefile
 |-- lpc23xx-spi
+|   |-- example
+|   |   |-- include
+|   |   |   `-- scp1000-test.h
+|   |   |-- README
+|   |   `-- scp1000-test.c
 |   |-- include
 |   |   `-- lpc23xx-spi.h
 |   |-- lpc23xx-spi.c
@@ -218,4 +223,4 @@
     |-- openocd_lpc23xx.cfg
     `-- README
 
-53 directories, 165 files
+55 directories, 168 files
