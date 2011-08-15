@@ -16,6 +16,6 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/lpc23xx-vic/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
-CSRCS           = serial-fifo.c
-#DEBUG           = -DDEBUG_USB
+#CSRCS           = serial-fifo.c
+DEBUG           = -DDEBUG_USB
 include $(LIBDIR)/include/common-test-make.mk
