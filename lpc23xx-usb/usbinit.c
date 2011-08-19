@@ -57,10 +57,10 @@ static void HandleUsbReset(uint8_t bDevStatus)
 
 
 /**
-	Initialises the USB hardware and sets up the USB stack by
+	Initializes the USB hardware and sets up the USB stack by
 	installing default callbacks.
 	
-	@return TRUE if initialisation was successful
+	@return TRUE if initialization was successful
  */
 BOOL USBInit(void)
 {
