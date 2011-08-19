@@ -1,0 +1,1 @@
+../../startup/lpc2368.ld

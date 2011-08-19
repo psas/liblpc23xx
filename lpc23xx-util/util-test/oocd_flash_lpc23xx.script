@@ -1,0 +1,57 @@
+#
+# The following commands will be executed on
+# reset (because of run_and_init in the config-file)
+# - wait for target halt
+# - erase memory
+# - flash content of file main.bin into target-memory
+# - shutdown openocd
+#
+# created by Martin Thomas
+# http://www.siwawi.arubi.uni-kl.de/avr_projects/arm_projects
+# based on information from Dominic Rath
+#
+halt
+arm7_9 dcc_downloads enable
+wait_halt
+sleep 100
+poll
+# Force into supervisor mode
+reg cpsr 0x13
+# Set the MEMMAP reg to point to flash (avoids problems while trying to flash)
+mww 0xE01FC040 1
+# Turn off the PLL and run the PLL feed sequence (avoids problems while trying to flash)
+#mww 0xe01fc080 0
+#mww 0xe01fc08c 0xaa
+#mww 0xe01fc08c 0x55
+
+
+soft_reset_halt
+sleep 100
+arm7_9 dcc_downloads enable
+sleep 100
+poll
+
+
+
+# Print out the first 100 bytes of memory
+mdh 0x0 100
+flash probe 0
+# erase the first 14 sectors, the remaining sectors will be used for non-volitile storage
+flash erase_sector 0 0 26
+flash erase_check 0
+sleep 100
+mdh 0x0 100
+#
+#lpc23xx-uart-test
+flash write_image ./util-test.hex
+flash write_image ./util-test.hex
+
+#
+mdh 0x0 100
+soft_reset_halt
+#reset run
+sleep 100
+resume
+sleep 100
+#shutdown
+

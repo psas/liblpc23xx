@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include "lpc23xx-types.h"
+#include "printf-lpc.h"
 #include "serial-fifo.h"
 
 void fifo_init(fifo_t *fifo, uint8_t *buf)
@@ -45,6 +46,7 @@ BOOL fifo_put(fifo_t *fifo, uint8_t c)
 	next = (fifo->head + 1) % VCOM_FIFO_SIZE;
 	if (next == fifo->tail) {
 		// full
+		printf_lpc(UART0, "FIFO full\n");
 		return FALSE;
 	}
 	

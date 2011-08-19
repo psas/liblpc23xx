@@ -43,6 +43,8 @@
 #define         USB_IS_FCCODIV6            ( USBCLKCFG = 5 )
 #define         USB_IS_FCCODIV10           ( USBCLKCFG = 9 )
 
+typedef enum {CCLK_DIV1=0, CCLK_DIV2, CCLK_DIV4, CCLK_DIV6, CCLK_DIV8} pclk_scale;
+
 typedef enum Freqtype { 
     ZERO                 = (uint32_t) 0,
     FOURTY_EIGHT_MHZ     = (uint32_t) 48000000,

@@ -11,6 +11,8 @@
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-vic.h"
+#include "lpc23xx-timer.h"
+
 #include "printf-lpc.h"
 
 #include "lpc23xx-util.h"
@@ -229,8 +231,53 @@ void putchar_lpc(uartport p,  char c) {
  * Spin in a loop for ticks ..
  */
 void util_waitticks(uint32_t ticks) {
-    uint32_t j;
+    volatile uint32_t j=0;
+    volatile uint32_t k=0;
 
-    for(j=ticks; j>0; --j);
+    k=0;
+    for(j=ticks; j>0; --j) k++;
+}
+
+/*
+ * util_wait_msecs
+ * wait n millisecs
+ */
+void util_wait_msecs(uint32_t msecs) {
+
+        uint32_t ticks = 0;
+        /* 
+         * scale is an empirically derived number.
+         * It adjusts for the number of tics to execute
+         * the loop and call to util_waitticks at optimization
+         * -O3. Other optimizations will have different timings.
+         * The error was measured at +1.9msecs for a 200msec test.
+         * This is about 1%...
+         */
+        uint32_t scale = 85;
+
+	ticks = millisecondsToCPUTicks(msecs);
+
+	util_waitticks(ticks / scale);
+
+}
+
+/*
+ * util_wait_usecs
+ * wait n uillisecs
+ */
+void util_wait_usecs(uint32_t usecs) {
+
+        uint32_t ticks = 0;
+        /* 
+         * scale is an empirically derived number.
+         * see notes in util_wait_msecs. Not as well 
+         * tested for usecs.
+         */
+        uint32_t scale = 85;
+
+	ticks = microsecondsToCPUTicks(usecs);
+
+	util_waitticks(ticks / scale);
+
 }
 

@@ -1,9 +1,9 @@
 
 #
-# Makefile for lpc23xx-uart-test
+# Makefile for adc-test
 #
 
-NAME            := serial-test
+NAME            := adc-test
 LIBDIR          := ../..
 
 INCLUDE         := -I.\
@@ -13,9 +13,9 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/lpc23xx-mam/include\
                    -I$(LIBDIR)/lpc23xx-pll/include\
                    -I$(LIBDIR)/lpc23xx-util/include\
-                   -I$(LIBDIR)/lpc23xx-vic/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
-#CSRCS           = serial-fifo.c
-DEBUG           = -DDEBUG_USB
+LPC23XX_PART    = LPC2378
+#DEBUG           = -DDEBUG_ADC
+
 include $(LIBDIR)/include/common-test-make.mk

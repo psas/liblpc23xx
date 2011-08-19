@@ -38,9 +38,10 @@
 #define         FIQ_MASK                ~(1<<FIQ_BIT)
 #define         T_MASK                  ~(1<<T_BIT)
 
-#define 	    FIO_ENABLE              ( SCS |= 1 )
+#define         FIO_ENABLE              ( SCS |= 1 )
 
 enum {BIN=2, OCT=8, DEC=10, HEX=16} ;
+
 
 /*
  * __get_cpsr
@@ -96,5 +97,7 @@ void            putchar_lpc(uartport p,  char c) ;
 
 void            util_waitticks(uint32_t ticks) ;
 
+void            util_wait_msecs(uint32_t msecs) ;
+void            util_wait_usecs(uint32_t usecs) ;
 
 #endif

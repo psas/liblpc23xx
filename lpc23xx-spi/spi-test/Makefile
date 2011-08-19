@@ -1,9 +1,9 @@
 
 #
-# Makefile for lpc23xx-uart-test
+# Makefile for spi-test
 #
 
-NAME            := serial-test
+NAME            := spi-test
 LIBDIR          := ../..
 
 INCLUDE         := -I.\
@@ -12,10 +12,10 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/include\
                    -I$(LIBDIR)/lpc23xx-mam/include\
                    -I$(LIBDIR)/lpc23xx-pll/include\
+                   -I$(LIBDIR)/lpc23xx-spi/include\
                    -I$(LIBDIR)/lpc23xx-util/include\
-                   -I$(LIBDIR)/lpc23xx-vic/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
-#CSRCS           = serial-fifo.c
-DEBUG           = -DDEBUG_USB
+#DEBUG           = -DDEBUG_SPI
+
 include $(LIBDIR)/include/common-test-make.mk
