@@ -30,11 +30,10 @@
 #include "printf-lpc.h"
 #include "serial-fifo.h"
 
-void fifo_init(fifo_t *fifo, uint8_t *buf)
+void fifo_init(fifo_t *fifo)
 {
 	fifo->head = 0;
 	fifo->tail = 0;
-	fifo->buf = buf;
 }
 
 
@@ -43,7 +42,7 @@ BOOL fifo_put(fifo_t *fifo, uint8_t c)
 	int next;
 	
 	// check if FIFO has room
-	next = (fifo->head + 1) % VCOM_FIFO_SIZE;
+	next = (fifo->head + 1) % sizeof(fifo->buf);
 	if (next == fifo->tail) {
 		// full
 		printf_lpc(UART0, "FIFO full\n");
@@ -66,7 +65,7 @@ BOOL fifo_get(fifo_t *fifo, uint8_t *pc)
 		return FALSE;
 	}
 	
-	next = (fifo->tail + 1) % VCOM_FIFO_SIZE;
+	next = (fifo->tail + 1) % sizeof(fifo->buf);
 	
 	*pc = fifo->buf[fifo->tail];
 	fifo->tail = next;
@@ -77,12 +76,12 @@ BOOL fifo_get(fifo_t *fifo, uint8_t *pc)
 
 int fifo_avail(fifo_t *fifo)
 {
-	return (VCOM_FIFO_SIZE + fifo->head - fifo->tail) % VCOM_FIFO_SIZE;
+	return (sizeof(fifo->buf) + fifo->head - fifo->tail) % sizeof(fifo->buf);
 }
 
 
 int fifo_free(fifo_t *fifo)
 {
-	return (VCOM_FIFO_SIZE - 1 - fifo_avail(fifo));
+	return (sizeof(fifo->buf) - 1 - fifo_avail(fifo));
 }
 

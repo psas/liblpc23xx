@@ -31,15 +31,13 @@
 #include <stdint.h>
 #include "lpc23xx-types.h"
 
-#define VCOM_FIFO_SIZE	128
-
 typedef struct {
 	int		head;
 	int 	tail;
-	uint8_t		*buf;
+	uint8_t		buf[128];
 } fifo_t;
 
-void fifo_init(fifo_t *fifo, uint8_t *buf);
+void fifo_init(fifo_t *fifo);
 BOOL fifo_put(fifo_t *fifo, uint8_t c);
 BOOL fifo_get(fifo_t *fifo, uint8_t *pc);
 int  fifo_avail(fifo_t *fifo);
