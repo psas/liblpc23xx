@@ -30,14 +30,14 @@
 #include "printf-lpc.h"
 #include "serial-fifo.h"
 
-void fifo_init(fifo_t *fifo)
+void fifo_init(fifo_type *fifo)
 {
 	fifo->head = 0;
 	fifo->tail = 0;
 }
 
 
-BOOL fifo_put(fifo_t *fifo, uint8_t c)
+BOOL fifo_put(fifo_type *fifo, uint8_t c)
 {
 	int next;
 	
@@ -56,7 +56,7 @@ BOOL fifo_put(fifo_t *fifo, uint8_t c)
 }
 
 
-BOOL fifo_get(fifo_t *fifo, uint8_t *pc)
+BOOL fifo_get(fifo_type *fifo, uint8_t *pc)
 {
 	int next;
 	
@@ -74,13 +74,13 @@ BOOL fifo_get(fifo_t *fifo, uint8_t *pc)
 }
 
 
-int fifo_avail(fifo_t *fifo)
+int fifo_avail(fifo_type *fifo)
 {
 	return (sizeof(fifo->buf) + fifo->head - fifo->tail) % sizeof(fifo->buf);
 }
 
 
-int fifo_free(fifo_t *fifo)
+int fifo_free(fifo_type *fifo)
 {
 	return (sizeof(fifo->buf) - 1 - fifo_avail(fifo));
 }

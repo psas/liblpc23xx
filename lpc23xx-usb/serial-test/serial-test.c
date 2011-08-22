@@ -100,8 +100,8 @@ static volatile BOOL fChainDone;
 static uint8_t txdata[VCOM_FIFO_SIZE];
 static uint8_t rxdata[VCOM_FIFO_SIZE];
 
-static fifo_t txfifo;
-static fifo_t rxfifo;
+static fifo_type txfifo;
+static fifo_type rxfifo;
 
 // forward declaration of interrupt handler
 static void USBIntHandler(void) __attribute__ ((interrupt("IRQ")));
