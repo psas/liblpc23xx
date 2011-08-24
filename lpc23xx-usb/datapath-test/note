@@ -1,0 +1,4 @@
+r p1.22 error
+g p1.19 blink at 1 or 2 hz
+b p1.25 solid blue when usb connected
+

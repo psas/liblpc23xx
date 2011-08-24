@@ -6,14 +6,14 @@
 NAME            := liblpc23xx
 
 ##
-# this is the default, make LPC23XX_PART=LPC2368 will over-ride
-LPC23XX_PART    ?= LPC2378
-#LPC23XX_PART   ?= LPC2368
+# this is the default, 'make LPC23XX_PART=-DLPC2378' will over-ride
+#LPC23XX_PART    ?= -DLPC2378
+LPC23XX_PART   ?= -DGFE_LPC2368
 
 ##
 # If you are using port B the LPC2378 uncomment out the next line.
 # this is the default, make LPC2378_PORT= will overwrite
-LPC2378_PORT    = -DLPC2378_PORTB
+#LPC2378_PORT    = -DLPC2378_PORTB
 
 CROSSCMP        := /opt/cross
 
@@ -24,7 +24,7 @@ AS              := $(CROSSCMP)/bin/arm-elf-as
 CP              := $(CROSSCMP)/bin/arm-elf-objcopy
 OD              := $(CROSSCMP)/bin/arm-elf-objdump
 
-DEBUG           ?=
+DEBUG           ?= -g
 #DEBUG           ?= -DDEBUG_ADC
 #DEBUG           = -DDEBUG_USB
  
@@ -54,6 +54,7 @@ TESTS           = ./lpc23xx-pll/test/lpc23xx-pll-test.hex\
 	          ./lpc23xx-util/util-test/util-test.hex\
 	          ./lpc23xx-spi/spi-test/spi-test.hex\
 	          ./lpc23xx-usb/serial-test/serial-test.hex\
+	          ./lpc23xx-usb/datapath-test/datapath-test.hex\
 	          ./lpc23xx-uart/test/lpc23xx-uart-test.hex\
 	          ./lpc23xx-timer/timer-test/timer-test.hex
 
@@ -65,11 +66,11 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) -D$(LPC23XX_PART) -ggdb -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rs
 
-ASFLAGS         = -ggdb -ahls -mfloat-abi=softfp $(INCLUDE) 
+ASFLAGS         = -g -ahls -mfloat-abi=softfp $(INCLUDE) 
  
 .PHONY: clean allclean rebuild
 
@@ -77,7 +78,7 @@ ASFLAGS         = -ggdb -ahls -mfloat-abi=softfp $(INCLUDE)
 
 .c.o :
 	@echo "-------- COMPILING $@ "
-	@$(CC) $(CFLAGS) -o $(<:.c=.o) -c $<
+	@$(CC) $(CFLAGS) -o $(<:.c=.o) $<
 
 .s.o :
 	@echo "-------- COMPILING $@ "
@@ -106,6 +107,7 @@ allclean: clean
 	$(MAKE) -s -C lpc23xx-uart/test clean
 	$(MAKE) -s -C lpc23xx-binsem/test clean
 	$(MAKE) -s -C lpc23xx-usb/serial-test clean
+	$(MAKE) -s -C lpc23xx-usb/datapath-test clean
 	$(MAKE) -s -C lpc23xx-adc/adc-test clean
 	$(MAKE) -s -C lpc23xx-spi/spi-test clean
 	$(MAKE) -s -C lpc23xx-timer/timer-test clean

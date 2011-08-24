@@ -10,8 +10,8 @@ GCC_VERSION     ?= 4.5.2
 
 #########
 # this is the default, make LPC23XX_PART=LPC2368 will over-ride
-LPC23XX_PART    ?= LPC2378
-#LPC23XX_PART   ?= LPC2368
+#LPC23XX_PART    ?= LPC2378
+LPC23XX_PART   ?= LPC2368
 
 CC              := $(CROSS)/bin/arm-elf-gcc
 LD              := $(CROSS)/bin/arm-elf-ld

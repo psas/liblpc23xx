@@ -265,17 +265,25 @@ void USBHwSetAddress(uint8_t bAddr)
         
     @param [in] fConnect    If TRUE, connect, otherwise disconnect
  */
-void USBHwConnect(BOOL fConnect)
-{
+void USBHwConnect(BOOL fConnect) {
 #ifndef LPC2378_PORTB
-  if(fConnect)
-    FIO2CLR = (1<<9);
-  else
-    FIO2SET = (1<<9);
+    #ifdef GFE_LPC2368  // Circuit error on GFE has D+ and D- effectively reversed
+        if(fConnect)
+            FIO2SET = (1<<9);
+        else
+            FIO2CLR = (1<<9);
+    #else
+        if(fConnect)
+            FIO2CLR = (1<<9);
+        else
+            FIO2SET = (1<<9);
+    #endif
 #else
   if(fConnect)
     FIO0CLR = (1<<14);
+//    FIO0SET = (1<<14);
   else
+ //   FIO0CLR = (1<<14);
     FIO0SET = (1<<14);
 #endif
     USBHwCmdWrite(CMD_DEV_STATUS, fConnect ? CON : 0);

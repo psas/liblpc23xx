@@ -1,54 +1,15 @@
-/*
-   LPCUSB, an USB device driver for LPC microcontrollers	
-   Copyright (C) 2006 Bertrik Sikken (bertrik@sikken.nl)
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-   2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-   3. The name of the author may not be used to endorse or promote products
-   derived from this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, 
-   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-   */
 
 /*
-   Minimal implementation of a USB serial port, using the CDC class.
-   This example application simply echoes everything it receives right back
-   to the host.
+ * datapath-test.c
+ *
+ * Test the datapath from a sensor to
+ * the LPC to USB to the FC and from the FC
+ * to the LPC.
+ * 
+ */
 
-   Windows:
-   Extract the usbser.sys file from .cab file in C:\WINDOWS\Driver Cache\i386
-   and store it somewhere (C:\temp is a good place) along with the usbser.inf
-   file. Then plug in the LPC214x and direct windows to the usbser driver.
-   Windows then creates an extra COMx port that you can open in a terminal
-   program, like hyperterminal.
-   
-   Linux:
-   The device should be recognised automatically by the cdc_acm driver,
-   which creates a /dev/ttyACMx device file that acts just like a regular
-   serial port.
-
-*/
-
-
-#include <stdio.h>			// EOF
-#include <string.h>			// memcpy
-
-//#include "type.h"
+#include <stdio.h>                      // EOF
+#include <string.h>                     // memcpy
 
 #include "lpc23xx.h"
 #include "lpc23xx-debug.h"
@@ -63,84 +24,90 @@
 #include "usbapi.h"
 
 #include "serial-fifo.h"
+#include "datapath-test.h"
 
 
-#define BAUD_RATE	    115200
+#define BAUD_RATE               115200
 
-#define INT_IN_EP		0x81
-#define BULK_OUT_EP		0x05
-#define BULK_IN_EP		0x82
+#define INT_IN_EP               0x81
+#define BULK_OUT_EP             0x05
+#define BULK_IN_EP              0x82
 
-#define MAX_PACKET_SIZE	64
+#define MAX_PACKET_SIZE 64
 
-#define LE_WORD(x)		((x)&0xFF),((x)>>8)
+#define LE_WORD(x)              ((x)&0xFF),((x)>>8)
 
 // CDC definitions
-#define CS_INTERFACE			0x24
-#define CS_ENDPOINT				0x25
+#define CS_INTERFACE            0x24
+#define CS_ENDPOINT             0x25
 
-#define	SET_LINE_CODING			0x20
-#define	GET_LINE_CODING			0x21
-#define	SET_CONTROL_LINE_STATE	0x22
+#define SET_LINE_CODING         0x20
+#define GET_LINE_CODING         0x21
+#define SET_CONTROL_LINE_STATE  0x22
+
+typedef enum {GO=0, STOP, RESET} runstate_type;
+
+struct {
+   runstate_type state;
+} runstate_g;
 
 // data structure for GET_LINE_CODING / SET_LINE_CODING class requests
 typedef struct {
-    uint32_t		dwDTERate;
-    uint8_t		bCharFormat;
-    uint8_t		bParityType;
-    uint8_t		bDataBits;
+    uint32_t            dwDTERate;
+    uint8_t             bCharFormat;
+    uint8_t             bParityType;
+    uint8_t             bDataBits;
 } TLineCoding;
 
-static TLineCoding LineCoding = {115200, 0, 0, 8};
-static uint8_t abBulkBuf[64];
-static uint8_t abClassReqData[8];
-static volatile BOOL fBulkInBusy;
-static volatile BOOL fChainDone;
+static TLineCoding      LineCoding = {115200, 0, 0, 8};
+static uint8_t          abBulkBuf[64];
+static uint8_t          abClassReqData[8];
+static volatile BOOL    fBulkInBusy;
+static volatile BOOL    fChainDone;
 
-static fifo_type txfifo;
-static fifo_type rxfifo;
+static fifo_type           txfifo;
+static fifo_type           rxfifo;
 
 // forward declaration of interrupt handler
 static void USBIntHandler(void) __attribute__ ((interrupt("IRQ")));
-
 
 static const uint8_t abDescriptors[] = {
 
     // device descriptor
     0x12,
     DESC_DEVICE,
-    LE_WORD(0x0101),			// bcdUSB
-    0x02,						// bDeviceClass
-    0x00,						// bDeviceSubClass
-    0x00,						// bDeviceProtocol
-    MAX_PACKET_SIZE0,			// bMaxPacketSize
-    LE_WORD(0xFFFF),			// idVendor
-    LE_WORD(0x0005),			// idProduct
-    LE_WORD(0x0100),			// bcdDevice
-    0x01,						// iManufacturer
-    0x02,						// iProduct
-    0x03,						// iSerialNumber
-    0x01,						// bNumConfigurations
+    LE_WORD(0x0101),                    // bcdUSB
+    0x02,                               // bDeviceClass
+    0x00,                               // bDeviceSubClass
+    0x00,                               // bDeviceProtocol
+    MAX_PACKET_SIZE0,                   // bMaxPacketSize
+    LE_WORD(0xFFFF),                    // idVendor
+    LE_WORD(0x0005),                    // idProduct
+    LE_WORD(0x0100),                    // bcdDevice
+    0x01,                               // iManufacturer
+    0x02,                               // iProduct
+    0x03,                               // iSerialNumber
+    0x01,                               // bNumConfigurations
 
     // configuration descriptor
     0x09,
     DESC_CONFIGURATION,
-    LE_WORD(67),				// wTotalLength
-    0x02,						// bNumInterfaces
-    0x01,						// bConfigurationValue
-    0x00,						// iConfiguration
-    0xC0,						// bmAttributes
-    0x32,						// bMaxPower
+    LE_WORD(67),                        // wTotalLength
+    0x02,                               // bNumInterfaces
+    0x01,                               // bConfigurationValue
+    0x00,                               // iConfiguration
+    0xC0,                               // bmAttributes
+    0x32,                               // bMaxPower
     // control class interface
     0x09,
     DESC_INTERFACE,
-    0x00,						// bInterfaceNumber
-    0x00,						// bAlternateSetting
-    0x01,						// bNumEndPoints
-    0x02,						// bInterfaceClass
-    0x02,						// bInterfaceSubClass
-    0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
-    0x00,						// iInterface
+    0x00,                               // bInterfaceNumber
+    0x00,                               // bAlternateSetting
+    0x01,                               // bNumEndPoints
+    0x02,                               // bInterfaceClass
+    0x02,                               // bInterfaceSubClass
+    0x01,                               // bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
+    0x00,                               // iInterface
     // header functional descriptor
     0x05,
     CS_INTERFACE,
@@ -150,50 +117,50 @@ static const uint8_t abDescriptors[] = {
     0x05,
     CS_INTERFACE,
     0x01,
-    0x01,						// bmCapabilities = device handles call management
-    0x01,						// bDataInterface
+    0x01,                                // bmCapabilities = device handles call management
+    0x01,                                // bDataInterface
     // ACM functional descriptor
     0x04,
     CS_INTERFACE,
     0x02,
-    0x02,						// bmCapabilities
+    0x02,                                // bmCapabilities
     // union functional descriptor
     0x05,
     CS_INTERFACE,
     0x06,
-    0x00,						// bMasterInterface
-    0x01,						// bSlaveInterface0
+    0x00,                                // bMasterInterface
+    0x01,                                // bSlaveInterface0
     // notification EP
     0x07,
     DESC_ENDPOINT,
-    INT_IN_EP,					// bEndpointAddress
-    0x03,						// bmAttributes = intr
-    LE_WORD(8),					// wMaxPacketSize
-    0x0A,						// bInterval
+    INT_IN_EP,                           // bEndpointAddress
+    0x03,                                // bmAttributes = intr
+    LE_WORD(8),                          // wMaxPacketSize
+    0x0A,                                // bInterval
     // data class interface descriptor
     0x09,
     DESC_INTERFACE,
-    0x01,						// bInterfaceNumber
-    0x00,						// bAlternateSetting
-    0x02,						// bNumEndPoints
-    0x0A,						// bInterfaceClass = data
-    0x00,						// bInterfaceSubClass
-    0x00,						// bInterfaceProtocol
-    0x00,						// iInterface
+    0x01,                                // bInterfaceNumber
+    0x00,                                // bAlternateSetting
+    0x02,                                // bNumEndPoints
+    0x0A,                                // bInterfaceClass = data
+    0x00,                                // bInterfaceSubClass
+    0x00,                                // bInterfaceProtocol
+    0x00,                                // iInterface
     // data EP OUT
     0x07,
     DESC_ENDPOINT,
-    BULK_OUT_EP,				// bEndpointAddress
-    0x02,						// bmAttributes = bulk
-    LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-    0x00,						// bInterval
+    BULK_OUT_EP,                         // bEndpointAddress
+    0x02,                                // bmAttributes = bulk
+    LE_WORD(MAX_PACKET_SIZE),            // wMaxPacketSize
+    0x00,                                // bInterval
     // data EP in
     0x07,
     DESC_ENDPOINT,
-    BULK_IN_EP,					// bEndpointAddress
-    0x02,						// bmAttributes = bulk
-    LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-    0x00,						// bInterval
+    BULK_IN_EP,                          // bEndpointAddress
+    0x02,                                // bmAttributes = bulk
+    LE_WORD(MAX_PACKET_SIZE),            // wMaxPacketSize
+    0x00,                                // bInterval
 
     // string descriptors
     0x04,
@@ -352,7 +319,6 @@ void VCOM_init(void)
     fChainDone = TRUE;
 }
 
-
 /**
   Writes one character to VCOM port
 
@@ -364,6 +330,26 @@ int VCOM_putchar(int c)
     return fifo_put(&txfifo, c) ? c : EOF;
 }
 
+/*
+ * VCOM_putword
+ * Writes one word to VCOM port
+ */
+int VCOM_putword(int c) {
+    int r = 0;
+    r = fifo_put(&txfifo,  c &  0xff              );
+    if(r) {
+        r = fifo_put(&txfifo, ((c & (0xff << 8)) >> 8));
+        if( r ) {
+            r = fifo_put(&txfifo, ((c & (0xff << 16))  >> 16 ));
+            if( r ) {
+                r = fifo_put(&txfifo, ((c & (0xff << 24))  >> 24));
+                if( r ) { } 
+                else DBG(UART0, "fifo_put fail\n"); 
+            } else DBG(UART0, "fifo_put fail\n"); 
+        } else  DBG(UART0, "fifo_put fail\n");
+    } else  DBG(UART0, "fifo_put fail\n");
+    return(0);
+}
 
 /**
   Reads one character from VCOM port
@@ -422,6 +408,71 @@ static void USBDevIntHandler(uint8_t bDevStatus)
 }
 
 
+/*
+ * stream_task
+ */
+static void stream_task() {
+	int c       = 0;
+	int index   = 0;
+	int success = 0;
+
+	runstate_g.state = RESET;
+
+	// do USB stuff in interrupt
+	while (1) {
+//		DBG(UART0, "State is: %u\n", (uint32_t) runstate_g.state);
+	//util_wait_msecs(800);
+		switch(runstate_g.state) {
+		case GO:
+			// get and print sample
+			VCOM_putword(++index);
+			DBG(UART0, "%d GO\n", index);
+			break;
+		case STOP:
+			// stop getting samples
+			break;
+		case RESET:
+			// reset index and continue getting samples, next state is GO
+			index            = 0;
+			runstate_g.state = STOP;
+			break;
+		default:
+			DBG(UART0, "stream_task(): INVALID STATE\n");
+			break;
+		}
+		c = VCOM_getchar();
+		if (c != EOF) {
+			// show on console
+			if (c == 'g' ) {
+				runstate_g.state = GO;
+				DBG(UART0,"Go detected\n");
+			} else if (c == 's' ) {
+				runstate_g.state = STOP;
+				DBG(UART0,"Stop detected\n");
+			} else if (c == 'm' ) {
+				DBG(UART0,"Menu detected\n");
+			} else if (c == 'r' ) {
+				runstate_g.state = RESET;
+				DBG(UART0,"Reset detected\n");
+			} else if ((c == 9) || (c == 10) || (c == 13) || ((c >= 32) && (c <= 126))) {
+
+				success = VCOM_putchar(c);
+				if(success == EOF){
+					DBG(UART0, "success is: %d\n", success);
+					runstate_g.state = RESET;
+				}
+				DBG(UART0,"%c", c);
+			}
+			else {
+				DBG(UART0,".");
+
+			}
+
+		}
+	}
+
+}
+
 
 /*************************************************************************
   main
@@ -429,7 +480,6 @@ static void USBDevIntHandler(uint8_t bDevStatus)
  **************************************************************************/
 int main(void)
 {
-    int c;
 
     FIO_ENABLE;
     pllstart_seventytwomhz() ;
@@ -441,8 +491,12 @@ int main(void)
     // initialise stack
     USBInit();
 
+    DBG(UART0,"Past USBInit\n");
+
     // register descriptors
     USBRegisterDescriptors(abDescriptors);
+
+    DBG(UART0,"Past USBRegisterDescriptors\n");
 
     // register class request handler
     USBRegisterRequestHandler(REQTYPE_TYPE_CLASS, HandleClassRequest, abClassReqData);
@@ -464,31 +518,19 @@ int main(void)
     DBG(UART0,"Starting USB communication\n");
 
     VICVectPriority22 = 0x01;
-    VICVectAddr22 = (int) USBIntHandler;
+    VICVectAddr22     = (int) USBIntHandler;
 
     // set up USB interrupt
-    VICIntSelect &= ~(1<<22);               // select IRQ for USB
-    VICIntEnable |= (1<<22);
+    VICIntSelect      &= ~(1<<22);     // select IRQ for USB
+    VICIntEnable      |= (1<<22);
 
     vic_enableIRQ();
 
     // connect to bus
     USBHwConnect(TRUE);
 
-    // echo any character received (do USB stuff in interrupt)
-    while (1) {
-        c = VCOM_getchar();
-        if (c != EOF) {
-            // show on console
-            if ((c == 9) || (c == 10) || (c == 13) || ((c >= 32) && (c <= 126))) {
-                DBG(UART0,"%c", c);
-            }
-            else {
-                DBG(UART0,".");
-            }
-            VCOM_putchar(c);
-        }
-    }
+    DBG(UART0,"USBHwConnect\n");
+    stream_task();
 
     return 0;
 }
