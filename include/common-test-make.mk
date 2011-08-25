@@ -11,7 +11,7 @@ GCC_VERSION     ?= 4.5.2
 #########
 # this is the default, make LPC23XX_PART=LPC2368 will over-ride
 #LPC23XX_PART    ?= LPC2378
-LPC23XX_PART   ?= LPC2368
+LPC23XX_PART   ?= -DGFE_LPC2368
 
 CC              := $(CROSS)/bin/arm-elf-gcc
 LD              := $(CROSS)/bin/arm-elf-ld
@@ -22,11 +22,11 @@ OD              := $(CROSS)/bin/arm-elf-objdump
 
 TYPE            := lpc23xx
 
-DEBUG           ?=
+DEBUG           ?= -g
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
-CFLAGS          ?= $(INCLUDE) $(DEBUG) -D$(LPC23XX_PART) -g -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
+CFLAGS          ?= $(INCLUDE) $(DEBUG) $(LPC23XX_PART) -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
 
 ASFLAGS         ?= -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
@@ -54,7 +54,7 @@ PROGS           = $(NAME).out
 
 .c.o :
 	@echo "-------- COMPILING $@ "
-	@$(CC) $(CFLAGS) -c $<
+	@$(CC) $(CFLAGS) $<
 
 .s.o :
 	@echo "-------- COMPILING $@ "
