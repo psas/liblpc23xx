@@ -78,7 +78,7 @@ ASFLAGS         = -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
 .c.o :
 	@echo "-------- COMPILING $@ "
-	$(CC) $(CFLAGS) -o $(<:.c=.o) $<
+	@$(CC) $(CFLAGS) -o $(<:.c=.o) $<
 
 .s.o :
 	@echo "-------- COMPILING $@ "
