@@ -1,4 +1,30 @@
 
+/* Copyright (C) 2011 Keith Wilson.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * Except as contained in this notice, the names of the authors or their
+ * institutions shall not be used in advertising or otherwise to promote the
+ * sale, use or other dealings in this Software without prior written
+ * authorization from the authors.
+ */
+
+
 /*
  * lpc23xx-pll.c
  */
@@ -11,25 +37,26 @@
 
 struct pll_status pllstat;
 
-/*
+/*! \brief Current Controlled Oscillator Frequency Setting
  * pllquery_fcco_mhz
+ * \return Current value of cco frequency
  */
 Freq    pllquery_fcco_mhz(void) {
     return(pllstat.fcco_mhz);
 }
 
-/*
+/*! 
  * pllquery_cclk_mhz
+ * \brief Main clock Frequency Setting
+ * \return Freq value of main clock.
  */
 Freq    pllquery_cclk_mhz(void) {
     return(pllstat.cclk_mhz);
 }
 
-/*
+/*!
  * pllfeed
- * ----------------------
- * Turns off interrupts, feeds pll, then
- *  restores interrupt functions.
+ * \brief Turns off interrupts, feeds pll, then restores interrupt functions.
  */
 void pllfeed(void) {
     uint32_t        savedInterrupts;
@@ -45,8 +72,9 @@ void pllfeed(void) {
     VICIntEnable    = savedInterrupts;
 }
 
-/*
+/*!
  * pllstop
+ * \brief safely stop pll
  */
 void pllstop(void) {
 
@@ -62,10 +90,11 @@ void pllstop(void) {
     }
 }
 
-/*
+/*! 
  * pllstart_seventytwomhz
  * lpc23xx rev03 p60
  * Fcco = 288Mhz, M=12, N=1, Fin = 12Mhz 
+ * \brief run cclk at 72Mhz
  */
 void pllstart_seventytwomhz(void) { 
     pllstat.cclk_mhz = ZERO;
@@ -95,10 +124,11 @@ void pllstart_seventytwomhz(void) {
 }
 
 
-/*
+/*!
  * pllstart_sixtymhz
  * lpc23xx rev03 p60
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz 
+ * \brief run cclk at 60Mhz
  */
 void pllstart_sixtymhz(void) { 
     pllstat.cclk_mhz = ZERO;
@@ -128,10 +158,11 @@ void pllstart_sixtymhz(void) {
 
 }
 
-/*
+/*!
  * pllstart_fourtyeightmhz
  * lpc23xx rev03 p60
  * Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz
+ * \brief run cclk at 48Mhz
  */
 void pllstart_fourtyeightmhz(void) {
     pllstat.cclk_mhz = ZERO;

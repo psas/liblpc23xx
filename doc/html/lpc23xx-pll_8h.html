@@ -124,12 +124,19 @@ Enumerations</h2></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="lpc23xx-pll_8h.html#aaab35d52c761a4a06b3261e5fc476585">Freq</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#ab36442774d984aca0b3268a6fe598e02">pllquery_cclk_mhz</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Main clock Frequency Setting.  <a href="#ab36442774d984aca0b3268a6fe598e02"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="lpc23xx-pll_8h.html#aaab35d52c761a4a06b3261e5fc476585">Freq</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#a78ed4d3c5f181ca222b2d86fdec7b756">pllquery_fcco_mhz</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Current Controlled Oscillator Frequency Setting pllquery_fcco_mhz.  <a href="#a78ed4d3c5f181ca222b2d86fdec7b756"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#a98825baa36179bfbd23149c4e2989ca6">pllfeed</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Turns off interrupts, feeds pll, then restores interrupt functions.  <a href="#a98825baa36179bfbd23149c4e2989ca6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#aad2480ab89f28a62f4b90dc4dbe1664d">pllstop</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">safely stop pll  <a href="#aad2480ab89f28a62f4b90dc4dbe1664d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#abbe46b3fb84ac57aad90564950ba6efc">pllstart_seventytwomhz</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">run cclk at 72Mhz  <a href="#abbe46b3fb84ac57aad90564950ba6efc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#a4288609783c1eafd8c552f3047851dfe">pllstart_sixtymhz</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">run cclk at 60Mhz  <a href="#a4288609783c1eafd8c552f3047851dfe"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#a47fedf553754517513294eb079238970">pllstart_fourtyeightmhz</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">run cclk at 48Mhz  <a href="#a47fedf553754517513294eb079238970"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structpll__status.html">pll_status</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lpc23xx-pll_8h.html#aaea2a00c8002edec360d1f47d015627c">pllstat</a></td></tr>
@@ -522,6 +529,10 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Main clock Frequency Setting. </p>
+<p>pllquery_cclk_mhz </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>Freq value of main clock. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a78ed4d3c5f181ca222b2d86fdec7b756"></a><!-- doxytag: member="lpc23xx&#45;pll.h::pllquery_fcco_mhz" ref="a78ed4d3c5f181ca222b2d86fdec7b756" args="(void)" -->
@@ -539,6 +550,9 @@ Variables</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Current Controlled Oscillator Frequency Setting pllquery_fcco_mhz. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>Current value of cco frequency </dd></dl>
 
 </div>
 </div>
@@ -558,6 +572,9 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Turns off interrupts, feeds pll, then restores interrupt functions. </p>
+<p>pllfeed </p>
+
 </div>
 </div>
 <a class="anchor" id="aad2480ab89f28a62f4b90dc4dbe1664d"></a><!-- doxytag: member="lpc23xx&#45;pll.h::pllstop" ref="aad2480ab89f28a62f4b90dc4dbe1664d" args="(void)" -->
@@ -575,6 +592,9 @@ Variables</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>safely stop pll </p>
+<p>pllstop </p>
 
 </div>
 </div>
@@ -594,6 +614,9 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>run cclk at 72Mhz </p>
+<p>pllstart_seventytwomhz lpc23xx rev03 p60 Fcco = 288Mhz, M=12, N=1, Fin = 12Mhz </p>
+
 </div>
 </div>
 <a class="anchor" id="a4288609783c1eafd8c552f3047851dfe"></a><!-- doxytag: member="lpc23xx&#45;pll.h::pllstart_sixtymhz" ref="a4288609783c1eafd8c552f3047851dfe" args="(void)" -->
@@ -612,6 +635,9 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>run cclk at 60Mhz </p>
+<p>pllstart_sixtymhz lpc23xx rev03 p60 Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz </p>
+
 </div>
 </div>
 <a class="anchor" id="a47fedf553754517513294eb079238970"></a><!-- doxytag: member="lpc23xx&#45;pll.h::pllstart_fourtyeightmhz" ref="a47fedf553754517513294eb079238970" args="(void)" -->
@@ -629,6 +655,9 @@ Variables</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>run cclk at 48Mhz </p>
+<p>pllstart_fourtyeightmhz lpc23xx rev03 p60 Fcco = 480Mhz, M=20, N=1, Fin = 12Mhz </p>
 
 </div>
 </div>
@@ -661,7 +690,7 @@ Variables</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Aug 26 2011 12:39:57 for liblpc23xx by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Aug 26 2011 13:17:58 for liblpc23xx by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

@@ -59,104 +59,130 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <a href="lpc23xx-spi_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00002"></a>00002 <span class="comment">/*</span>
-<a name="l00003"></a>00003 <span class="comment"> * lpc23xx-spi.h</span>
-<a name="l00004"></a>00004 <span class="comment"> */</span>
-<a name="l00005"></a>00005 
-<a name="l00006"></a>00006 <span class="preprocessor">#ifndef _LPC23XX_SPI_H</span>
-<a name="l00007"></a>00007 <span class="preprocessor"></span><span class="preprocessor">#define _LPC23XX_SPI_H</span>
-<a name="l00008"></a>00008 <span class="preprocessor"></span>
-<a name="l00009"></a>00009 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx_8h.html">lpc23xx.h</a>&quot;</span>
-<a name="l00010"></a>00010 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-types_8h.html">lpc23xx-types.h</a>&quot;</span>
-<a name="l00011"></a>00011 
-<a name="l00012"></a>00012 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-pll_8h.html">lpc23xx-pll.h</a>&quot;</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-util_8h.html">lpc23xx-util.h</a>&quot;</span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="comment">//P0.15</span>
-<a name="l00016"></a><a class="code" href="lpc23xx-spi_8h.html#a00e952ef2bd0ebaefeb97452ec1a1c39">00016</a> <span class="preprocessor">#define     PINSEL_SPI_SCK             (PINSEL0  = (PINSEL0  &amp; ~(0x3 &lt;&lt; 30)) | (0x3 &lt;&lt; 30))</span>
-<a name="l00017"></a><a class="code" href="lpc23xx-spi_8h.html#a6b790ac3324de09850707d1c014257aa">00017</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_SCK_NOPULL     (PINMODE0 = (PINMODE0 &amp; ~(0x3 &lt;&lt; 30)) | (0x2 &lt;&lt; 30))</span>
-<a name="l00018"></a>00018 <span class="preprocessor"></span>
-<a name="l00019"></a>00019 <span class="comment">//P0.17</span>
-<a name="l00020"></a><a class="code" href="lpc23xx-spi_8h.html#a78ca394096d7d7c1e0c7e60a4390a321">00020</a> <span class="preprocessor">#define     PINSEL_SPI_MISO            (PINSEL1  = (PINSEL1  &amp; ~(0x3 &lt;&lt; 2)) | (0x3 &lt;&lt; 2))</span>
-<a name="l00021"></a><a class="code" href="lpc23xx-spi_8h.html#a17492201389d8fa715cc695fe4959edc">00021</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MISO_NOPULL    (PINMODE1 = (PINMODE1 &amp; ~(0x3 &lt;&lt; 2)) | (0x2 &lt;&lt; 2))</span>
-<a name="l00022"></a>00022 <span class="preprocessor"></span>
-<a name="l00023"></a>00023 <span class="comment">//P0.18</span>
-<a name="l00024"></a><a class="code" href="lpc23xx-spi_8h.html#ae71483076ae9b142c515d1c409f18d40">00024</a> <span class="preprocessor">#define     PINSEL_SPI_MOSI            (PINSEL1  = (PINSEL1  &amp; ~(0x3 &lt;&lt; 4)) | (0x3 &lt;&lt; 4))</span>
-<a name="l00025"></a><a class="code" href="lpc23xx-spi_8h.html#a58cfe477b9b6f7a77e8645375b039500">00025</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MOSI_NOPULL    (PINMODE1 = (PINMODE1 &amp; ~(0x3 &lt;&lt; 4)) | (0x2 &lt;&lt; 4))</span>
-<a name="l00026"></a>00026 <span class="preprocessor"></span>
-<a name="l00027"></a>00027 <span class="comment">// P0.16 is SSEL, use as GPIO in master mode SPI</span>
-<a name="l00028"></a><a class="code" href="lpc23xx-spi_8h.html#a2eeb3db53686747e4b9fd36bbee32b91">00028</a> <span class="preprocessor">#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  &amp; ~(0x3)     ) | (0x3))</span>
-<a name="l00029"></a><a class="code" href="lpc23xx-spi_8h.html#a3872ddef173002ef9c4627a019ab3169">00029</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  &amp; ~(0x3)     ) )</span>
-<a name="l00030"></a><a class="code" href="lpc23xx-spi_8h.html#ae9fcc5f008d7fd3a6a251b488f1718af">00030</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_SSEL_NOPULL    (PINMODE1  = (PINMODE1 &amp; ~(0x3))     | (0x2 ))</span>
-<a name="l00031"></a>00031 <span class="preprocessor"></span>
-<a name="l00032"></a><a class="code" href="lpc23xx-spi_8h.html#a55d54b5756719c5b036c25f15b51d5f7">00032</a> <span class="preprocessor">#define     FIO_SPI_SSEL               (FIO0DIR |= (1&lt;&lt;16))</span>
-<a name="l00033"></a><a class="code" href="lpc23xx-spi_8h.html#aa5f9f77584732bb0c0864cc1330afed2">00033</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_HIGH                  (FIO0SET |= (1&lt;&lt;16))</span>
-<a name="l00034"></a><a class="code" href="lpc23xx-spi_8h.html#abe5e43b495fff4533148b32d948527b9">00034</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_LOW                   (FIO0CLR |= (1&lt;&lt;16))</span>
-<a name="l00035"></a>00035 <span class="preprocessor"></span>
-<a name="l00036"></a>00036 <span class="comment">// P1.0  is for a second device in master mode SPI</span>
-<a name="l00037"></a><a class="code" href="lpc23xx-spi_8h.html#af522c334dbd98a8c0e7ff99f81d43395">00037</a> <span class="preprocessor">#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL1 =  (PINSEL2 &amp; ~(0x11)     ) | (0x00))</span>
-<a name="l00038"></a><a class="code" href="lpc23xx-spi_8h.html#acaefcd2058a5ed1b861341fc6cf1f6dd">00038</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MASTERM_SSEL_1_NOPULL    (PINMODE2 = (PINMODE2 &amp; ~(0x3))      | (0x2 ))</span>
-<a name="l00039"></a><a class="code" href="lpc23xx-spi_8h.html#a0cdd49ef53067eebecce5cb2c884b86a">00039</a> <span class="preprocessor"></span><span class="preprocessor">#define     FIO_SPI_SSEL_1                       (FIO1DIR |= 0x1)</span>
-<a name="l00040"></a><a class="code" href="lpc23xx-spi_8h.html#a284184ed9663bca48531e7f89f2fd7c3">00040</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_1_HIGH                          (FIO1SET |= 0x1)</span>
-<a name="l00041"></a><a class="code" href="lpc23xx-spi_8h.html#a819b9fcc2f016a2e6d7da62d79c6bbca">00041</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_1_LOW                           (FIO1CLR |= 0x1)</span>
-<a name="l00042"></a>00042 <span class="preprocessor"></span>
-<a name="l00043"></a>00043 
-<a name="l00044"></a><a class="code" href="lpc23xx-spi_8h.html#a269d6dd37545932911cf48d16240bd5b">00044</a> <span class="preprocessor">#define     PCONP_PCSPI                8</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00046"></a><a class="code" href="lpc23xx-spi_8h.html#aa4a57d49ccfb16fad8483bca3e1c8f8a">00046</a> <span class="preprocessor">#define     SPI_PWR_ON                 (PCONP = (PCONP |  (1&lt;&lt;PCONP_PCSPI)))</span>
-<a name="l00047"></a><a class="code" href="lpc23xx-spi_8h.html#ac65154e0ffab2289e788e4e0c0ddb8b6">00047</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_PWR_OFF                (PCONP = (PCONP &amp; ~(1&lt;&lt;PCONP_PCSPI)))</span>
+<a name="l00002"></a>00002 <span class="comment">/* Copyright (C) 2011 Keith Wilson.</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * Permission is hereby granted, free of charge, to any person obtaining a</span>
+<a name="l00005"></a>00005 <span class="comment"> * copy of this software and associated documentation files (the &quot;Software&quot;),</span>
+<a name="l00006"></a>00006 <span class="comment"> * to deal in the Software without restriction, including without limitation</span>
+<a name="l00007"></a>00007 <span class="comment"> * the rights to use, copy, modify, merge, publish, distribute, sublicense,</span>
+<a name="l00008"></a>00008 <span class="comment"> * and/or sell copies of the Software, and to permit persons to whom the</span>
+<a name="l00009"></a>00009 <span class="comment"> * Software is furnished to do so, subject to the following conditions:</span>
+<a name="l00010"></a>00010 <span class="comment"> * </span>
+<a name="l00011"></a>00011 <span class="comment"> * The above copyright notice and this permission notice shall be included in</span>
+<a name="l00012"></a>00012 <span class="comment"> * all copies or substantial portions of the Software.</span>
+<a name="l00013"></a>00013 <span class="comment"> * </span>
+<a name="l00014"></a>00014 <span class="comment"> * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<a name="l00015"></a>00015 <span class="comment"> * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<a name="l00016"></a>00016 <span class="comment"> * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<a name="l00017"></a>00017 <span class="comment"> * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN</span>
+<a name="l00018"></a>00018 <span class="comment"> * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN</span>
+<a name="l00019"></a>00019 <span class="comment"> * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<a name="l00020"></a>00020 <span class="comment"> * </span>
+<a name="l00021"></a>00021 <span class="comment"> * Except as contained in this notice, the names of the authors or their</span>
+<a name="l00022"></a>00022 <span class="comment"> * institutions shall not be used in advertising or otherwise to promote the</span>
+<a name="l00023"></a>00023 <span class="comment"> * sale, use or other dealings in this Software without prior written</span>
+<a name="l00024"></a>00024 <span class="comment"> * authorization from the authors.</span>
+<a name="l00025"></a>00025 <span class="comment"> */</span>
+<a name="l00026"></a>00026 
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 <span class="comment">/*</span>
+<a name="l00029"></a>00029 <span class="comment"> * lpc23xx-spi.h</span>
+<a name="l00030"></a>00030 <span class="comment"> */</span>
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 <span class="preprocessor">#ifndef _LPC23XX_SPI_H</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#define _LPC23XX_SPI_H</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx_8h.html">lpc23xx.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-types_8h.html">lpc23xx-types.h</a>&quot;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-pll_8h.html">lpc23xx-pll.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="lpc23xx-util_8h.html">lpc23xx-util.h</a>&quot;</span>
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 <span class="comment">//P0.15</span>
+<a name="l00042"></a><a class="code" href="lpc23xx-spi_8h.html#a00e952ef2bd0ebaefeb97452ec1a1c39">00042</a> <span class="preprocessor">#define     PINSEL_SPI_SCK             (PINSEL0  = (PINSEL0  &amp; ~(0x3 &lt;&lt; 30)) | (0x3 &lt;&lt; 30))</span>
+<a name="l00043"></a><a class="code" href="lpc23xx-spi_8h.html#a6b790ac3324de09850707d1c014257aa">00043</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_SCK_NOPULL     (PINMODE0 = (PINMODE0 &amp; ~(0x3 &lt;&lt; 30)) | (0x2 &lt;&lt; 30))</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span>
+<a name="l00045"></a>00045 <span class="comment">//P0.17</span>
+<a name="l00046"></a><a class="code" href="lpc23xx-spi_8h.html#a78ca394096d7d7c1e0c7e60a4390a321">00046</a> <span class="preprocessor">#define     PINSEL_SPI_MISO            (PINSEL1  = (PINSEL1  &amp; ~(0x3 &lt;&lt; 2)) | (0x3 &lt;&lt; 2))</span>
+<a name="l00047"></a><a class="code" href="lpc23xx-spi_8h.html#a17492201389d8fa715cc695fe4959edc">00047</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MISO_NOPULL    (PINMODE1 = (PINMODE1 &amp; ~(0x3 &lt;&lt; 2)) | (0x2 &lt;&lt; 2))</span>
 <a name="l00048"></a>00048 <span class="preprocessor"></span>
-<a name="l00049"></a>00049 <span class="comment">// Clock</span>
-<a name="l00050"></a><a class="code" href="lpc23xx-spi_8h.html#af98207c939b7a585fe9154ad46fd7854">00050</a> <span class="preprocessor">#define     PCLKSEL0_PCLK_SPI          16</span>
-<a name="l00051"></a>00051 <span class="preprocessor"></span>
-<a name="l00052"></a><a class="code" href="lpc23xx-spi_8h.html#a76eeff574faee1f09d64c3f7b9846f89">00052</a> <span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV1       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x1 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
-<a name="l00053"></a><a class="code" href="lpc23xx-spi_8h.html#a609b45ccaf9da9416a1ccc0e6546b592">00053</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV2       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x2 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
-<a name="l00054"></a><a class="code" href="lpc23xx-spi_8h.html#a50983edd5bc728baa0828bb83814fd5d">00054</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV4       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x0 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
-<a name="l00055"></a><a class="code" href="lpc23xx-spi_8h.html#a8da8e6ac0a2f0e96e4d0d6ed9f8b273d">00055</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV8       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x3 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
-<a name="l00056"></a>00056 <span class="preprocessor"></span>
-<a name="l00057"></a><a class="code" href="lpc23xx-spi_8h.html#a27537db92d0837cc77baa0d99b8cac48">00057</a> <span class="preprocessor">#define     SPI_ENABLE                 (AD0CR = (AD0CR |  (1 &lt;&lt; AD0CR_PDN)))</span>
-<a name="l00058"></a><a class="code" href="lpc23xx-spi_8h.html#a00174198073dadbaaad7f9475360b228">00058</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_DISABLE                (AD0CR = (AD0CR &amp; ~(1 &lt;&lt; AD0CR_PDN)))</span>
-<a name="l00059"></a>00059 <span class="preprocessor"></span>
-<a name="l00060"></a>00060 <span class="comment">// spi control register</span>
-<a name="l00061"></a><a class="code" href="lpc23xx-spi_8h.html#a8a832074e28bf119c394eca9a458431f">00061</a> <span class="preprocessor">#define     SPI_CR_BITENABLE           2</span>
-<a name="l00062"></a><a class="code" href="lpc23xx-spi_8h.html#a919a40103c47075b1be3c5ce44527431">00062</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_CPHA                3</span>
-<a name="l00063"></a><a class="code" href="lpc23xx-spi_8h.html#a29721ccafef1fb08a99e6fd532b5e92f">00063</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_CPOL                4</span>
-<a name="l00064"></a><a class="code" href="lpc23xx-spi_8h.html#adffefcdc5446b82b9f7c0905508dd463">00064</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_MSTR                5</span>
-<a name="l00065"></a><a class="code" href="lpc23xx-spi_8h.html#a16460f34d68c520e78d2b236b3ec690d">00065</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_LSBF                6</span>
-<a name="l00066"></a><a class="code" href="lpc23xx-spi_8h.html#aff1b3447ca002b621b0a97658b74478d">00066</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_SPIE                7</span>
-<a name="l00067"></a><a class="code" href="lpc23xx-spi_8h.html#a828db7af297a574818849745aa128fe1">00067</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_BITS                8</span>
+<a name="l00049"></a>00049 <span class="comment">//P0.18</span>
+<a name="l00050"></a><a class="code" href="lpc23xx-spi_8h.html#ae71483076ae9b142c515d1c409f18d40">00050</a> <span class="preprocessor">#define     PINSEL_SPI_MOSI            (PINSEL1  = (PINSEL1  &amp; ~(0x3 &lt;&lt; 4)) | (0x3 &lt;&lt; 4))</span>
+<a name="l00051"></a><a class="code" href="lpc23xx-spi_8h.html#a58cfe477b9b6f7a77e8645375b039500">00051</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MOSI_NOPULL    (PINMODE1 = (PINMODE1 &amp; ~(0x3 &lt;&lt; 4)) | (0x2 &lt;&lt; 4))</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span>
+<a name="l00053"></a>00053 <span class="comment">// P0.16 is SSEL, use as GPIO in master mode SPI</span>
+<a name="l00054"></a><a class="code" href="lpc23xx-spi_8h.html#a2eeb3db53686747e4b9fd36bbee32b91">00054</a> <span class="preprocessor">#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  &amp; ~(0x3)     ) | (0x3))</span>
+<a name="l00055"></a><a class="code" href="lpc23xx-spi_8h.html#a3872ddef173002ef9c4627a019ab3169">00055</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  &amp; ~(0x3)     ) )</span>
+<a name="l00056"></a><a class="code" href="lpc23xx-spi_8h.html#ae9fcc5f008d7fd3a6a251b488f1718af">00056</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_SSEL_NOPULL    (PINMODE1  = (PINMODE1 &amp; ~(0x3))     | (0x2 ))</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span>
+<a name="l00058"></a><a class="code" href="lpc23xx-spi_8h.html#a55d54b5756719c5b036c25f15b51d5f7">00058</a> <span class="preprocessor">#define     FIO_SPI_SSEL               (FIO0DIR |= (1&lt;&lt;16))</span>
+<a name="l00059"></a><a class="code" href="lpc23xx-spi_8h.html#aa5f9f77584732bb0c0864cc1330afed2">00059</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_HIGH                  (FIO0SET |= (1&lt;&lt;16))</span>
+<a name="l00060"></a><a class="code" href="lpc23xx-spi_8h.html#abe5e43b495fff4533148b32d948527b9">00060</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_LOW                   (FIO0CLR |= (1&lt;&lt;16))</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span>
+<a name="l00062"></a>00062 <span class="comment">// P1.0  is for a second device in master mode SPI</span>
+<a name="l00063"></a><a class="code" href="lpc23xx-spi_8h.html#af522c334dbd98a8c0e7ff99f81d43395">00063</a> <span class="preprocessor">#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL1 =  (PINSEL2 &amp; ~(0x11)     ) | (0x00))</span>
+<a name="l00064"></a><a class="code" href="lpc23xx-spi_8h.html#acaefcd2058a5ed1b861341fc6cf1f6dd">00064</a> <span class="preprocessor"></span><span class="preprocessor">#define     PINMODE_SPI_MASTERM_SSEL_1_NOPULL    (PINMODE2 = (PINMODE2 &amp; ~(0x3))      | (0x2 ))</span>
+<a name="l00065"></a><a class="code" href="lpc23xx-spi_8h.html#a0cdd49ef53067eebecce5cb2c884b86a">00065</a> <span class="preprocessor"></span><span class="preprocessor">#define     FIO_SPI_SSEL_1                       (FIO1DIR |= 0x1)</span>
+<a name="l00066"></a><a class="code" href="lpc23xx-spi_8h.html#a284184ed9663bca48531e7f89f2fd7c3">00066</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_1_HIGH                          (FIO1SET |= 0x1)</span>
+<a name="l00067"></a><a class="code" href="lpc23xx-spi_8h.html#a819b9fcc2f016a2e6d7da62d79c6bbca">00067</a> <span class="preprocessor"></span><span class="preprocessor">#define     SSEL_1_LOW                           (FIO1CLR |= 0x1)</span>
 <a name="l00068"></a>00068 <span class="preprocessor"></span>
-<a name="l00069"></a>00069 <span class="comment">// spi status register</span>
-<a name="l00070"></a><a class="code" href="lpc23xx-spi_8h.html#ad0f614f870a51a90b16f9bd9105c2885">00070</a> <span class="preprocessor">#define     SPI_SR_ABRT                3</span>
-<a name="l00071"></a><a class="code" href="lpc23xx-spi_8h.html#abaa043349833dc7b8138969c64f63adf">00071</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_MODF                4</span>
-<a name="l00072"></a><a class="code" href="lpc23xx-spi_8h.html#af4acfb2cc1a369f6226260e771ca41bf">00072</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_ROVR                5</span>
-<a name="l00073"></a><a class="code" href="lpc23xx-spi_8h.html#ae1ca160bd70abc7ce6b9b3c5190bdc22">00073</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_WCOL                6</span>
-<a name="l00074"></a><a class="code" href="lpc23xx-spi_8h.html#a9bb3f5eb06e31d6b8efb2a3937055d0d">00074</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_SPIF                7</span>
-<a name="l00075"></a>00075 <span class="preprocessor"></span>
-<a name="l00076"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1">00076</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {<a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a729f534108fc5aff61eb86e95de56372">SPI_50KHZ</a>=50000,
-<a name="l00077"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a8f296796b4e4e5f8a3572ddca62d672f">00077</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a8f296796b4e4e5f8a3572ddca62d672f">SPI_100KHZ</a>=100000,
-<a name="l00078"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1ae0be7fb65c6c795b2cebe24e77f7436f">00078</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1ae0be7fb65c6c795b2cebe24e77f7436f">SPI_250KHZ</a>=250000,
-<a name="l00079"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a59d859ef35477cb7a9655173ee434534">00079</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a59d859ef35477cb7a9655173ee434534">SPI_500KHZ</a>=500000} spi_freq;
-<a name="l00080"></a>00080 
-<a name="l00081"></a>00081 <span class="comment">// lpc23xx_um v3 p462</span>
-<a name="l00082"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9">00082</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {<a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a7d0f3f931e11690790cd430da3023142">SPI_8BITS</a> =0x8,
-<a name="l00083"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ad3b9580c86fe5d4b26055269c8b9dfd0">00083</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ad3b9580c86fe5d4b26055269c8b9dfd0">SPI_9BITS</a> =0x9,
-<a name="l00084"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac185264295ebcaed0ec54da3779aa4bc">00084</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac185264295ebcaed0ec54da3779aa4bc">SPI_10BITS</a>=0xa,
-<a name="l00085"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a9c05cfd0aab2b7264b50c368dcf2e10a">00085</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a9c05cfd0aab2b7264b50c368dcf2e10a">SPI_11BITS</a>=0xb,
-<a name="l00086"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a18c437e1f0eff52ae57deed929ed22e8">00086</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a18c437e1f0eff52ae57deed929ed22e8">SPI_12BITS</a>=0xc,
-<a name="l00087"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac84476c2198e536132d8ca96d2b620b5">00087</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac84476c2198e536132d8ca96d2b620b5">SPI_13BITS</a>=0xd,
-<a name="l00088"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a2a099d0537dd01f5abadd3bc99ae99bf">00088</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a2a099d0537dd01f5abadd3bc99ae99bf">SPI_14BITS</a>=0xe,
-<a name="l00089"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a1d50783c7714b53e9817eaef6ff3abfa">00089</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a1d50783c7714b53e9817eaef6ff3abfa">SPI_15BITS</a>=0xf,
-<a name="l00090"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a43039bc9dc6d36ddb07d5565ddff0cf2">00090</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a43039bc9dc6d36ddb07d5565ddff0cf2">SPI_16BITS</a>=0x0} spi_xfernumbits ;
-<a name="l00091"></a>00091 
-<a name="l00092"></a>00092 uint8_t    <a class="code" href="lpc23xx-spi_8h.html#a4f481c36c685dca386f9691f38d09f51">spi_readstatus</a>();
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a38741344d2987839a7e76366cd5327b5">spi_waitSPIF</a>() ;
-<a name="l00095"></a>00095 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a0d06bcf31683f3d6202e8945a0db4e2a">spi_transact</a>(uint16_t data, <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9">spi_xfernumbits</a> bits) ;
-<a name="l00096"></a>00096 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a4da4e9770d690fe66c409cb5010f76ef">spi_init_master_MSB_16</a>(<a class="code" href="lpc23xx-pll_8h.html#a2a262dab51db199df7b73e0ba32ee39c">pclk_scale</a> scale, <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1">spi_freq</a> spifreq) ;
-<a name="l00097"></a>00097 
-<a name="l00098"></a>00098 
-<a name="l00099"></a>00099 <span class="preprocessor">#endif</span>
+<a name="l00069"></a>00069 
+<a name="l00070"></a><a class="code" href="lpc23xx-spi_8h.html#a269d6dd37545932911cf48d16240bd5b">00070</a> <span class="preprocessor">#define     PCONP_PCSPI                8</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00072"></a><a class="code" href="lpc23xx-spi_8h.html#aa4a57d49ccfb16fad8483bca3e1c8f8a">00072</a> <span class="preprocessor">#define     SPI_PWR_ON                 (PCONP = (PCONP |  (1&lt;&lt;PCONP_PCSPI)))</span>
+<a name="l00073"></a><a class="code" href="lpc23xx-spi_8h.html#ac65154e0ffab2289e788e4e0c0ddb8b6">00073</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_PWR_OFF                (PCONP = (PCONP &amp; ~(1&lt;&lt;PCONP_PCSPI)))</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00075"></a>00075 <span class="comment">// Clock</span>
+<a name="l00076"></a><a class="code" href="lpc23xx-spi_8h.html#af98207c939b7a585fe9154ad46fd7854">00076</a> <span class="preprocessor">#define     PCLKSEL0_PCLK_SPI          16</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>
+<a name="l00078"></a><a class="code" href="lpc23xx-spi_8h.html#a76eeff574faee1f09d64c3f7b9846f89">00078</a> <span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV1       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x1 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
+<a name="l00079"></a><a class="code" href="lpc23xx-spi_8h.html#a609b45ccaf9da9416a1ccc0e6546b592">00079</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV2       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x2 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
+<a name="l00080"></a><a class="code" href="lpc23xx-spi_8h.html#a50983edd5bc728baa0828bb83814fd5d">00080</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV4       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x0 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
+<a name="l00081"></a><a class="code" href="lpc23xx-spi_8h.html#a8da8e6ac0a2f0e96e4d0d6ed9f8b273d">00081</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CLK_IS_CCLK_DIV8       ( PCLKSEL0 = ((PCLKSEL0 &amp; ~(0x3&lt;&lt;PCLKSEL0_PCLK_SPI)) |(0x3 &lt;&lt; PCLKSEL0_PCLK_SPI)) )</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span>
+<a name="l00083"></a><a class="code" href="lpc23xx-spi_8h.html#a27537db92d0837cc77baa0d99b8cac48">00083</a> <span class="preprocessor">#define     SPI_ENABLE                 (AD0CR = (AD0CR |  (1 &lt;&lt; AD0CR_PDN)))</span>
+<a name="l00084"></a><a class="code" href="lpc23xx-spi_8h.html#a00174198073dadbaaad7f9475360b228">00084</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_DISABLE                (AD0CR = (AD0CR &amp; ~(1 &lt;&lt; AD0CR_PDN)))</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span>
+<a name="l00086"></a>00086 <span class="comment">// spi control register</span>
+<a name="l00087"></a><a class="code" href="lpc23xx-spi_8h.html#a8a832074e28bf119c394eca9a458431f">00087</a> <span class="preprocessor">#define     SPI_CR_BITENABLE           2</span>
+<a name="l00088"></a><a class="code" href="lpc23xx-spi_8h.html#a919a40103c47075b1be3c5ce44527431">00088</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_CPHA                3</span>
+<a name="l00089"></a><a class="code" href="lpc23xx-spi_8h.html#a29721ccafef1fb08a99e6fd532b5e92f">00089</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_CPOL                4</span>
+<a name="l00090"></a><a class="code" href="lpc23xx-spi_8h.html#adffefcdc5446b82b9f7c0905508dd463">00090</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_MSTR                5</span>
+<a name="l00091"></a><a class="code" href="lpc23xx-spi_8h.html#a16460f34d68c520e78d2b236b3ec690d">00091</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_LSBF                6</span>
+<a name="l00092"></a><a class="code" href="lpc23xx-spi_8h.html#aff1b3447ca002b621b0a97658b74478d">00092</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_SPIE                7</span>
+<a name="l00093"></a><a class="code" href="lpc23xx-spi_8h.html#a828db7af297a574818849745aa128fe1">00093</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_CR_BITS                8</span>
+<a name="l00094"></a>00094 <span class="preprocessor"></span>
+<a name="l00095"></a>00095 <span class="comment">// spi status register</span>
+<a name="l00096"></a><a class="code" href="lpc23xx-spi_8h.html#ad0f614f870a51a90b16f9bd9105c2885">00096</a> <span class="preprocessor">#define     SPI_SR_ABRT                3</span>
+<a name="l00097"></a><a class="code" href="lpc23xx-spi_8h.html#abaa043349833dc7b8138969c64f63adf">00097</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_MODF                4</span>
+<a name="l00098"></a><a class="code" href="lpc23xx-spi_8h.html#af4acfb2cc1a369f6226260e771ca41bf">00098</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_ROVR                5</span>
+<a name="l00099"></a><a class="code" href="lpc23xx-spi_8h.html#ae1ca160bd70abc7ce6b9b3c5190bdc22">00099</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_WCOL                6</span>
+<a name="l00100"></a><a class="code" href="lpc23xx-spi_8h.html#a9bb3f5eb06e31d6b8efb2a3937055d0d">00100</a> <span class="preprocessor"></span><span class="preprocessor">#define     SPI_SR_SPIF                7</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span>
+<a name="l00102"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1">00102</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {<a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a729f534108fc5aff61eb86e95de56372">SPI_50KHZ</a>=50000,
+<a name="l00103"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a8f296796b4e4e5f8a3572ddca62d672f">00103</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a8f296796b4e4e5f8a3572ddca62d672f">SPI_100KHZ</a>=100000,
+<a name="l00104"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1ae0be7fb65c6c795b2cebe24e77f7436f">00104</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1ae0be7fb65c6c795b2cebe24e77f7436f">SPI_250KHZ</a>=250000,
+<a name="l00105"></a><a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a59d859ef35477cb7a9655173ee434534">00105</a>     <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1a59d859ef35477cb7a9655173ee434534">SPI_500KHZ</a>=500000} spi_freq;
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107 <span class="comment">// lpc23xx_um v3 p462</span>
+<a name="l00108"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9">00108</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {<a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a7d0f3f931e11690790cd430da3023142">SPI_8BITS</a> =0x8,
+<a name="l00109"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ad3b9580c86fe5d4b26055269c8b9dfd0">00109</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ad3b9580c86fe5d4b26055269c8b9dfd0">SPI_9BITS</a> =0x9,
+<a name="l00110"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac185264295ebcaed0ec54da3779aa4bc">00110</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac185264295ebcaed0ec54da3779aa4bc">SPI_10BITS</a>=0xa,
+<a name="l00111"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a9c05cfd0aab2b7264b50c368dcf2e10a">00111</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a9c05cfd0aab2b7264b50c368dcf2e10a">SPI_11BITS</a>=0xb,
+<a name="l00112"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a18c437e1f0eff52ae57deed929ed22e8">00112</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a18c437e1f0eff52ae57deed929ed22e8">SPI_12BITS</a>=0xc,
+<a name="l00113"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac84476c2198e536132d8ca96d2b620b5">00113</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9ac84476c2198e536132d8ca96d2b620b5">SPI_13BITS</a>=0xd,
+<a name="l00114"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a2a099d0537dd01f5abadd3bc99ae99bf">00114</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a2a099d0537dd01f5abadd3bc99ae99bf">SPI_14BITS</a>=0xe,
+<a name="l00115"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a1d50783c7714b53e9817eaef6ff3abfa">00115</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a1d50783c7714b53e9817eaef6ff3abfa">SPI_15BITS</a>=0xf,
+<a name="l00116"></a><a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a43039bc9dc6d36ddb07d5565ddff0cf2">00116</a>     <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9a43039bc9dc6d36ddb07d5565ddff0cf2">SPI_16BITS</a>=0x0} spi_xfernumbits ;
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118 uint8_t    <a class="code" href="lpc23xx-spi_8h.html#a4f481c36c685dca386f9691f38d09f51">spi_readstatus</a>();
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a38741344d2987839a7e76366cd5327b5">spi_waitSPIF</a>() ;
+<a name="l00121"></a>00121 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a0d06bcf31683f3d6202e8945a0db4e2a">spi_transact</a>(uint16_t data, <a class="code" href="lpc23xx-spi_8h.html#a41941d73c92d0d3ab4584ea5cdacb7c9">spi_xfernumbits</a> bits) ;
+<a name="l00122"></a>00122 <span class="keywordtype">void</span>       <a class="code" href="lpc23xx-spi_8h.html#a4da4e9770d690fe66c409cb5010f76ef">spi_init_master_MSB_16</a>(<a class="code" href="lpc23xx-pll_8h.html#a2a262dab51db199df7b73e0ba32ee39c">pclk_scale</a> scale, <a class="code" href="lpc23xx-spi_8h.html#a0e06a79425acb383e4f66ff4f5c053b1">spi_freq</a> spifreq) ;
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -173,7 +199,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Aug 26 2011 12:39:57 for liblpc23xx by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Aug 26 2011 13:17:58 for liblpc23xx by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>
