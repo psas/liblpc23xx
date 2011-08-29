@@ -39,7 +39,10 @@ typedef struct {
 } fifo_type;
 
 void fifo_init(fifo_type *fifo);
+
 BOOL fifo_put(fifo_type *fifo, uint8_t c);
+BOOL fifo_putword(fifo_type *fifo, uint32_t w) ;
+
 BOOL fifo_get(fifo_type *fifo, uint8_t *pc);
 int  fifo_avail(fifo_type *fifo);
 int	 fifo_free(fifo_type *fifo);

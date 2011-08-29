@@ -37,6 +37,34 @@ void fifo_init(fifo_type *fifo)
 	fifo->tail = 0;
 }
 
+/*
+ * put a uint32_t word into the uint8_t char fifo
+ */
+BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
+	int     next;
+
+	uint8_t i = 0;
+
+        // check if FIFO has room
+	for(i=0; i<4; ++i) {
+		next = (fifo->head + i) % sizeof(fifo->buf);
+		if (next == fifo->tail) {
+			// full
+			printf_lpc(UART0, "FIFO full\n");
+			return FALSE;
+		}
+	}
+
+	fifo->buf[fifo->head]   = w &  0xff;
+	fifo->buf[fifo->head+1] = ((w & (0xff << 8)) >> 8);
+	fifo->buf[fifo->head+2] = ((w & (0xff << 16)) >> 16);
+	fifo->buf[fifo->head+3] = ((w & (0xff << 24)) >> 24);
+
+	fifo->head = fifo-> head+4;
+
+	return TRUE;
+
+}
 
 BOOL fifo_put(fifo_type *fifo, uint8_t c)
 {

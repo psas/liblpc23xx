@@ -69,11 +69,12 @@
 enum {BIN=2, OCT=8, DEC=10, HEX=16} ;
 
 
-/*
+/**
  * __get_cpsr
  * ---------------------------------------
  * Reads and returns the value of the cpsr
-http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka3724.html
+ *
+   \sa <a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka3724.html> ARM FAQ </a>
  */
 static inline uint32_t __get_cpsr(void) {
     uint32_t retval;
@@ -81,7 +82,7 @@ static inline uint32_t __get_cpsr(void) {
     return retval;
 }
 
-/*
+/**
  * __set_cpsr
  * ---------------------------------------
  * Set the value of the cpsr
@@ -103,7 +104,18 @@ static inline void __set_cpsr(uint32_t val) {
     save_Tbit    = (current_cpsr & (1<<T_BIT));
     val          = (val & T_MASK) | save_Tbit;
 
+    // try to let previous instructions finish
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+
     asm volatile (" msr  cpsr, %0" : /* no outputs */ : "r" (val)  );
+
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+    asm volatile ("nop" : /* no outputs */ : /* no inputs */  );
+
+
 }
 
 inline uint32_t util_getbitval(uint32_t val, uint32_t bitnumber) ;

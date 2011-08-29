@@ -655,7 +655,7 @@ BOOL USBHwInit(void)
   /* The LPC23xx uses a single PLL, and has multiple clock dividers for each
    * peripheral. These settings assume a PLL frequency of 288 MHz */
 
-    USBCLKCFG = 5; /* 288 MHz / 48 MHz = 6 */
+   // USBCLKCFG = 5; /* 288 MHz / 48 MHz = 6 */    /* this is set in liblpc23xx/lpc23xx-pll */
 
 #ifdef LPC2378_PORTB
     USBClkCtrl = (1 << 1) | (1 << 3) | (1 << 4); /* Enable the clocks */
