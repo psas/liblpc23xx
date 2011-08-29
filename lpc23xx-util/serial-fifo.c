@@ -51,6 +51,8 @@ BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
             // full
             printf_lpc(UART0, "fifo_putword: FIFO full at %d\n", i);
             return FALSE;
+        } else {
+        	printf_lpc(UART0, ".");
         }
     }
 
