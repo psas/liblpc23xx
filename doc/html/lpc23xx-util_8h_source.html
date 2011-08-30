@@ -48,8 +48,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div class="navpath">
     <ul>
-      <li><a class="el" href="dir_e4dfa478c58efc806db5436356a5f2cd.html">lpc23xx-util</a>      </li>
-      <li><a class="el" href="dir_1f25994a3ad693a332e6f030338b21e2.html">include</a>      </li>
+      <li><a class="el" href="dir_647ac58bf6f0822ea7e4800a871e9072.html">lpc23xx-util</a>      </li>
+      <li><a class="el" href="dir_cdc7cf0f7d4049ad8e5148084034bb5f.html">include</a>      </li>
     </ul>
   </div>
 </div>
@@ -129,64 +129,56 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00069"></a><a class="code" href="lpc23xx-util_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a43142945bd5595d577da681f126ee453">00069</a> <span class="keyword">enum</span> {<a class="code" href="lpc23xx-util_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a3dba92f17ebb0d7efe6056d51e9acdc7">BIN</a>=2, <a class="code" href="lpc23xx-util_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a43142945bd5595d577da681f126ee453">OCT</a>=8, <a class="code" href="lpc23xx-util_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a851043138f8ef49c6eeea75760b69481">DEC</a>=10, <a class="code" href="lpc23xx-util_8h.html#adf764cbdea00d65edcd07bb9953ad2b7ad3c20094c5fe3327350484d01c44c137">HEX</a>=16} ;
 <a name="l00070"></a>00070 
 <a name="l00071"></a>00071 
-<a name="l00072"></a>00072 <span class="comment">/*</span>
-<a name="l00073"></a>00073 <span class="comment"> * __get_cpsr</span>
-<a name="l00074"></a>00074 <span class="comment"> * ---------------------------------------</span>
-<a name="l00075"></a>00075 <span class="comment"> * Reads and returns the value of the cpsr</span>
-<a name="l00076"></a>00076 <span class="comment">http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka3724.html</span>
-<a name="l00077"></a>00077 <span class="comment"> */</span>
-<a name="l00078"></a><a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">00078</a> <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t <a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">__get_cpsr</a>(<span class="keywordtype">void</span>) {
-<a name="l00079"></a>00079     uint32_t retval;
-<a name="l00080"></a>00080     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot; mrs  %0, cpsr&quot;</span> : <span class="stringliteral">&quot;=r&quot;</span> (retval) : <span class="comment">/* no inputs */</span>  );
-<a name="l00081"></a>00081     <span class="keywordflow">return</span> retval;
-<a name="l00082"></a>00082 }
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084 <span class="comment">/*</span>
-<a name="l00085"></a>00085 <span class="comment"> * __set_cpsr</span>
-<a name="l00086"></a>00086 <span class="comment"> * ---------------------------------------</span>
-<a name="l00087"></a>00087 <span class="comment"> * Set the value of the cpsr</span>
-<a name="l00088"></a>00088 <span class="comment"> * This will force the processor into, then out of system (privileged) mode.</span>
-<a name="l00089"></a>00089 <span class="comment"> *  Resulting processor mode is decided by caller by setting mode bits in val.</span>
-<a name="l00090"></a>00090 <span class="comment"> * Don&#39;t change the &#39;T&#39; bit.</span>
-<a name="l00091"></a>00091 <span class="comment"> *  &quot;Never use an MSR instruction to force a change to the state of the T bit in the CPSR. If</span>
-<a name="l00092"></a>00092 <span class="comment"> *  you do this, the processor enters an unpredictable state.&quot;</span>
-<a name="l00093"></a>00093 <span class="comment"> *</span>
-<a name="l00094"></a>00094 <span class="comment"> * This is a very dangerous function, use at your own risk.</span>
-<a name="l00095"></a>00095 <span class="comment"> * Reference: ARM7TDMI-S Technical Reference Manual, p54 &quot;The Control Bits&quot;</span>
-<a name="l00096"></a>00096 <span class="comment"> */</span>
-<a name="l00097"></a><a class="code" href="lpc23xx-util_8h.html#a7e24ee22ecb6e2f1b94818abfd3489c3">00097</a> <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="lpc23xx-util_8h.html#a7e24ee22ecb6e2f1b94818abfd3489c3">__set_cpsr</a>(uint32_t val) {
-<a name="l00098"></a>00098     uint32_t current_cpsr ;
-<a name="l00099"></a>00099     uint32_t save_Tbit;
-<a name="l00100"></a>00100    
-<a name="l00101"></a>00101     current_cpsr = <a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">__get_cpsr</a>();
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103     save_Tbit    = (current_cpsr &amp; (1&lt;&lt;T_BIT));
-<a name="l00104"></a>00104     val          = (val &amp; T_MASK) | save_Tbit;
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot; msr  cpsr, %0&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="stringliteral">&quot;r&quot;</span> (val)  );
-<a name="l00107"></a>00107 }
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109 <span class="keyword">inline</span> uint32_t <a class="code" href="lpc23xx-util_8h.html#a6e876710334574b44efc418a30c6976e">util_getbitval</a>(uint32_t val, uint32_t bitnumber) ;
-<a name="l00110"></a>00110 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#afc93278c228b75dd4390d834b0e83206">util_cpsrstat</a>(uint32_t cpsrval);
+<a name="l00079"></a><a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">00079</a> <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t <a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">__get_cpsr</a>(<span class="keywordtype">void</span>) {
+<a name="l00080"></a>00080     uint32_t retval;
+<a name="l00081"></a>00081     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot; mrs  %0, cpsr&quot;</span> : <span class="stringliteral">&quot;=r&quot;</span> (retval) : <span class="comment">/* no inputs */</span>  );
+<a name="l00082"></a>00082     <span class="keywordflow">return</span> retval;
+<a name="l00083"></a>00083 }
+<a name="l00084"></a>00084 
+<a name="l00098"></a><a class="code" href="lpc23xx-util_8h.html#a7e24ee22ecb6e2f1b94818abfd3489c3">00098</a> <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="lpc23xx-util_8h.html#a7e24ee22ecb6e2f1b94818abfd3489c3">__set_cpsr</a>(uint32_t val) {
+<a name="l00099"></a>00099     uint32_t current_cpsr ;
+<a name="l00100"></a>00100     uint32_t save_Tbit;
+<a name="l00101"></a>00101    
+<a name="l00102"></a>00102     current_cpsr = <a class="code" href="lpc23xx-util_8h.html#a0e12e278b7d45d0cf284b3930055ba66">__get_cpsr</a>();
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104     save_Tbit    = (current_cpsr &amp; (1&lt;&lt;T_BIT));
+<a name="l00105"></a>00105     val          = (val &amp; T_MASK) | save_Tbit;
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107     <span class="comment">// try to let previous instructions finish</span>
+<a name="l00108"></a>00108     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
+<a name="l00109"></a>00109     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
+<a name="l00110"></a>00110     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
 <a name="l00111"></a>00111 
-<a name="l00112"></a>00112 uint32_t        <a class="code" href="lpc23xx-util_8h.html#a813b191b29361ee7cce950ec305bbe4e">microsecondsToCPUTicks</a>(<span class="keyword">const</span> uint32_t microseconds) ;
-<a name="l00113"></a>00113 uint32_t        <a class="code" href="lpc23xx-util_8h.html#afe7c96cfed739ff1216d6e6425eaf470">millisecondsToCPUTicks</a>(<span class="keyword">const</span> uint32_t milliseconds) ;
-<a name="l00114"></a>00114 
-<a name="l00115"></a>00115 <span class="keywordtype">char</span>*           <a class="code" href="lpc23xx-util_8h.html#a8d7c10f71dfcfbb8456b888c4eaa9e38">util_itoa</a>(int32_t val, uint32_t base) ;
-<a name="l00116"></a>00116 <span class="keywordtype">char</span>*           <a class="code" href="lpc23xx-util_8h.html#a849b2488a030887e8cdfb2b04c5ecad3">util_uitoa</a>(uint32_t val, uint32_t base) ;
+<a name="l00112"></a>00112     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot; msr  cpsr, %0&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="stringliteral">&quot;r&quot;</span> (val)  );
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
+<a name="l00115"></a>00115     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
+<a name="l00116"></a>00116     <span class="keyword">asm</span> <span class="keyword">volatile</span> (<span class="stringliteral">&quot;nop&quot;</span> : <span class="comment">/* no outputs */</span> : <span class="comment">/* no inputs */</span>  );
 <a name="l00117"></a>00117 
-<a name="l00118"></a>00118 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#a783d146184ee3eb97761fe34d9ed9c9b">debug_msg</a>(<span class="keywordtype">char</span>* <a class="code" href="namespacebaudcalc.html#a8521e4aa6133364d3894088aab1dae9f">msg</a>) ;
-<a name="l00119"></a>00119 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#aed514ec86e45743401320649718af06f">debug_val</a>(<span class="keywordtype">char</span>* <a class="code" href="namespacebaudcalc.html#a8521e4aa6133364d3894088aab1dae9f">msg</a>, int32_t val, uint32_t base) ;
+<a name="l00118"></a>00118 
+<a name="l00119"></a>00119 }
 <a name="l00120"></a>00120 
-<a name="l00121"></a>00121 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#aa696c346ee9a5a1500389fd8a0281483">putstring_lpc</a>(<a class="code" href="lpc23xx-uart_8h.html#ac4c2b91b822d841fe23157d18557cc51">uartport</a> p, <span class="keyword">const</span> <span class="keywordtype">char</span> *s) ;
-<a name="l00122"></a>00122 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#a0b8c2a9a0fb2f838f21207de7d6eee20">putchar_lpc</a>(<a class="code" href="lpc23xx-uart_8h.html#ac4c2b91b822d841fe23157d18557cc51">uartport</a> p,  <span class="keywordtype">char</span> c) ;
+<a name="l00121"></a>00121 <span class="keyword">inline</span> uint32_t <a class="code" href="lpc23xx-util_8h.html#a6e876710334574b44efc418a30c6976e">util_getbitval</a>(uint32_t val, uint32_t bitnumber) ;
+<a name="l00122"></a>00122 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#afc93278c228b75dd4390d834b0e83206">util_cpsrstat</a>(uint32_t cpsrval);
 <a name="l00123"></a>00123 
-<a name="l00124"></a>00124 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#af32f90b02cfa95fe6885da338f7a3c9c">util_waitticks</a>(uint32_t ticks) ;
-<a name="l00125"></a>00125 
-<a name="l00126"></a>00126 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#adab38b65ca3013fc7e142959986760c5">util_wait_msecs</a>(uint32_t msecs) ;
-<a name="l00127"></a>00127 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#af86822f92f74df8186240524178b03d8">util_wait_usecs</a>(uint32_t usecs) ;
-<a name="l00128"></a>00128 
-<a name="l00129"></a>00129 <span class="preprocessor">#endif</span>
+<a name="l00124"></a>00124 uint32_t        <a class="code" href="lpc23xx-util_8h.html#a813b191b29361ee7cce950ec305bbe4e">microsecondsToCPUTicks</a>(<span class="keyword">const</span> uint32_t microseconds) ;
+<a name="l00125"></a>00125 uint32_t        <a class="code" href="lpc23xx-util_8h.html#afe7c96cfed739ff1216d6e6425eaf470">millisecondsToCPUTicks</a>(<span class="keyword">const</span> uint32_t milliseconds) ;
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 <span class="keywordtype">char</span>*           <a class="code" href="lpc23xx-util_8h.html#a8d7c10f71dfcfbb8456b888c4eaa9e38">util_itoa</a>(int32_t val, uint32_t base) ;
+<a name="l00128"></a>00128 <span class="keywordtype">char</span>*           <a class="code" href="lpc23xx-util_8h.html#a849b2488a030887e8cdfb2b04c5ecad3">util_uitoa</a>(uint32_t val, uint32_t base) ;
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#a783d146184ee3eb97761fe34d9ed9c9b">debug_msg</a>(<span class="keywordtype">char</span>* <a class="code" href="namespacebaudcalc.html#a8521e4aa6133364d3894088aab1dae9f">msg</a>) ;
+<a name="l00131"></a>00131 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#aed514ec86e45743401320649718af06f">debug_val</a>(<span class="keywordtype">char</span>* <a class="code" href="namespacebaudcalc.html#a8521e4aa6133364d3894088aab1dae9f">msg</a>, int32_t val, uint32_t base) ;
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#aa696c346ee9a5a1500389fd8a0281483">putstring_lpc</a>(<a class="code" href="lpc23xx-uart_8h.html#ac4c2b91b822d841fe23157d18557cc51">uartport</a> p, <span class="keyword">const</span> <span class="keywordtype">char</span> *s) ;
+<a name="l00134"></a>00134 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#a0b8c2a9a0fb2f838f21207de7d6eee20">putchar_lpc</a>(<a class="code" href="lpc23xx-uart_8h.html#ac4c2b91b822d841fe23157d18557cc51">uartport</a> p,  <span class="keywordtype">char</span> c) ;
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#af32f90b02cfa95fe6885da338f7a3c9c">util_waitticks</a>(uint32_t ticks) ;
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#adab38b65ca3013fc7e142959986760c5">util_wait_msecs</a>(uint32_t msecs) ;
+<a name="l00139"></a>00139 <span class="keywordtype">void</span>            <a class="code" href="lpc23xx-util_8h.html#af86822f92f74df8186240524178b03d8">util_wait_usecs</a>(uint32_t usecs) ;
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -203,7 +195,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Aug 26 2011 13:17:58 for liblpc23xx by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Mon Aug 29 2011 18:41:28 for liblpc23xx by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>
