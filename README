@@ -3,6 +3,11 @@ PSAS utility library for NXP LPC23xx uControllers (http://www.nxp.com/).
 
 Top level Makefile builds liblpc23xx.a.
 
+------- common files
+
+The startup directory contains common files for linking an object
+file. It also contains files for programming with openocd.
+
 ------- gcc version note
 
 export GCC_VERSION=4.x.x to override default gcc version in makefile.

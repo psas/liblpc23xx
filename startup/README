@@ -1,3 +1,26 @@
 
+
+To create an object file that will execute on an lpc23xx there
+are a set of files stored here which should be used to 
+help maintain a consistent development environment. Please
+don't write your own boot.s without a very good reason.
+
 common initialization files 
+---------------------------
+
+boot.s: boot loader
+
+lpc23xx.ld: linker file
+
+hwsys.c: interrupt vector file
+
+include/hwsys.h: include file for hwsys.c
+
+openocd files
+-----------------------------
+
+openocd_lpc23xx.cfg: configuration file for openocd jtag software
+
+oocd_flash_lpc23xx.script: script example file for openocd programming.
+
 
