@@ -60,14 +60,14 @@
 #define         mainOSC_READY              ( OSCSTAT )
 #define         mainOSC_SELECT             ( CLKSRCSEL = 0x1 )
 
-#define         CCLK_IS_FCCODIV1           ( CCLKCFG = 0x0   )
-#define         CCLK_IS_FCCODIV4           ( CCLKCFG = 0x3   )
-#define         CCLK_IS_FCCODIV8           ( CCLKCFG = 0x7  )
-#define         CCLK_IS_FCCODIV10          ( CCLKCFG = 0x9  )
-#define         CCLK_IS_FCCODIV40          ( CCLKCFG = 0x39 )
+#define         CCLK_IS_FCCODIV1           ( CCLKCFG   = 0  )
+#define         CCLK_IS_FCCODIV4           ( CCLKCFG   = 3  )
+#define         CCLK_IS_FCCODIV8           ( CCLKCFG   = 7  )
+#define         CCLK_IS_FCCODIV10          ( CCLKCFG   = 9  )
+#define         CCLK_IS_FCCODIV40          ( CCLKCFG   = 39 )
 
-#define         USB_IS_FCCODIV6            ( USBCLKCFG = 5 )
-#define         USB_IS_FCCODIV10           ( USBCLKCFG = 9 )
+#define         USB_IS_FCCODIV6            ( USBCLKCFG = 5  )
+#define         USB_IS_FCCODIV10           ( USBCLKCFG = 9  )
 
 typedef enum {CCLK_DIV1=0, CCLK_DIV2, CCLK_DIV4, CCLK_DIV6, CCLK_DIV8} pclk_scale;
 
