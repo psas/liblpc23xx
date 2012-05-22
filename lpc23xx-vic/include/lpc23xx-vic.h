@@ -24,16 +24,15 @@
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-vic.h
+/*! \file lpc23xx-vic.h
  */
 
 #ifndef _LPC23XX_VIC_H
 #define _LPC23XX_VIC_H
 
+#include "lpc23xx.h"
 
-#define EXIT_INTERRUPT  VICVectAddr=0x0
+#define EXIT_INTERRUPT  VICAddress=0x0
 
 /*
  *
