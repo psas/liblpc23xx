@@ -126,6 +126,9 @@ uint32_t microsecondsToCPUTicks(const uint32_t microseconds) {
 
 /*
  * millisecondsToCPUTicks
+ *
+ * (1e6 ticks/sec) x (1sec/1000msec) = 1e3ticks/msec * Xmsec = (X * 1e3) ticks
+ *
  */
 uint32_t millisecondsToCPUTicks(const uint32_t milliseconds) {
     uint32_t ret = (pllquery_cclk_mhz() / 1000) * milliseconds;
@@ -264,42 +267,32 @@ void util_waitticks(uint32_t ticks) {
     for(j=ticks; j>0; --j) k++;
 }
 
-/*
- * util_wait_msecs
- * wait n millisecs
+/*! \brief Attempt to build a consistent delay function
+ *
+ * @param msecs  number of millisecs to wait
+ *
+ * \warning This is approximate.
  */
 void util_wait_msecs(uint32_t msecs) {
 
-        uint32_t ticks = 0;
-        /* 
-         * scale is an empirically derived number.
-         * It adjusts for the number of tics to execute
-         * the loop and call to util_waitticks at optimization
-         * -O3. Other optimizations will have different timings.
-         * The error was measured at +1.9msecs for a 200msec test.
-         * This is about 1%...
-         */
-        uint32_t scale = 85;
+	uint32_t ticks = 0;
+	uint32_t scale = 45;
 
 	ticks = millisecondsToCPUTicks(msecs);
 
 	util_waitticks(ticks / scale);
-
 }
 
-/*
- * util_wait_usecs
- * wait n uillisecs
+/*! \brief Attempt to build a consistent delay function
+ *
+ * @param usecs  number of usecs to wait
+ *
+ * \warning This is approximate.
  */
 void util_wait_usecs(uint32_t usecs) {
 
-        uint32_t ticks = 0;
-        /* 
-         * scale is an empirically derived number.
-         * see notes in util_wait_msecs. Not as well 
-         * tested for usecs.
-         */
-        uint32_t scale = 85;
+	uint32_t ticks = 0;
+	uint32_t scale = 85;
 
 	ticks = microsecondsToCPUTicks(usecs);
 
