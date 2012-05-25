@@ -24,9 +24,7 @@
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-uart.h
+/*! \file lpc23xx-uart.h
  */
 
 #ifndef _LPC23XX_UART_H
@@ -34,7 +32,7 @@
 
 #include <stdint.h>
 
-#define UART_MAXBUFFER  121 
+#define         UART_MAXBUFFER            121
 
 /*
  * PCLKSEL0
@@ -87,6 +85,45 @@
 /*
  * uart pins and register masks
  */
+#define         RBRIE_BIT                 0
+#define         THREIE_BIT                1
+#define         RXLSIE_BIT                2
+
+#define         VIC_UART0_BIT             6   // lpc23xx manual page 94 VIC
+#define         VIC_UART1_BIT             7
+#define         VIC_UART2_BIT             28
+#define         VIC_UART3_BIT             29
+
+#define         VIC_ENABLE_UART0_INT      (VICIntEnable = (VICIntEnable | (1<<VIC_UART0_BIT)   ))
+#define         VIC_DISABLE_UART0_INT     (VICIntEnable = (VICIntEnable & (~(1<<VIC_UART0_BIT))))
+
+#define         VIC_ENABLE_UART1_INT      (VICIntEnable = (VICIntEnable | (1<<VIC_UART1_BIT)   ))
+#define         VIC_DISABLE_UART1_INT     (VICIntEnable = (VICIntEnable & (~(1<<VIC_UART1_BIT))))
+
+#define         VIC_ENABLE_UART2_INT      (VICIntEnable = (VICIntEnable | (1<<VIC_UART2_BIT)   ))
+#define         VIC_DISABLE_UART2_INT     (VICIntEnable = (VICIntEnable & (~(1<<VIC_UART2_BIT))))
+
+#define         VIC_ENABLE_UART3_INT      (VICIntEnable = (VICIntEnable | (1<<VIC_UART3_BIT)   ))
+#define         VIC_DISABLE_UART3_INT     (VICIntEnable = (VICIntEnable & (~(1<<VIC_UART3_BIT))))
+
+#define         VIC_UART0_SELECT_IRQ      (VICIntSelect = (VICIntSelect & (~(1<<VIC_UART0_BIT)) ))
+#define         VIC_UART0_SELECT_FIQ      (VICIntSelect = (VICIntSelect | (1<<VIC_UART0_BIT)    ))
+
+#define         VIC_UART1_SELECT_IRQ      (VICIntSelect = (VICIntSelect & (~(1<<VIC_UART1_BIT)) ))
+#define         VIC_UART1_SELECT_FIQ      (VICIntSelect = (VICIntSelect | (1<<VIC_UART1_BIT)    ))
+
+#define         VIC_UART2_SELECT_IRQ      (VICIntSelect = (VICIntSelect & (~(1<<VIC_UART2_BIT)) ))
+#define         VIC_UART2_SELECT_FIQ      (VICIntSelect = (VICIntSelect | (1<<VIC_UART2_BIT)    ))
+
+#define         VIC_UART3_SELECT_IRQ      (VICIntSelect = (VICIntSelect & (~(1<<VIC_UART3_BIT)) ))
+#define         VIC_UART3_SELECT_FIQ      (VICIntSelect = (VICIntSelect | (1<<VIC_UART3_BIT)    ))
+
+#define         VIC_UART0_SET_PRIORITY(pri) (VICVectPriority6  = pri)
+#define         VIC_UART1_SET_PRIORITY(pri) (VICVectPriority7  = pri)
+#define         VIC_UART2_SET_PRIORITY(pri) (VICVectPriority28 = pri)
+#define         VIC_UART3_SET_PRIORITY(pri) (VICVectPriority29 = pri)
+
+#define         USB_SET_VIC_HANDLER(name) (VICVectAddr22 = (unsigned int)name)
 #define         P0_RXD0_TXD0_MASK         (~(0xF0))
 #define         P0_RXD0_TXD0_ENABLE       0x50
 
@@ -161,9 +198,11 @@ extern struct uart0_status {
     uint8_t stopbits;
 } uart0stat ;
 
-//extern char uart0_linebuffer[UART_MAXBUFFER] ;
-
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
+
+void    uart_enable_interrupt(uartport u);
+
+void    uart_disable_interrupt(uartport u);
 
 Baud    uart0_query_baud(void) ;
 
@@ -178,7 +217,7 @@ void    uart0_putchar(char ch) ;
 
 void    uart0_putstring(const char *s) ;
 
-char  uart0_getchar (void) ;
+char    uart0_getchar (void) ;
 
 char*   uart0_getstring (void) ;
 

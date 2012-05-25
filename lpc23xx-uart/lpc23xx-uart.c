@@ -24,19 +24,84 @@
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-uart.c
+/*! \file lpc23xx-uart.c
  */
 
 #include <stdint.h>
-#include "lpc23xx.h"
+#include <stdbool.h>
 
+#include "lpc23xx.h"
 #include "lpc23xx-pll.h"
+#include "lpc23xx-vic.h"
 
 #include "lpc23xx-uart.h"
 
 struct uart0_status uart0stat;
+
+/*! \brief enable the interrupts on uartport u
+ *
+ * @param u
+ */
+void uart_enable_interrupt(uartport u) {
+	switch(u){
+	case UART0:
+		U0IER =  (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT);
+		VIC_UART0_SELECT_IRQ ;
+		VIC_ENABLE_UART0_INT ;
+		VIC_UART0_SET_PRIORITY(3) ;
+		break;
+	case UART1:
+		U1IER =  (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT);
+		VIC_UART1_SELECT_IRQ ;
+		VIC_ENABLE_UART1_INT ;
+		VIC_UART1_SET_PRIORITY(3) ;
+		break;
+	case UART2:
+		U2IER =  (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT);
+		VIC_UART2_SELECT_IRQ ;
+		VIC_ENABLE_UART2_INT ;
+		VIC_UART2_SET_PRIORITY(3) ;
+		break;
+	case UART3:
+		U3IER =  (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT);
+		VIC_UART3_SELECT_IRQ ;
+		VIC_ENABLE_UART3_INT ;
+		VIC_UART3_SET_PRIORITY(3) ;
+		break;
+	default:
+		break;
+	}
+	CLEAR_DLAB0;
+}
+
+/*! \brief disable the interrupts on uartport u
+ *
+ * @param u
+ *
+ * \warning Priority is default to 3 in VIC and IRQ is default in VIC.
+ */
+void uart_disable_interrupt(uartport u) {
+	switch(u) {
+		case UART0:
+			U0IER =  U0IER & ( ~( (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT) ) );
+			VIC_DISABLE_UART0_INT ;
+			break;
+		case UART1:
+			U1IER =  U1IER & ( ~( (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT) ) );
+			VIC_DISABLE_UART1_INT ;
+			break;
+		case UART2:
+			U2IER =  U2IER & ( ~( (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT) ) );
+			VIC_DISABLE_UART2_INT ;
+			break;
+		case UART3:
+			U3IER =  U3IER & ( ~( (1<<RXLSIE_BIT) | (1<<THREIE_BIT) | (1<<RBRIE_BIT) ) );
+			VIC_DISABLE_UART3_INT ;
+			break;
+		default:
+			break;
+	}
+}
 
 /*
  * uart0_query_baud
@@ -103,7 +168,7 @@ void uart0_init_9600(void) {
             while(1);
             break;
     }
-    // enable interrupt
+
     UART0_FCR_ONE_CHAR_EN;
 
     // set parameters
@@ -111,6 +176,8 @@ void uart0_init_9600(void) {
 
     uart0stat.charlength = 8;
     uart0stat.stopbits   = 1;
+
+    // reset tx/rx fifo
 
     CLEAR_DLAB0;
 

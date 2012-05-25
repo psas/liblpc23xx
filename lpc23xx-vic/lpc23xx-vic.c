@@ -37,6 +37,23 @@
 #include "lpc23xx-vic.h"
 
 
+/*! \brief turn interrupts off at the CPU status register
+ *
+ * @return
+ */
+void vic_cpu_disable_interrupts() {
+	vic_disableIRQ();
+    vic_disableFIQ();
+}
+
+/*! \brief turn interrupts on at the CPU status register
+ *
+ * @return
+ */
+void vic_cpu_enable_interrupts() {
+	vic_enableIRQ();
+	vic_enableFIQ();
+}
 /* 
  * vic_disableIRQ
  * The IRQ bit in the CPSR must be cleared for IRQ ints 
