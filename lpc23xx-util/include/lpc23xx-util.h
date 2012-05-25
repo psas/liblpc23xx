@@ -34,6 +34,7 @@
 
 #include "lpc23xx.h"
 #include "lpc23xx-uart.h"
+#include "ringbuffer.h"
 
 // Use typeof to avoid side effects from MAX(i++,j++) type of call.
 //  (only evaluate each variable once.)
@@ -117,6 +118,9 @@ static inline void __set_cpsr(uint32_t val) {
 
 
 }
+
+void            rb_print_buffer(Ringbuffer* rb) ;
+void            rb_print_state(Ringbuffer* rb);
 
 inline uint32_t util_getbitval(uint32_t val, uint32_t bitnumber) ;
 void            util_cpsrstat(uint32_t cpsrval);

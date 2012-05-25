@@ -1,6 +1,5 @@
 
-/*!
- * \file ringbuffer.c
+/*! \file ringbuffer.c
  *
  */
 

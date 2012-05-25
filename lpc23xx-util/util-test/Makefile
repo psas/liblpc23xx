@@ -15,4 +15,6 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/lpc23xx-timer/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
+DEBUG           = -DDEBUG_UTIL
+
 include $(LIBDIR)/include/common-test-make.mk

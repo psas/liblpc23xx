@@ -25,14 +25,14 @@
  */
 
 
-/*
- * lpc23xx-util.c
+/*! \file lpc23xx-util.c
  */
 
 #include <stdint.h>
 #include <string.h>
 
 #include "lpc23xx.h"
+#include "lpc23xx-debug.h"
 
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
@@ -41,7 +41,29 @@
 
 #include "printf-lpc.h"
 
+#include "ringbuffer.h"
 #include "lpc23xx-util.h"
+
+
+
+/*! \brief Print the contents of the ringbuffer
+ *
+ */
+void rb_print_buffer(Ringbuffer* rb) {
+	uint8_t i=0;
+
+	DBG(UART0,"Print buffer hp:%d tp:%d\r\n", rb->headidx, rb->tailidx);
+	for(i=0; i<MAX_RINGBUFFER_ELEMS; ++i) {
+		DBG(UART0,"rbuff[%d]: %c\n\r",i, rb->rbuff[i]);
+	}
+}
+
+void rb_print_state(Ringbuffer* rb) {
+
+	DBG(UART0,"\n\rStatus:\n\r");
+	DBG(UART0,"num entries: %d\n\r", rb->num_entries);
+
+}
 
 /*
  * util_getbitval
