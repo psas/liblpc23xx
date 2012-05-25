@@ -108,7 +108,35 @@ void i2c_init_state( i2c_master_xact_t* s) {
  * 3. Set I/O pins to correct mode
  * 4. Configure interrupt in VIC
  */
-void i2c_init(i2c_iface channel) {
+//void i2c1_alt_init(){
+//	init_binsem(&i2c1_binsem_g);
+//
+//	i2c_init_state( &i2c1_s_g );
+//
+//	POWER_I2C1_ON;
+//
+//	I2C1CONCLR = 0x7C;
+//	I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
+//
+//	I2C2_IS_CCLK_DIV1;
+//	I2C1SCLL   = I2SCLLOW;
+//	I2C1SCLH   = I2SCLHIGH;
+//
+//	I2C1_ENABLE_SDA1_ALT_PIN;
+//	I2C1_ENABLE_SCL1_ALT_PIN;
+//
+//	// reference: lpc23xx usermanual p158 table 107 footnote 2
+//	I2C1_SDA1_ALT_PULLUP;
+//
+//	// vic
+//	// set up VIC p93 table 86 lpc23xx user manual
+//	ENABLE_I2C1_INT;
+//	VICVectAddr19 = (unsigned int) i2c1_isr;
+//
+//	I2C1CONCLR    = I2C_SIC;
+//}
+
+void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
     switch(channel) {
         case I2C0: 
@@ -145,7 +173,7 @@ void i2c_init(i2c_iface channel) {
 
         case I2C1: 
 
-            init_binsem(&i2c1_binsem_g);
+        	init_binsem(&i2c1_binsem_g);
 
             i2c_init_state( &i2c1_s_g );
 
@@ -157,12 +185,20 @@ void i2c_init(i2c_iface channel) {
             I2C2_IS_CCLK_DIV1;
             I2C1SCLL   = I2SCLLOW;
             I2C1SCLH   = I2SCLHIGH;
+            if(pin == I2C1_ALTPIN){
+            	I2C1_ENABLE_SDA1_ALT_PIN;
+            	I2C1_ENABLE_SCL1_ALT_PIN;
 
-            I2C1_ENABLE_SDA1_PIN;
-            I2C1_ENABLE_SCL1_PIN;
+				// reference: lpc23xx usermanual p158 table 107 footnote 2
+				I2C1_SDA1_ALT_PULLUP;
+            }
+            else{
+            	I2C1_ENABLE_SDA1_PIN;
+				I2C1_ENABLE_SCL1_PIN;
 
-            // reference: lpc23xx usermanual p158 table 107 footnote 2
-            I2C1_SDA1_PULLUP;
+				// reference: lpc23xx usermanual p158 table 107 footnote 2
+				I2C1_SDA1_PULLUP;
+            }
 
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
@@ -956,7 +992,7 @@ void i2c2_isr(void) {
         }
         i2c2_s_g.xact_active = 0;
 
-        // _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
+        _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
         i2c_init_state(&i2c2_s_g) ;
         release_binsem(&i2c2_binsem_g);
     }
@@ -1094,3 +1130,16 @@ void start_i2c2_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
     }
 }
 
+void start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s, XACT_FnCallback* xact_fn){
+    switch(i2c_ch){
+    case I2C0:
+    	start_i2c0_master_xact(s, xact_fn);
+    	break;
+    case I2C1:
+    	start_i2c1_master_xact(s, xact_fn);
+    	break;
+    case I2C2:
+    	start_i2c2_master_xact(s, xact_fn);
+    	break;
+    }
+}

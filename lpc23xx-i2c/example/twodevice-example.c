@@ -312,7 +312,7 @@ int main (void) {
 
     uart0_putstring("\n***Starting i2c two device test (olimex2378)***\n\n");
 
-    i2c_init(I2C0);
+    i2c_init(I2C0, DEFAULT);
     // strange duty cycle just for fun.
     i2c_freq(I2C0, (uint16_t) 90, (uint16_t) 180);
 
