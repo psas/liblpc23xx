@@ -25,8 +25,7 @@
  */
 
 
-/*
- * printf_lpc.c
+/*! \file printf_lpc.c
  */
 
 #include <stdarg.h>
@@ -38,13 +37,13 @@
 
 #include "printf-lpc.h"
 
-/* 
+/*!
  * doubles (%g) might be accommodated with dtoa() from gcc/newlib dist, but
  * this uses a large amount of code space. Is it really necessary? Omitted
  * for now.
  */
 
-/*
+/*!
  * print_lpc
  */
 void print_lpc(uartport fd, const char *format, va_list args ) {
@@ -94,7 +93,7 @@ void print_lpc(uartport fd, const char *format, va_list args ) {
     }
 }
 
-/*
+/*! \break up the va_list
  * printf_lpc
  */
 void printf_lpc(uartport fd, const char *format, ... ) {

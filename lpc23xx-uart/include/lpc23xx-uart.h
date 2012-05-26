@@ -31,6 +31,8 @@
 #define _LPC23XX_UART_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "ringbuffer.h"
 
 #define         UART_MAXBUFFER            121
 
@@ -198,6 +200,8 @@ extern struct uart0_status {
     uint8_t stopbits;
 } uart0stat ;
 
+extern Ringbuffer     uart0_rb_g;
+
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
 
 void    uart_enable_interrupt(uartport u);
@@ -212,7 +216,7 @@ uint8_t uart0_query_stopbits(void) ;
 
 void    uart0_init_9600(void) ;
 void    uart0_init_115200(void) ;
-
+bool    uart0_init_rb() ;
 void    uart0_putchar(char ch) ;
 
 void    uart0_putstring(const char *s) ;
