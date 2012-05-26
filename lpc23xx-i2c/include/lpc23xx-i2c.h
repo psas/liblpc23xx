@@ -107,10 +107,13 @@
 #define I2SCLHIGH           300
 #define I2SCLLOW            300
 
-// Pinsel0 has builtin pullup. 
+// Pinsel0 has builtin pullup. //should this be I2C0?
 // Pinsel1&2 do not. 
-#define I2C1_SDA1_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<6))) // P0.19
-#define I2C1_SCL1_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<8))) // P0.20
+#define I2C1_SDA1_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<0))) // P0.0
+#define I2C1_SCL1_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<2))) // P0.1
+
+#define I2C1_SDA1_ALT_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<6))) // P0.19
+#define I2C1_SCL1_ALT_PULLUP    (PINMODE1 = (PINMODE1 & ~(3<<8))) // P0.20
 
 #define I2C2_SDA2_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<20))) // P0.10
 #define I2C2_SCL2_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<22))) // P0.11
@@ -129,6 +132,12 @@
 #define SCL1_SEL           0x3<<2
 #define SCL1MASK           ~(0x3<<2)
 
+#define SDA1_SEL_ALT       (0x3<<6)
+#define SDA1MASK_ALT	   ~(0x3<<6)
+
+#define SCL1_SEL_ALT       0x3<<8
+#define SCL1MASK_ALT       ~(0x3<<8)
+
 #define SDA0_SEL            0x1<<22
 #define SDA0MASK           ~(0x3<<22)
 
@@ -141,13 +150,20 @@
 #define I2C1_ENABLE_SDA1_PIN   (PINSEL0 = ((PINSEL0 & SDA1MASK) | SDA1_SEL))
 #define I2C1_ENABLE_SCL1_PIN   (PINSEL0 = ((PINSEL0 & SCL1MASK) | SCL1_SEL))
 
+#define I2C1_ENABLE_SDA1_ALT_PIN   (PINSEL1 = ((PINSEL1 & SDA1MASK_ALT) | SDA1_SEL_ALT))
+#define I2C1_ENABLE_SCL1_ALT_PIN   (PINSEL1 = ((PINSEL1 & SCL1MASK_ALT) | SCL1_SEL_ALT))
+
 #define I2C2_ENABLE_SDA2_PIN   (PINSEL0 = ((PINSEL0 & SDA2MASK) | SDA2_SEL))
 #define I2C2_ENABLE_SCL2_PIN   (PINSEL0 = ((PINSEL0 & SCL2MASK) | SCL2_SEL))
 
 #define I2C_BINSEM_WAITTICKS  3000
 
 
-typedef enum { I2C0=0, I2C1, I2C2 } i2c_iface;
+typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
+//The I2C1 channel has two different pin configurations, I2C1_ALTPIN selects it.
+//The rest are dummies, use DEFAULT. See SDA1_SEL_ALT and SCL1_SEL_ALT.
+//See p156 and 158 of the lpc23xx user manual.
+typedef enum { DEFAULT=0, I2C0_ALTPIN, I2C1_ALTPIN, I2C2_ALTPIN} i2c_pinsel;
 
 typedef enum { 
     I2C_IDLE = 0, 
@@ -215,14 +231,14 @@ void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 uint8_t i2c_create_read_address(uint8_t addr) ;
 uint8_t i2c_create_write_address(uint8_t addr) ;
 void    i2c_init_state( i2c_master_xact_t* s) ;
-void    i2c_init(i2c_iface channel) ;
+void    i2c_init(i2c_iface channel, i2c_pinsel pin) ;
 void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;
 void    i2c0_get_read_data(i2c_master_xact_t* s) ;
 
 void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
 void    start_i2c1_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
 void    start_i2c2_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
-
+void    start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
 /*
 void I2C1_master_xact(i2c_master_xact_t&  s) ;
 void I2C2_master_xact(i2c_master_xact_t&  s) ;
