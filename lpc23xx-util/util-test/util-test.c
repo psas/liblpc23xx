@@ -18,6 +18,12 @@
 #include "lpc23xx-util.h"
 #include "util-test.h"
 
+
+#ifdef DEBUG_COLORS
+
+#endif
+
+
 /*! \brief A little test of the Ringbuffer
  *
  * \return True if passes.

@@ -34,9 +34,12 @@
 #include "lpc23xx-pll.h"
 #include "lpc23xx-vic.h"
 
+#include "ringbuffer.h"
 #include "lpc23xx-uart.h"
 
 struct uart0_status uart0stat;
+
+Ringbuffer          uart0_rb_g;
 
 /*! \brief enable the interrupts on uartport u
  *
@@ -134,6 +137,8 @@ void uart0_init_9600(void) {
 
     uart0stat.baudrate = ZERO_H_B;
 
+    uart0_init_rb();
+
     // Enable GPIO for TXD/RXD
     SET_RXD0_TXD0;
 
@@ -196,6 +201,8 @@ void uart0_init_115200(void) {
 
     uart0stat.baudrate = ZERO_H_B;
 
+    uart0_init_rb();
+
     // Enable GPIO for TXD/RXD
     SET_RXD0_TXD0;
 
@@ -245,8 +252,17 @@ void uart0_init_115200(void) {
     uart0stat.baudrate = ONE_FIFTEEN_TWO_H_B;
 
 }
+/*! \brief initialize the ringbuffer structure
+ *
+ */
+bool uart0_init_rb() {
+	if(!rb_initialize(&uart0_rb_g)) {
+		return false;
+	}
+	return(true);
+}
 
-/*
+/*! \brief put a char to the uart0 ringbuffer
  * uart0_putchar
  */
 void uart0_putchar(char ch) {

@@ -35,7 +35,10 @@
 #include <stdarg.h>
 #include <stdint.h>
 
+#include "ringbuffer.h"
 #include "lpc23xx-uart.h"
+
+
 
 void      printf_lpc(uartport fd, const char *format, ... );
 
