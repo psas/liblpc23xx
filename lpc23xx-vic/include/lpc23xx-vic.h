@@ -71,6 +71,11 @@
                                  " msr   spsr_c,r1\n"		\
                                  " ldmfd sp!,{r0-r12,pc}^")
 
+
+void vic_cpu_disable_interrupts() ;
+void vic_cpu_enable_interrupts() ;
+
+
 uint32_t vic_disableIRQ(void) ;
 uint32_t vic_enableIRQ(void) ;
 
