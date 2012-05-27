@@ -125,7 +125,14 @@
 #define         VIC_UART2_SET_PRIORITY(pri) (VICVectPriority28 = pri)
 #define         VIC_UART3_SET_PRIORITY(pri) (VICVectPriority29 = pri)
 
-#define         USB_SET_VIC_HANDLER(name) (VICVectAddr22 = (unsigned int)name)
+#define         UART_SET_VIC_UART0_HANDLER(name) (VICVectAddr6 = (unsigned int)name)
+#define         UART_SET_VIC_UART1_HANDLER(name) (VICVectAddr7 - (unsigned int)name)
+#define         UART_SET_VIC_UART2_HANDLER(name) (VICVectAddr28 - (unsigned int)name)
+#define         UART_SET_VIC_UART3_HANDLER(name) (VICVectAddr20 - (unsigned int)name)
+
+#define         UART_INTST_BIT                 0
+#define         UART_INTSOURCE_BITS            0b1110
+
 #define         P0_RXD0_TXD0_MASK         (~(0xF0))
 #define         P0_RXD0_TXD0_ENABLE       0x50
 
@@ -203,6 +210,8 @@ extern struct uart0_status {
 extern Ringbuffer     uart0_rb_g;
 
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
+
+typedef enum {RLS=0, RDA, CTI, THRE} uart_int_status;
 
 void    uart_enable_interrupt(uartport u);
 

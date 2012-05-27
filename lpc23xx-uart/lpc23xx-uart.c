@@ -262,6 +262,57 @@ bool uart0_init_rb() {
 	return(true);
 }
 
+
+/*! \brief get the status of the interrupt
+ */
+uart_int_status get_uart_int_status(uint32_t reg) {
+	return(st = reg >> 1 & 0b111);
+}
+
+/*! \brief the interrupt for uart0
+ */
+void uart0_interrupt_service() {
+	uart_int_status st;
+
+	st = U0IIR;
+
+	if (st & UART_INTST_BIT ) {
+		switch (st) {
+		case RLS:
+			break;
+		case RDA:
+			break;
+		case CTI:
+			break;
+		case THRE:
+			break;
+		default:
+			break;
+		}
+}
+
+
+	// get status of interrupt rx , tx other?
+
+
+
+
+}
+
+/*! \brief use interrupt based uart
+ *
+ * @param ch 8 bit char
+ */
+void uart0_putchar_intr(char ch) {
+
+	// what was the interrupt?
+	uart_get_status(UART0_IIR)
+
+	// put a char into ringbuffer
+
+	// enable thre interrupt
+}
+
 /*! \brief put a char to the uart0 ringbuffer
  * uart0_putchar
  */

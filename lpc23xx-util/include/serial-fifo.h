@@ -45,7 +45,7 @@ BOOL fifo_putword(fifo_type *fifo, uint32_t w) ;
 
 BOOL fifo_get(fifo_type *fifo, uint8_t *pc);
 int  fifo_avail(fifo_type *fifo);
-int      fifo_free(fifo_type *fifo);
+int  fifo_free(fifo_type *fifo);
 
 
 #endif
