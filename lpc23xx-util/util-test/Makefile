@@ -13,6 +13,7 @@ INCLUDE         := -I.\
                    -I$(LIBDIR)/lpc23xx-pll/include\
                    -I$(LIBDIR)/lpc23xx-util/include\
                    -I$(LIBDIR)/lpc23xx-timer/include\
+                   -I$(LIBDIR)/lpc23xx-vic/include\
                    -I$(LIBDIR)/lpc23xx-uart/include
 
 DEBUG           = -DDEBUG_UTIL

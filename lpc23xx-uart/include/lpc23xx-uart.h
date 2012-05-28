@@ -87,9 +87,7 @@
 /*
  * uart pins and register masks
  */
-#define         RBRIE_BIT                 0
-#define         THREIE_BIT                1
-#define         RXLSIE_BIT                2
+
 
 #define         VIC_UART0_BIT             6   // lpc23xx manual page 94 VIC
 #define         VIC_UART1_BIT             7
@@ -130,8 +128,20 @@
 #define         UART_SET_VIC_UART2_HANDLER(name) (VICVectAddr28 - (unsigned int)name)
 #define         UART_SET_VIC_UART3_HANDLER(name) (VICVectAddr20 - (unsigned int)name)
 
-#define         UART_INTST_BIT                 0
-#define         UART_INTSOURCE_BITS            0b1110
+#define         UART_INTST_BIT            0
+#define         UART_INTSOURCE_BITS       0b1110
+
+#define         UART_RBRIE_BIT            0
+#define         UART_THREIE_BIT           1
+#define         UART_RXLSIE_BIT           2
+
+#define         UART0_RBR_INT_ENABLE      ( U0IER = U0IER | (1<<UART_RBRIE_BIT ) )
+#define         UART0_THRE_INT_ENABLE     ( U0IER = U0IER | (1<<UART_THREIE_BIT) )
+#define         UART0_RXLS_INT_ENABLE     ( U0IER = U0IER | (1<<UART_RXLSIE_BIT) )
+
+#define         UART0_RBR_INT_DISABLE     ( U0IER = U0IER & ( ~(1<<UART_RBRIE_BIT ) ) )
+#define         UART0_THRE_INT_DISABLE    ( U0IER = U0IER & ( ~(1<<UART_THREIE_BIT) ) )
+#define         UART0_RXLS_INT_DISABLE    ( U0IER = U0IER & ( ~(1<<UART_RXLSIE_BIT) ) )
 
 #define         P0_RXD0_TXD0_MASK         (~(0xF0))
 #define         P0_RXD0_TXD0_ENABLE       0x50
@@ -188,7 +198,7 @@
 #define         U0LSR_RDR_MASK            ( ( 0x1 ) )
 #define         U0RDR_READY               ( (U0LSR & U0LSR_RDR_MASK ) )
 
-
+enum UARTLSR { LSR_RDR=0, LSR_OE, LSR_PE, LSR_FE, LSR_BI, LSR_THRE, LSR_TEMT, LSR_RXFE};
 
 typedef enum Baudtype {
     ZERO_H_B              = 0,
@@ -201,17 +211,32 @@ typedef enum Baudtype {
     ONE_FIFTEEN_TWO_H_B   = 115200
 } Baud;
 
-extern struct uart0_status {
-    Baud    baudrate;
-    uint8_t charlength;
-    uint8_t stopbits;
-} uart0stat ;
-
-extern Ringbuffer     uart0_rb_g;
 
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
 
-typedef enum {RLS=0, RDA, CTI, THRE} uart_int_status;
+typedef enum {UART_RLS=0, UART_RDA, UART_CTI, UART_THRE} uart_iir_status;
+
+typedef struct  {
+	uint8_t uart_rdr;
+	uint8_t uart_oe;
+	uint8_t uart_pe;
+	uint8_t uart_fe;
+	uint8_t uart_bi;
+	uint8_t uart_thre;
+	uint8_t uart_temt;
+	uint8_t uart_rxfe;
+} uart_lsrstatus;
+
+typedef struct {
+    Baud    baudrate;
+    uint8_t charlength;
+    uint8_t stopbits;
+} uart_status;
+
+extern uart_status uart0_status;
+
+extern Ringbuffer     uart0_rb_rx_g;
+extern Ringbuffer     uart0_tx_rb_g;
 
 void    uart_enable_interrupt(uartport u);
 
@@ -226,10 +251,17 @@ uint8_t uart0_query_stopbits(void) ;
 void    uart0_init_9600(void) ;
 void    uart0_init_115200(void) ;
 bool    uart0_init_rb() ;
+
+void    get_uart0_lsr_status(uart_lsrstatus* lsrstatus) ;
+
+void    uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ")));
+
+void    uart0_putchar_intr(char ch);
 void    uart0_putchar(char ch) ;
 
 void    uart0_putstring(const char *s) ;
 
+char    uart0_getchar_intr(void);
 char    uart0_getchar (void) ;
 
 char*   uart0_getstring (void) ;

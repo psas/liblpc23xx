@@ -11,11 +11,13 @@
 #include "lpc23xx-pll.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-timer.h"
+#include "lpc23xx-vic.h"
 
 #include "ringbuffer.h"
 #include "printf-lpc.h"
 
 #include "lpc23xx-util.h"
+
 #include "util-test.h"
 
 
@@ -23,7 +25,33 @@
 
 #endif
 
+/*! \brief blink a light
+ *
+ */
+static void do_task() {
+	volatile uint32_t x        = 0;
+	const    uint32_t interval = 2200000;
+	uint8_t st = 88;
+    uint32_t st2 = 99;
+	x = 0;
+	for(;;) {
+		x++;
+		if (x == interval) {
+			x = 0;
+			printf_lpc(UART0, "U0IIR: 0b%b\n", U0IIR);
+			printf_lpc(UART0, "VICINTENABLE: 0b%b\n", VICIntEnable);
+			st = U0LSR;
+		    printf_lpc(UART0, "U0LSR: 0b%b\n", st);
+			st = U0IER;
+		    printf_lpc(UART0, "U0IER: 0b%b\n", st);
+		    st2 = U0IIR ;
+		    printf_lpc(UART0, "U0IIR: 0b%b\n\n", st2);
 
+		    uart0_putchar_intr('\t');
+
+		}
+	}
+}
 /*! \brief A little test of the Ringbuffer
  *
  * \return True if passes.
@@ -179,14 +207,18 @@ bool rb_test() {
 }
 
 int main (void) {
-	uint32_t ticks;
-	uint32_t start=0;
-	uint32_t stop=0;
-	uint32_t difftime=0;
-	uint32_t msecs=0;
-	uint32_t usecs=0;
-
-	int32_t error=0;
+//	uint32_t ticks;
+//	uint32_t start=0;
+//	uint32_t stop=0;
+//	uint32_t difftime=0;
+//	uint32_t msecs=0;
+//	uint32_t usecs=0;
+//
+//	int32_t error=0;
+	uint8_t dummy8;
+	uint32_t dummy32;
+//	//uint8_t   astr[MAX_RINGBUFFER_ELEMS];
+//	char    ch = '\0';
 
 	//pllstart_seventytwomhz() ;
 	// pllstart_sixtymhz() ;
@@ -195,46 +227,104 @@ int main (void) {
 	uart0_init_115200() ;
 	//uart0_init_9600() ;
 
-	uart0_putstring("\n***Starting UTIL timing test.***\n\n");
+	vic_disableIRQ();
+	vic_disableFIQ();
+	uart0_init_rb();
 
-	/* get counter value */
-	timer_init(TIMER_0,  (uint32_t) 0x0 , CCLK_DIV1);
-	RESET_TIMER0;
-	START_TIMER0;
+	U0IER = 0;
 
-	msecs = 200;
-	ticks = millisecondsToCPUTicks(msecs);
+	printf_lpc(UART0, "VICINTEnable: 0b%b\n", VICIntEnable);
+	printf_lpc(UART0, "U0IER: 0b%b\n", U0IER);
 
-	printf_lpc(UART0,"--> ticks in %u msecs are %u\n",msecs, ticks);
+	VIC_UART0_SELECT_IRQ ;
 
-	start = T0TC;
-	util_wait_msecs(msecs) ;
-	stop  = T0TC;
-	difftime = stop - start;
-	error    = difftime - ticks;
-	printf_lpc(UART0, "difftime is: %u\n", difftime);
-	printf_lpc(UART0, "error is: %d ticks.\n", error);
 
-	RESET_TIMER0;
-	START_TIMER0;
+	VIC_ENABLE_UART0_INT ;
 
-	usecs = 200;
-	ticks = microsecondsToCPUTicks(usecs);
+	VICVectAddr6 = (unsigned int) uart0_interrupt_service;
 
-	printf_lpc(UART0,"--> ticks in %u usecs are %u\n",msecs, ticks);
+	VIC_UART0_SET_PRIORITY(3) ;
 
-	start = T0TC;
-	util_wait_usecs(usecs) ;
-	stop  = T0TC;
-	difftime = stop - start;
-	error    = difftime - ticks;
-	printf_lpc(UART0, "difftime is: %u\n", difftime);
-	printf_lpc(UART0, "error is: %d ticks.\n", error);
+	U0IER =  (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT);
 
-	printf_lpc(UART0, "\n*** Test ringbuffer...\n");
-	rb_test() ;
+	dummy8 = U0LSR;
+	dummy32 = U0IIR;
 
-	printf_lpc(UART0, "\n******************\n***util-test done***\n");
+
+
+	vic_enableIRQ();
+	vic_enableFIQ();
+
+//   // U0IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT);
+
+//    VICAddress = 0x0;
+//
+//	uart0_putstring("\n***Starting UTIL timing test.***\n\n");
+//
+//	printf_lpc(UART0, "VICINTEnable: 0b%b\n", VICIntEnable);
+//	printf_lpc(UART0, "U0IER: 0b%b\n", U0IER);
+//
+//	uart0_putchar('z');
+//    uart0_putchar('\n');
+//
+////    uart0_putchar_intr('a');
+////    uart0_putchar_intr('a');
+////    uart0_putchar_intr('a');
+//
+////	rb_get_string(astr, &uart0_tx_rb_g);
+////	DBG(UART0, "\ngot string: -->%s<--\n", astr);
+//
+//	ch = uart0_getchar_intr();
+//
+//	printf_lpc(UART0, "U0IIR: 0b%b\n", U0IIR);
+//	uart0_putchar('x');
+//    uart0_putchar('\n');
+//
+     uart0_putchar_intr('\t');
+//	// uart0_putchar_intr(ch);
+
+    do_task();
+//
+//	uart0_putstring("\n***Starting UTIL timing test.***\n\n");
+//
+//	/* get counter value */
+//	timer_init(TIMER_0,  (uint32_t) 0x0 , CCLK_DIV1);
+//	RESET_TIMER0;
+//	START_TIMER0;
+//
+//	msecs = 200;
+//	ticks = millisecondsToCPUTicks(msecs);
+//
+//	printf_lpc(UART0,"--> ticks in %u msecs are %u\n",msecs, ticks);
+//
+//	start = T0TC;
+//	util_wait_msecs(msecs) ;
+//	stop  = T0TC;
+//	difftime = stop - start;
+//	error    = difftime - ticks;
+//	printf_lpc(UART0, "difftime is: %u\n", difftime);
+//	printf_lpc(UART0, "error is: %d ticks.\n", error);
+//
+//	RESET_TIMER0;
+//	START_TIMER0;
+//
+//	usecs = 200;
+//	ticks = microsecondsToCPUTicks(usecs);
+//
+//	printf_lpc(UART0,"--> ticks in %u usecs are %u\n",msecs, ticks);
+//
+//	start = T0TC;
+//	util_wait_usecs(usecs) ;
+//	stop  = T0TC;
+//	difftime = stop - start;
+//	error    = difftime - ticks;
+//	printf_lpc(UART0, "difftime is: %u\n", difftime);
+//	printf_lpc(UART0, "error is: %d ticks.\n", error);
+//
+//	printf_lpc(UART0, "\n*** Test ringbuffer...\n");
+//	rb_test() ;
+//
+//	printf_lpc(UART0, "\n******************\n***util-test done***\n");
 
 	return(0);
 
