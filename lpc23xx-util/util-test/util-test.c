@@ -29,8 +29,8 @@
  */
 static void do_task() {
 	volatile uint32_t x        = 0;
-	const    uint32_t interval = 500000;
-
+	const    uint32_t interval = 1000000;
+	char     ch ;
 	x = 0;
 	for(;;) {
 		x++;
@@ -44,11 +44,13 @@ static void do_task() {
 		    uart0_putchar_intr('\r');
 		    uart0_putchar_intr('\n');
 
-		 //   U0IER = 3;
-
 		    if(rb_numentries(&uart0_tx_rb_g) > 5) RED_LED_ON;
 
-		//    printf_lpc(UART0,"Number of received chars: %d\r\n", rb_numentries(&uart0_rb_rx_g));
+		    printf_lpc(UART0,"Number of received chars: %d\r\n", rb_numentries(&uart0_rb_rx_g));
+
+		    ch = uart0_getchar_intr();
+
+		    printf_lpc(UART0,"Char was: %c\r\n", ch);
 
 //		    if((U0LSR & 0b100000) == 0b100000) {
 //		    	 RED_LED_ON;
@@ -281,7 +283,6 @@ int main (void) {
 	uart0_putstring_intr("\n***USB0 putstr interrupt***\r\n\n");
 
 	printf_lpc(UART0, "\n***USB0 printf_lpc (interrupt-based) 0d%d\t0x%x\t0b%b\r\n\n", 15,15,15);
-
 
     do_task();
 

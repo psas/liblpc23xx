@@ -52,6 +52,7 @@ bool                uart0_kick_thr_int_g = true;
  */
 void uart_enable_interrupt(uartport u) {
 	uint32_t dummy32 = 0;
+	uint8_t  dummy8  = 0;
 
 	switch(u){
 	case UART0:
@@ -68,7 +69,7 @@ void uart_enable_interrupt(uartport u) {
 		UART0_RBR_INT_ENABLE ;
 		UART0_THRE_INT_ENABLE ;
 		UART0_RXLS_INT_ENABLE ;
-
+		dummy8  = U0LSR;
 		dummy32 = U0IIR;           // clear any flags in IntId fields...
 		break;
 	case UART1:
@@ -307,21 +308,19 @@ void uart0_interrupt_service() {
 	bool              success = false;
 	uint8_t           ch = '\0';
 
-	GREEN_LED_ON;
 	u0iir_value = U0IIR;
 	while ((u0iir_value & 0x1) == 0) {
-	// 	u0iir_intid = get_uart0_iir_intid(u0iir_value);
-		u0iir_intid = (0x7 & (u0iir_value >> 1));
+		u0iir_intid = (0b111 & (u0iir_value >> 1));
 		switch (u0iir_intid) {
 		// receive line status, see page 417 lpc23xx user manual
 		// RLS Interrupt on: overrun error (OE), parity error (PE), framing error (FE) and break interrupt (BI).
 		case UART_RLS:
-		//	uart0_putchar('L');
+			led_toggle(GREEN_LED);
 			u0lsr_value = U0LSR;
 			break;
 		case UART_RDA:             // receive data available
 		case UART_CTI:             // Character time out indicated, could be same case as UART_RDA...
-		//	uart0_putchar('D');
+		    led_toggle(RED_LED);
 			ch = (RB_ELEM) U0RBR;
 			if(!rb_is_full(&uart0_rb_rx_g)) {
 				rb_put_elem(ch, &uart0_rb_rx_g);
@@ -344,7 +343,7 @@ void uart0_interrupt_service() {
 		}
 		u0iir_value = U0IIR;
 	}
-	u0lsr_value = U0LSR;
+	//u0lsr_value = U0LSR;
 	VICAddress = 0x0 ;
 	GREEN_LED_OFF;
 }
@@ -356,6 +355,7 @@ void uart0_interrupt_service() {
 void uart0_putchar_intr(char ch) {
 	UART0_THRE_INT_DISABLE ;
 	UART0_RXLS_INT_DISABLE ;
+
 	if(!rb_is_full(&uart0_tx_rb_g)){
 	    if(uart0_kick_thr_int_g) {
 	    	uart0_kick_thr_int_g = false;
@@ -393,13 +393,12 @@ void uart0_putchar(char ch) {
  */
 void uart0_putstring_intr(const char *s) {
 
-	//UART0_RBR_INT_DISABLE ;
 	UART0_THRE_INT_DISABLE ;
 	UART0_RXLS_INT_DISABLE ;
+
     while(*s) {
         uart0_putchar_intr(*s++); // put a char
     }
-    //  UART0_RBR_INT_ENABLE ;
     UART0_THRE_INT_ENABLE ;
     UART0_RXLS_INT_ENABLE ;
 }
@@ -430,7 +429,7 @@ char uart0_getchar_intr(void)  {
     	rb_get_elem(&ch, &uart0_rb_rx_g);
     	return((char) ch);
     }
-    return('5');
+    return('\0');
 }
 
 /*! \brief uart polling version
@@ -444,6 +443,29 @@ char uart0_getchar (void)  {
 }
 
 
+/*! \brief Interrupt version of getstring from uart
+ * uart0_getstring_intr
+ * --------------------------------------
+ * receive chars from the serial port until
+ *   '\n'.
+ * \warning maximum length of line is UART_MAXBUFFER-1 chars.
+ */
+//char* uart0_getstring (void) {
+//
+//    static char uart0_linebuffer[UART_MAXBUFFER] ;
+//
+//    char       current = ' ';
+//    uint32_t   index   = 0;
+//
+//    while((current != '\n' && current != '\r') && index < UART_MAXBUFFER-1) {
+//        current                 = uart0_getchar_intr();
+//        uart0_linebuffer[index] = current;
+//        ++index;
+//    }
+//    uart0_linebuffer[index]     = '\0';
+//
+//    return(uart0_linebuffer);
+//}
 /*
  * uart0_getstring
  * --------------------------------------
