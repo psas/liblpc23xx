@@ -44,39 +44,40 @@ uart_status         uart0_status_g;
 Ringbuffer          uart0_rb_rx_g;
 Ringbuffer          uart0_tx_rb_g;
 
+bool                uart0_kick_thr_int_g = true;
 
 /*! \brief enable the interrupts on uartport u
  *
  * @param u
  */
 void uart_enable_interrupt(uartport u) {
+	uint32_t dummy32 = 0;
+
 	switch(u){
 	case UART0:
-		U0IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_RBRIE_BIT);
+		UART0_RBR_INT_DISABLE ;
+		UART0_RXLS_INT_DISABLE ;
+		UART0_THRE_INT_DISABLE ;
+
+		uart0_kick_thr_int_g = true;
 		VIC_UART0_SELECT_IRQ ;
 		VIC_ENABLE_UART0_INT ;
-		VIC_UART0_SET_PRIORITY(3) ;
-	    UART_SET_VIC_UART0_HANDLER(uart0_interrupt_service);
+		VIC_UART0_SET_PRIORITY(1) ;
+		UART_SET_VIC_UART0_HANDLER(uart0_interrupt_service);
+
+		UART0_RBR_INT_ENABLE ;
+		UART0_THRE_INT_ENABLE ;
+		UART0_RXLS_INT_ENABLE ;
+
+		dummy32 = U0IIR;           // clear any flags in IntId fields...
 		break;
 	case UART1:
-		U1IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_RBRIE_BIT);
-		VIC_UART1_SELECT_IRQ ;
-		VIC_ENABLE_UART1_INT ;
-		VIC_UART1_SET_PRIORITY(3) ;
 		// UART_SET_VIC_UART1_HANDLER(uart1_interrupt_service);
 		break;
 	case UART2:
-		U2IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_RBRIE_BIT);
-		VIC_UART2_SELECT_IRQ ;
-		VIC_ENABLE_UART2_INT ;
-		VIC_UART2_SET_PRIORITY(3) ;
 		// UART_SET_VIC_UART2_HANDLER(uart2_interrupt_service);
 		break;
 	case UART3:
-		U3IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_RBRIE_BIT);
-		VIC_UART3_SELECT_IRQ ;
-		VIC_ENABLE_UART3_INT ;
-		VIC_UART3_SET_PRIORITY(3) ;
 		// UART_SET_VIC_UART3_HANDLER(uart3_interrupt_service);
 		break;
 	default:
@@ -298,8 +299,8 @@ void get_uart0_lsr_status(uart_lsr_status* lsrstatus) {
  */
 void uart0_interrupt_service() {
 
-	volatile uint8_t  u0lsr_value;
-	volatile char     u0iir_value;
+	volatile uint8_t           u0lsr_value;
+	volatile unsigned char     u0iir_value;
 
 	volatile uart_iir_intid    u0iir_intid;
 
@@ -307,7 +308,8 @@ void uart0_interrupt_service() {
 	uint8_t           ch = '\0';
 
 	GREEN_LED_ON;
-	while (((u0iir_value=U0IIR) & 0x1) == 0) {
+	u0iir_value = U0IIR;
+	while ((u0iir_value & 0x1) == 0) {
 	// 	u0iir_intid = get_uart0_iir_intid(u0iir_value);
 		u0iir_intid = (0x7 & (u0iir_value >> 1));
 		switch (u0iir_intid) {
@@ -328,18 +330,21 @@ void uart0_interrupt_service() {
 			}
 			break;
 		case UART_THRE:            // Transmit Holding Register Empty interrupt
-			// if data in uart0_tx_rb_g then place into Tx Fifo, enable the interrupt
 			if(!rb_is_empty(&uart0_tx_rb_g)) {
 				success = rb_get_elem(&ch, &uart0_tx_rb_g);
+				if(!success) ch = '\0';
 				U0THR = ch;
+				uart0_kick_thr_int_g=false;
 			} else {
-				UART0_THRE_INT_DISABLE;  // don't keep generating interrupts...we're done.
+				uart0_kick_thr_int_g=true;  // need to restart THR interrupt
 			}
 			break;
 		default:
 			break;
 		}
+		u0iir_value = U0IIR;
 	}
+	u0lsr_value = U0LSR;
 	VICAddress = 0x0 ;
 	GREEN_LED_OFF;
 }
@@ -349,16 +354,15 @@ void uart0_interrupt_service() {
  * @param ch 8 bit char
  */
 void uart0_putchar_intr(char ch) {
-	// put a char into ringbuffer
-
 	if(!rb_is_full(&uart0_tx_rb_g)){
-
-		// uart0_putchar('.');
-		rb_put_elem(ch, &uart0_tx_rb_g);
-	    UART0_THRE_INT_ENABLE ;
-	    UART0_RXLS_INT_ENABLE ;
+	    if(uart0_kick_thr_int_g) {
+	    	uart0_kick_thr_int_g = false;
+	    	U0THR = ch;
+	    } else {
+	    	rb_put_elem(ch, &uart0_tx_rb_g);
+	    }
 	} else {
-		uart0_putchar('f');
+		// uart0_putchar('f');
 	}
 }
 
@@ -375,6 +379,26 @@ void uart0_putchar(char ch) {
     U0THR = ch;
 }
 
+
+/*
+ * uart0_putstring_intr
+ * -------------------------------------
+ * put a string to the serial port, using interrupts
+ *
+ * Assumes null termination of string.
+ */
+void uart0_putstring_intr(const char *s) {
+
+	UART0_RBR_INT_DISABLE ;
+	UART0_THRE_INT_DISABLE ;
+	UART0_RXLS_INT_DISABLE ;
+    while(*s) {
+        uart0_putchar_intr(*s++); // put a char
+    }
+    UART0_RBR_INT_ENABLE ;
+    UART0_THRE_INT_ENABLE ;
+    UART0_RXLS_INT_ENABLE ;
+}
 
 /*
  * uart0_putstring

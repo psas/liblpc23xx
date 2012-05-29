@@ -214,64 +214,64 @@ typedef enum Baudtype {
 
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
 
-typedef enum {UART_RLS     = 0x3,
-	          UART_RDA = 0x2,
-	          UART_CTI = 0x6,
-	          UART_THRE= 0x1
+typedef enum {UART_RLS = 0b0011,
+	          UART_RDA = 0b0010,
+	          UART_CTI = 0b0110,
+	          UART_THRE= 0b0001
 } uart_iir_intid;
 
 typedef struct  {
-	uint8_t uart_rdr;
-	uint8_t uart_oe;
-	uint8_t uart_pe;
-	uint8_t uart_fe;
-	uint8_t uart_bi;
-	uint8_t uart_thre;
-	uint8_t uart_temt;
-	uint8_t uart_rxfe;
+	uint8_t           uart_rdr;
+	uint8_t           uart_oe;
+	uint8_t           uart_pe;
+	uint8_t           uart_fe;
+	uint8_t           uart_bi;
+	uint8_t           uart_thre;
+	uint8_t           uart_temt;
+	uint8_t           uart_rxfe;
 } uart_lsr_status;
 
 typedef struct {
-    Baud    baudrate;
-    uint8_t charlength;
-    uint8_t stopbits;
+    Baud              baudrate;
+    uint8_t           charlength;
+    uint8_t           stopbits;
 } uart_status;
 
 extern uart_status uart0_status;
 
 extern Ringbuffer     uart0_rb_rx_g;
 extern Ringbuffer     uart0_tx_rb_g;
+extern bool           uart0_kick_thr_int_g;
 
-void    uart_enable_interrupt(uartport u);
+void           uart_enable_interrupt(uartport u);
 
-void    uart_disable_interrupt(uartport u);
+void           uart_disable_interrupt(uartport u);
 
-Baud    uart0_query_baud(void) ;
+Baud           uart0_query_baud(void) ;
 
-uint8_t uart0_query_charlength(void) ;
+uint8_t        uart0_query_charlength(void) ;
 
-uint8_t uart0_query_stopbits(void) ;
+uint8_t        uart0_query_stopbits(void) ;
 
-void    uart0_init_9600(void) ;
-void    uart0_init_115200(void) ;
-bool    uart0_init_rb() ;
+void           uart0_init_9600(void) ;
+void           uart0_init_115200(void) ;
+
+bool           uart0_init_rb() ;
 
 uart_iir_intid get_uart0_iir_intid(uint32_t u0iir);
 void           get_uart0_lsr_status(uart_lsr_status* lsrstatus) ;
 
-void    uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ")));
+void           uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ")));
 
+void           uart0_putchar_intr(char ch) ;
+void           uart0_putchar(char ch) ;
 
-// void    uart0_interrupt_service(void) __attribute__ ((naked)) ;
+void           uart0_putstring_intr(const char *s) ;
+void           uart0_putstring(const char *s) ;
 
-void    uart0_putchar_intr(char ch);
-void    uart0_putchar(char ch) ;
+char           uart0_getchar_intr(void);
+char           uart0_getchar (void) ;
 
-void    uart0_putstring(const char *s) ;
-
-char    uart0_getchar_intr(void);
-char    uart0_getchar (void) ;
-
-char*   uart0_getstring (void) ;
+char*          uart0_getstring (void) ;
 
 #endif

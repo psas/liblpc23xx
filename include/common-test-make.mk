@@ -22,11 +22,10 @@ OD              := $(CROSS)/bin/arm-elf-objdump
 
 TYPE            := lpc23xx
 
-DEBUG           ?= -g
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
-CFLAGS          ?= $(INCLUDE) $(DEBUG) $(LPC23XX_PART) -c -Wall -Werror -fno-common -O3 -mfloat-abi=softfp -mcpu=arm7tdmi-s
+CFLAGS          ?= $(INCLUDE) $(DEBUG) $(LPC23XX_PART) -g -c -Wall -Werror -fno-common -O0 -mfloat-abi=softfp -mcpu=arm7tdmi-s
 
 ASFLAGS         ?= -g -ahls -mfloat-abi=softfp $(INCLUDE)
 
