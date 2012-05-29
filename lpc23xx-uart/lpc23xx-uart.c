@@ -354,6 +354,8 @@ void uart0_interrupt_service() {
  * @param ch 8 bit char
  */
 void uart0_putchar_intr(char ch) {
+	UART0_THRE_INT_DISABLE ;
+	UART0_RXLS_INT_DISABLE ;
 	if(!rb_is_full(&uart0_tx_rb_g)){
 	    if(uart0_kick_thr_int_g) {
 	    	uart0_kick_thr_int_g = false;
@@ -364,6 +366,8 @@ void uart0_putchar_intr(char ch) {
 	} else {
 		// uart0_putchar('f');
 	}
+	UART0_THRE_INT_ENABLE ;
+	UART0_RXLS_INT_ENABLE ;
 }
 
 /*! \brief put a char to the uart0 ringbuffer
@@ -389,13 +393,13 @@ void uart0_putchar(char ch) {
  */
 void uart0_putstring_intr(const char *s) {
 
-	UART0_RBR_INT_DISABLE ;
+	//UART0_RBR_INT_DISABLE ;
 	UART0_THRE_INT_DISABLE ;
 	UART0_RXLS_INT_DISABLE ;
     while(*s) {
         uart0_putchar_intr(*s++); // put a char
     }
-    UART0_RBR_INT_ENABLE ;
+    //  UART0_RBR_INT_ENABLE ;
     UART0_THRE_INT_ENABLE ;
     UART0_RXLS_INT_ENABLE ;
 }

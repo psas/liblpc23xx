@@ -116,7 +116,6 @@ void color_led_flash(uint32_t cycles,
 		for(;;) {
 			x++;
 			if (x == interval) {
-				// uart0_putstring(".\n");
 				--cycles;
 				switch(led) {
 				case RED_LED:
@@ -368,17 +367,17 @@ char* util_uitoa(uint32_t val, uint32_t base) {
  * debug_msg
  */
 void debug_msg(char* msg) {
-    uart0_putstring(msg) ;
-    uart0_putstring("\n");
+    uart0_putstring_intr(msg)      ;
+    uart0_putstring_intr("\n")     ;
 }
 
 /*
  * debug_val
  */
 void debug_val(char* msg, int32_t val, uint32_t base) {
-    uart0_putstring(msg) ;
-    uart0_putstring(util_itoa(val,base));
-    uart0_putstring("\n");
+    uart0_putstring_intr(msg)                 ;
+    uart0_putstring_intr(util_itoa(val,base)) ;
+    uart0_putstring_intr("\n")                ;
 }
 
 /*
@@ -388,7 +387,7 @@ void debug_val(char* msg, int32_t val, uint32_t base) {
 void putstring_lpc(uartport p, const char *s) {
     switch(p){ 
         case UART0:
-            uart0_putstring(s);
+            uart0_putstring_intr(s);
             break;
             //        case UART1:
             //            uart1_putstring(s);
@@ -409,7 +408,7 @@ void putstring_lpc(uartport p, const char *s) {
 void putchar_lpc(uartport p,  char c) {
     switch(p){ 
         case UART0:
-            uart0_putchar(c);
+            uart0_putchar_intr(c);
             break;
             //        case UART1:
             //            uart1_putchar(c);

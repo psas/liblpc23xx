@@ -48,6 +48,8 @@ static void do_task() {
 
 		    if(rb_numentries(&uart0_tx_rb_g) > 5) RED_LED_ON;
 
+		//    printf_lpc(UART0,"Number of received chars: %d\r\n", rb_numentries(&uart0_rb_rx_g));
+
 //		    if((U0LSR & 0b100000) == 0b100000) {
 //		    	 RED_LED_ON;
 //		    }
@@ -245,6 +247,7 @@ int main (void) {
 
 	uart0_init_115200() ;
 	//uart0_init_9600() ;
+
 	FIO_ENABLE;
 
 	RED_LED_UNMASK;
@@ -276,6 +279,9 @@ int main (void) {
 	uart0_putstring("\n***USB0 putstr polled***\r\n\n");
 
 	uart0_putstring_intr("\n***USB0 putstr interrupt***\r\n\n");
+
+	printf_lpc(UART0, "\n***USB0 printf_lpc (interrupt-based) 0d%d\t0x%x\t0b%b\r\n\n", 15,15,15);
+
 
     do_task();
 
