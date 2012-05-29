@@ -20,7 +20,6 @@
 
 #include "util-test.h"
 
-
 #ifdef DEBUG_COLORS
 
 #endif
@@ -30,25 +29,63 @@
  */
 static void do_task() {
 	volatile uint32_t x        = 0;
-	const    uint32_t interval = 2200000;
-	uint8_t st = 88;
-    uint32_t st2 = 99;
+	const    uint32_t interval = 1200000;
+//	uint8_t st = 88;
+//    uint32_t st2 = 99;
+   // RB_ELEM   astr[MAX_RINGBUFFER_ELEMS];
+  //  char     ch = '\0';
 	x = 0;
 	for(;;) {
 		x++;
 		if (x == interval) {
 			x = 0;
-			printf_lpc(UART0, "U0IIR: 0b%b\n", U0IIR);
-			printf_lpc(UART0, "VICINTENABLE: 0b%b\n", VICIntEnable);
-			st = U0LSR;
-		    printf_lpc(UART0, "U0LSR: 0b%b\n", st);
-			st = U0IER;
-		    printf_lpc(UART0, "U0IER: 0b%b\n", st);
-		    st2 = U0IIR ;
-		    printf_lpc(UART0, "U0IIR: 0b%b\n\n", st2);
+			led_toggle(BLUE_LED);
+		//	BLUE_LED_OFF;
+		//	printf_lpc(UART0, "\n***U0IER: 0b%b\n", U0IER);
+		//	uart0_putchar('*');
+		//	printf_lpc(UART0, "VICINTENABLE: 0b%b\n", VICIntEnable);
+		//	st = U0LSR;
+		//    printf_lpc(UART0, "U0LSR: 0b%b\n", st);
+		//	st = U0IER;
+	//	    printf_lpc(UART0, "U0IER: 0b%b\n", st);
+		//    st2 = U0IIR ;
+		//    printf_lpc(UART0, "U0IIR: 0b%b\n***\n", st2);
 
-		    uart0_putchar_intr('\t');
+		// 	U0THR = 'q';
 
+		    uart0_putchar_intr('a');
+//
+		    uart0_putchar_intr('b');
+		    uart0_putchar_intr('\n');
+
+		    uart0_putchar_intr('\r');
+
+		    U0IER = (U0IER | 0x2);
+
+		  //   if(rb_numentries(&uart0_tx_rb_g) > 5) RED_LED_ON;
+
+//		    if((U0LSR & 0b100000) == 0b100000) {
+//		    	 RED_LED_ON;
+//		    }
+//		    if ( ((VICIntEnable & (1<<VIC_UART0_BIT)) >> VIC_UART0_BIT ) == 1) {
+//		 		RED_LED_ON;
+//		    } else {
+//		    	BLUE_LED_ON;
+//		    }
+
+//		    if((U0IER & 0b10) == 0b10) {
+//		    	RED_LED_OFF;
+//		    } else {
+//		    	RED_LED_ON;
+//		    }
+
+//		    ch = uart0_getchar_intr();
+//		    uart0_putchar_intr(ch);
+//		    uart0_putchar_intr('\n');
+//		    uart0_putchar_intr('\r');
+
+//			rb_get_string(astr, &uart0_rb_rx_g);
+//			DBG(UART0, "-->%s<--\n", astr);
 		}
 	}
 }
@@ -206,6 +243,7 @@ bool rb_test() {
 	return(pass);
 }
 
+
 int main (void) {
 //	uint32_t ticks;
 //	uint32_t start=0;
@@ -215,9 +253,9 @@ int main (void) {
 //	uint32_t usecs=0;
 //
 //	int32_t error=0;
-	uint8_t dummy8;
+// 	uint8_t dummy8;
 	uint32_t dummy32;
-//	//uint8_t   astr[MAX_RINGBUFFER_ELEMS];
+//	/
 //	char    ch = '\0';
 
 	//pllstart_seventytwomhz() ;
@@ -231,34 +269,47 @@ int main (void) {
 	vic_disableFIQ();
 	uart0_init_rb();
 
+	FIO_ENABLE;
+
+	RED_LED_UNMASK;
+	BLUE_LED_UNMASK;
+	GREEN_LED_UNMASK;
+
+	RED_LED_ENABLE;
+	GREEN_LED_ENABLE;
+	BLUE_LED_ENABLE;
+
+    RED_LED_OFF;
+    BLUE_LED_OFF;
+    GREEN_LED_OFF;
+
+  //  color_led_flash(5, BLUE_LED,  FLASH_FAST ) ;
+    BLUE_LED_OFF;
+
 	U0IER = 0;
 
 	printf_lpc(UART0, "VICINTEnable: 0b%b\n", VICIntEnable);
 	printf_lpc(UART0, "U0IER: 0b%b\n", U0IER);
 
 	VIC_UART0_SELECT_IRQ ;
-
-
 	VIC_ENABLE_UART0_INT ;
+	VIC_UART0_SET_PRIORITY(1) ;
+	UART_SET_VIC_UART0_HANDLER(uart0_interrupt_service);
 
-	VICVectAddr6 = (unsigned int) uart0_interrupt_service;
+//	VIC_UART0_SELECT_IRQ ;
+//	VIC_ENABLE_UART0_INT ;
+//	VICVectAddr6 = (unsigned int) uart0_interrupt_service;
+//	VIC_UART0_SET_PRIORITY(3) ;
 
-	VIC_UART0_SET_PRIORITY(3) ;
-
-	U0IER =  (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT);
-
-	dummy8 = U0LSR;
-	dummy32 = U0IIR;
-
-
+	UART0_RBR_INT_ENABLE ;
+	UART0_THRE_INT_DISABLE ;
+	UART0_RXLS_INT_ENABLE ;
 
 	vic_enableIRQ();
 	vic_enableFIQ();
+	dummy32 = U0IIR;
 
-//   // U0IER =  (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT);
 
-//    VICAddress = 0x0;
-//
 //	uart0_putstring("\n***Starting UTIL timing test.***\n\n");
 //
 //	printf_lpc(UART0, "VICINTEnable: 0b%b\n", VICIntEnable);
@@ -280,7 +331,7 @@ int main (void) {
 //	uart0_putchar('x');
 //    uart0_putchar('\n');
 //
-     uart0_putchar_intr('\t');
+   //   uart0_putchar_intr('\t');
 //	// uart0_putchar_intr(ch);
 
     do_task();

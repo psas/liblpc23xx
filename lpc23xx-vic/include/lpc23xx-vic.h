@@ -51,7 +51,7 @@
 #define ISR_ENTRY asm volatile(" sub   lr, lr,#4\n"		\
                                  " stmfd sp!,{r0-r12,lr}\n"	\
                                  " mrs   r1, spsr\n"		\
-                                 " stmfd sp!,{r1}")
+                                 " stmfd sp!,{r1}" )
 
 /*
  *

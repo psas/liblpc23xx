@@ -214,7 +214,11 @@ typedef enum Baudtype {
 
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
 
-typedef enum {UART_RLS=0, UART_RDA, UART_CTI, UART_THRE} uart_iir_status;
+typedef enum {UART_RLS     = 0x3,
+	          UART_RDA = 0x2,
+	          UART_CTI = 0x6,
+	          UART_THRE= 0x1
+} uart_iir_intid;
 
 typedef struct  {
 	uint8_t uart_rdr;
@@ -225,7 +229,7 @@ typedef struct  {
 	uint8_t uart_thre;
 	uint8_t uart_temt;
 	uint8_t uart_rxfe;
-} uart_lsrstatus;
+} uart_lsr_status;
 
 typedef struct {
     Baud    baudrate;
@@ -252,9 +256,13 @@ void    uart0_init_9600(void) ;
 void    uart0_init_115200(void) ;
 bool    uart0_init_rb() ;
 
-void    get_uart0_lsr_status(uart_lsrstatus* lsrstatus) ;
+uart_iir_intid get_uart0_iir_intid(uint32_t u0iir);
+void           get_uart0_lsr_status(uart_lsr_status* lsrstatus) ;
 
 void    uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ")));
+
+
+// void    uart0_interrupt_service(void) __attribute__ ((naked)) ;
 
 void    uart0_putchar_intr(char ch);
 void    uart0_putchar(char ch) ;

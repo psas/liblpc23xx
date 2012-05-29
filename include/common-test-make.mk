@@ -70,7 +70,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "--------- LINKING $@ "
-	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -lm -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION) -lgcc
+	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -lm  -lgcc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION)
 
 $(NAME).sdump: $(NAME).c
 	@echo "--------- Combined Assembler and Source for $< "
