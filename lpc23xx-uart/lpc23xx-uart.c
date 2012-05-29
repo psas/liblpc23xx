@@ -44,7 +44,8 @@ uart_status         uart0_status_g;
 Ringbuffer          uart0_rb_rx_g;
 Ringbuffer          uart0_tx_rb_g;
 
-bool                uart0_kick_thr_int_g = true;
+bool                uart0_kick_thr_int_g     = true;
+uint32_t            uart0_numchars_in_rxbuff = 0;
 
 /*! \brief enable the interrupts on uartport u
  *
@@ -305,8 +306,8 @@ void uart0_interrupt_service() {
 
 	volatile uart_iir_intid    u0iir_intid;
 
-	bool              success = false;
-	uint8_t           ch = '\0';
+	bool                       success = false;
+	uint8_t                    ch = '\0';
 
 	u0iir_value = U0IIR;
 	while ((u0iir_value & 0x1) == 0) {
@@ -324,6 +325,7 @@ void uart0_interrupt_service() {
 			ch = (RB_ELEM) U0RBR;
 			if(!rb_is_full(&uart0_rb_rx_g)) {
 				rb_put_elem(ch, &uart0_rb_rx_g);
+				++uart0_numchars_in_rxbuff;
 			} else {
 				// error...char is lost.
 			}
@@ -427,6 +429,9 @@ char uart0_getchar_intr(void)  {
 
     if(!rb_is_empty(&uart0_rb_rx_g)) {
     	rb_get_elem(&ch, &uart0_rb_rx_g);
+    	UART0_RBR_INT_DISABLE ;
+    	uart0_numchars_in_rxbuff = rb_numentries(&uart0_rb_rx_g);
+    	UART0_RBR_INT_ENABLE ;
     	return((char) ch);
     }
     return('\0');

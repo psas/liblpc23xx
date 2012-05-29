@@ -242,6 +242,7 @@ extern uart_status uart0_status;
 extern Ringbuffer     uart0_rb_rx_g;
 extern Ringbuffer     uart0_tx_rb_g;
 extern bool           uart0_kick_thr_int_g;
+extern uint32_t       uart0_numchars_in_rxbuff;
 
 void           uart_enable_interrupt(uartport u);
 

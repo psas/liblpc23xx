@@ -205,7 +205,7 @@ uint8_t rb_max_size(Ringbuffer* rb) {
 }
 
 /*! \brief Returns the current number of entries in ringbuffer */
-uint8_t rb_numentries(Ringbuffer* rb) {
+inline uint8_t rb_numentries(Ringbuffer* rb) {
     if(rb == NULL) {return(false);}
     return(rb->num_entries);
 }
