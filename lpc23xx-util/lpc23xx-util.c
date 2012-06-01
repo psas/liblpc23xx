@@ -200,16 +200,17 @@ void led_toggle(ledcolor_type led) {
 void rb_print_buffer(Ringbuffer* rb) {
 	uint8_t i=0;
 
-	DBG(UART0,"Print buffer hp:%d tp:%d\r\n", rb->headidx, rb->tailidx);
+	// DBG(UART0,"Print buffer hp:%d tp:%d\r\n", rb->headidx, rb->tailidx);
 	for(i=0; i<MAX_RINGBUFFER_ELEMS; ++i) {
-		DBG(UART0,"rbuff[%d]: %c\n\r",i, rb->rbuff[i]);
+	//	DBG(UART0,"rbuff[%d]: %c\n\r",i, rb->rbuff[i]);
+		uart0_putchar_intr(rb->rbuff[i]);
 	}
 }
 
 void rb_print_state(Ringbuffer* rb) {
 
-	DBG(UART0,"\n\rStatus:\n\r");
-	DBG(UART0,"num entries: %d\n\r", rb->num_entries);
+	printf_lpc(UART0,"\r\nStatus: ");
+	printf_lpc(UART0,"Num entries: %d\n\r\n\r", rb->num_entries);
 
 }
 
@@ -243,45 +244,45 @@ void util_cpsrstat(uint32_t cpsrval) {
     n_negative  = util_getbitval(cpsrval,NNEGLT_BIT);
     t_thumbmode = util_getbitval(cpsrval,T_BIT);
 
-    printf_lpc(UART0,"\n*** cpsr decode start ***\n");
+    printf_lpc(UART0,"\r\n*** cpsr decode start ***\r\n");
 
-    printf_lpc(UART0,"Decoding cpsr: 0b%b\n",cpsrval);
+    printf_lpc(UART0,"Decoding cpsr: 0b%b\r\n",cpsrval);
 
-    printf_lpc(UART0,"v_overflow:\t\t%d.\n", v_overflow);
-    printf_lpc(UART0,"c_carry:\t\t%d.\n",    c_carry);
-    printf_lpc(UART0,"z_zero:\t\t\t%d.\n",     z_zero);
-    printf_lpc(UART0,"n_negative:\t\t%d.\n", n_negative);
-    printf_lpc(UART0,"t_thumbmode:\t\t%d.\n", t_thumbmode);
+    printf_lpc(UART0,"v_overflow:\t\t%d.\r\n", v_overflow);
+    printf_lpc(UART0,"c_carry:\t\t%d.\r\n",    c_carry);
+    printf_lpc(UART0,"z_zero:\t\t\t%d.\r\n",     z_zero);
+    printf_lpc(UART0,"n_negative:\t\t%d.\r\n", n_negative);
+    printf_lpc(UART0,"t_thumbmode:\t\t%d.\r\n", t_thumbmode);
 
     if(irq == 1) {
-        printf_lpc(UART0,"IRQ:\t\t\t%d (disabled).\n", irq);
+        printf_lpc(UART0,"IRQ:\t\t\t%d (disabled).\r\n", irq);
     } else {
-        printf_lpc(UART0,"IRQ:\t\t\t%d (enabled).\n", irq);
+        printf_lpc(UART0,"IRQ:\t\t\t%d (enabled).\r\n", irq);
     }
     if(fiq == 1) {
-        printf_lpc(UART0,"FIQ:\t\t\t%d (disabled).\n", fiq);
+        printf_lpc(UART0,"FIQ:\t\t\t%d (disabled).\r\n", fiq);
     } else {
-        printf_lpc(UART0,"FIQ:\t\t\t%d (enabled).\n", fiq);
+        printf_lpc(UART0,"FIQ:\t\t\t%d (enabled).\r\n", fiq);
     }
-    printf_lpc(UART0,"Mode:\n");
+    printf_lpc(UART0,"Mode:\r\n");
     switch(mode) {
         case 0x13:
-            printf_lpc(UART0,"  Supervisor Mode:\t0x%x\n", mode);
+            printf_lpc(UART0,"  Supervisor Mode:\t0x%x\r\n", mode);
             break;
         case 0x17:
-            printf_lpc(UART0,"  Abort Mode:\t0x%x\n", mode);
+            printf_lpc(UART0,"  Abort Mode:\t0x%x\r\n", mode);
             break;
         case 0x1b:
-            printf_lpc(UART0,"  Undefined Mode:\t0x%x\n", mode);
+            printf_lpc(UART0,"  Undefined Mode:\t0x%x\r\n", mode);
             break;
         case 0x1f:
-            printf_lpc(UART0,"  System Mode:\t0x%x\n", mode);
+            printf_lpc(UART0,"  System Mode:\t0x%x\r\n", mode);
             break;
         default:
-            printf_lpc(UART0,"  Unknown Mode:\t0x%x\n", mode);
+            printf_lpc(UART0,"  Unknown Mode:\t0x%x\r\n", mode);
             break;
     }
-    printf_lpc(UART0,"\n*** cpsr decode end ***\n");
+    printf_lpc(UART0,"\r\n*** cpsr decode end ***\r\n");
 
 }
 
@@ -368,7 +369,7 @@ char* util_uitoa(uint32_t val, uint32_t base) {
  */
 void debug_msg(char* msg) {
     uart0_putstring_intr(msg)      ;
-    uart0_putstring_intr("\n")     ;
+    uart0_putstring_intr("\r\n")     ;
 }
 
 /*
@@ -377,17 +378,18 @@ void debug_msg(char* msg) {
 void debug_val(char* msg, int32_t val, uint32_t base) {
     uart0_putstring_intr(msg)                 ;
     uart0_putstring_intr(util_itoa(val,base)) ;
-    uart0_putstring_intr("\n")                ;
+    uart0_putstring_intr("\r\n")                ;
 }
 
 /*
  * putstring_lpc
  * put a string to a uart port
  */
-void putstring_lpc(uartport p, const char *s) {
-    switch(p){ 
+bool putstring_lpc(uartport p, const char *s) {
+	bool success = false;
+	switch(p){
         case UART0:
-            uart0_putstring_intr(s);
+            success = uart0_putstring_intr(s);
             break;
             //        case UART1:
             //            uart1_putstring(s);
@@ -401,14 +403,16 @@ void putstring_lpc(uartport p, const char *s) {
         default:
             break;
     }
+	return success;
 }
 /*
  * put a character to a uart port
  */
-void putchar_lpc(uartport p,  char c) {
-    switch(p){ 
+bool putchar_lpc(uartport p,  char c) {
+    bool success = false;
+	switch(p){
         case UART0:
-            uart0_putchar_intr(c);
+            success = uart0_putchar_intr(c);
             break;
             //        case UART1:
             //            uart1_putchar(c);
@@ -422,6 +426,7 @@ void putchar_lpc(uartport p,  char c) {
         default:
             break;
     }
+	return success;
 } 
 
 /*

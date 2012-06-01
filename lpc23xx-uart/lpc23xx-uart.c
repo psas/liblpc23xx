@@ -25,7 +25,7 @@
  */
 
 /*! \file lpc23xx-uart.c
- */
+*/
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -45,47 +45,44 @@ Ringbuffer          uart0_rb_rx_g;
 Ringbuffer          uart0_tx_rb_g;
 
 bool                uart0_kick_thr_int_g     = true;
-uint32_t            uart0_numchars_in_rxbuff = 0;
 
 /*! \brief enable the interrupts on uartport u
  *
  * @param u
  */
 void uart_enable_interrupt(uartport u) {
-	uint32_t dummy32 = 0;
-	uint8_t  dummy8  = 0;
+    uint32_t dummy32 = 0;
+    uint8_t  dummy8  = 0;
 
-	switch(u){
-	case UART0:
-		UART0_RBR_INT_DISABLE ;
-		UART0_RXLS_INT_DISABLE ;
-		UART0_THRE_INT_DISABLE ;
+    switch(u){
+        case UART0:
+            UART0_RBR_INT_DISABLE ;
+            UART0_RXLS_INT_DISABLE ;
+            UART0_THRE_INT_DISABLE ;
 
-		uart0_kick_thr_int_g = true;
-		VIC_UART0_SELECT_IRQ ;
-		VIC_ENABLE_UART0_INT ;
-		VIC_UART0_SET_PRIORITY(1) ;
-		UART_SET_VIC_UART0_HANDLER(uart0_interrupt_service);
+            uart0_kick_thr_int_g = true;
+            VIC_UART0_SELECT_IRQ ;
+            VIC_ENABLE_UART0_INT ;
+            VIC_UART0_SET_PRIORITY(UART0_INTR_PRIORITY) ;
+            UART_SET_VIC_UART0_HANDLER(uart0_interrupt_service);
 
-		UART0_RBR_INT_ENABLE ;
-		UART0_THRE_INT_ENABLE ;
-		UART0_RXLS_INT_ENABLE ;
-		dummy8  = U0LSR;
-		dummy32 = U0IIR;           // clear any flags in IntId fields...
-		break;
-	case UART1:
-		// UART_SET_VIC_UART1_HANDLER(uart1_interrupt_service);
-		break;
-	case UART2:
-		// UART_SET_VIC_UART2_HANDLER(uart2_interrupt_service);
-		break;
-	case UART3:
-		// UART_SET_VIC_UART3_HANDLER(uart3_interrupt_service);
-		break;
-	default:
-		break;
-	}
-	CLEAR_DLAB0;
+            UART0_RBR_INT_ENABLE ;
+            UART0_THRE_INT_ENABLE ;
+            UART0_RXLS_INT_ENABLE ;
+            dummy8  = U0LSR;
+            dummy32 = U0IIR;           // clear any flags in IntId fields...
+            break;
+        case UART1:
+            // this uart has a modem...
+            break;
+        case UART2:
+            break;
+        case UART3:
+            break;
+        default:
+            break;
+    }
+    CLEAR_DLAB0;
 }
 
 /*! \brief disable the interrupts on uartport u
@@ -95,26 +92,26 @@ void uart_enable_interrupt(uartport u) {
  * \warning Priority is default to 3 in VIC and IRQ is default in VIC.
  */
 void uart_disable_interrupt(uartport u) {
-	switch(u) {
-		case UART0:
-			U0IER =  U0IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-			VIC_DISABLE_UART0_INT ;
-			break;
-		case UART1:
-			U1IER =  U1IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-			VIC_DISABLE_UART1_INT ;
-			break;
-		case UART2:
-			U2IER =  U2IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-			VIC_DISABLE_UART2_INT ;
-			break;
-		case UART3:
-			U3IER =  U3IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-			VIC_DISABLE_UART3_INT ;
-			break;
-		default:
-			break;
-	}
+    switch(u) {
+        case UART0:
+            U0IER =  U0IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
+            VIC_DISABLE_UART0_INT ;
+            break;
+        case UART1:
+            U1IER =  U1IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
+            VIC_DISABLE_UART1_INT ;
+            break;
+        case UART2:
+            U2IER =  U2IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
+            VIC_DISABLE_UART2_INT ;
+            break;
+        case UART3:
+            U3IER =  U3IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
+            VIC_DISABLE_UART3_INT ;
+            break;
+        default:
+            break;
+    }
 }
 
 /*
@@ -264,20 +261,20 @@ void uart0_init_115200(void) {
  *
  */
 bool uart0_init_rb() {
-	if(!rb_initialize(&uart0_rb_rx_g)) {
-		return false;
-	}
-	if(!rb_initialize(&uart0_tx_rb_g)) {
-			return false;
-	}
-	return(true);
+    if(!rb_initialize(&uart0_rb_rx_g)) {
+        return false;
+    }
+    if(!rb_initialize(&uart0_tx_rb_g)) {
+        return false;
+    }
+    return(true);
 }
 
 
 /*! \brief get the status of the interrupt
- */
+*/
 uart_iir_intid get_uart0_iir_intid(uint32_t u0iir) {
-	return( (0x7 & (u0iir >> 1))  );
+    return( (0x7 & (u0iir >> 1))  );
 }
 
 /*! \brief reading LSR will clear it.
@@ -285,91 +282,85 @@ uart_iir_intid get_uart0_iir_intid(uint32_t u0iir) {
  * @param lsrstatus pointer to lsr status structure
  */
 void get_uart0_lsr_status(uart_lsr_status* lsrstatus) {
-	uint8_t lsr_reg = U0LSR; // this read will clear U0LSR
+    uint8_t lsr_reg = U0LSR; // this read will clear U0LSR
 
-	lsrstatus->uart_rdr   = (  lsr_reg & (1<<LSR_RDR)            );
-	lsrstatus->uart_oe    = ( (lsr_reg & (1<<LSR_OE))   >> LSR_OE);
-	lsrstatus->uart_pe    = ( (lsr_reg & (1<<LSR_PE))   >> LSR_PE);
-	lsrstatus->uart_fe    = ( (lsr_reg & (1<<LSR_FE))   >> LSR_FE);
-	lsrstatus->uart_bi    = ( (lsr_reg & (1<<LSR_BI))   >> LSR_BI);
-	lsrstatus->uart_thre  = ( (lsr_reg & (1<<LSR_THRE)) >> LSR_THRE);
-	lsrstatus->uart_temt  = ( (lsr_reg & (1<<LSR_TEMT)) >> LSR_TEMT);
-	lsrstatus->uart_rxfe  = ( (lsr_reg & (1<<LSR_RXFE)) >> LSR_RXFE);
+    lsrstatus->uart_rdr   = (  lsr_reg & (1<<LSR_RDR)            );
+    lsrstatus->uart_oe    = ( (lsr_reg & (1<<LSR_OE))   >> LSR_OE);
+    lsrstatus->uart_pe    = ( (lsr_reg & (1<<LSR_PE))   >> LSR_PE);
+    lsrstatus->uart_fe    = ( (lsr_reg & (1<<LSR_FE))   >> LSR_FE);
+    lsrstatus->uart_bi    = ( (lsr_reg & (1<<LSR_BI))   >> LSR_BI);
+    lsrstatus->uart_thre  = ( (lsr_reg & (1<<LSR_THRE)) >> LSR_THRE);
+    lsrstatus->uart_temt  = ( (lsr_reg & (1<<LSR_TEMT)) >> LSR_TEMT);
+    lsrstatus->uart_rxfe  = ( (lsr_reg & (1<<LSR_RXFE)) >> LSR_RXFE);
 }
 
 /*! \brief Process an interrupt for uart0
- */
+*/
 void uart0_interrupt_service() {
 
-	volatile uint8_t           u0lsr_value;
-	volatile unsigned char     u0iir_value;
+    volatile uint8_t           u0lsr_value;
+    volatile unsigned char     u0iir_value;
 
-	volatile uart_iir_intid    u0iir_intid;
+    volatile uart_iir_intid    u0iir_intid;
 
-	bool                       success = false;
-	uint8_t                    ch = '\0';
+    bool                       success = false;
+    uint8_t                    ch      = '\0';
 
-	u0iir_value = U0IIR;
-	while ((u0iir_value & 0x1) == 0) {
-		u0iir_intid = (0b111 & (u0iir_value >> 1));
-		switch (u0iir_intid) {
-		// receive line status, see page 417 lpc23xx user manual
-		// RLS Interrupt on: overrun error (OE), parity error (PE), framing error (FE) and break interrupt (BI).
-		case UART_RLS:
-			led_toggle(GREEN_LED);
-			u0lsr_value = U0LSR;
-			break;
-		case UART_RDA:             // receive data available
-		case UART_CTI:             // Character time out indicated, could be same case as UART_RDA...
-		    led_toggle(RED_LED);
-			ch = (RB_ELEM) U0RBR;
-			if(!rb_is_full(&uart0_rb_rx_g)) {
-				rb_put_elem(ch, &uart0_rb_rx_g);
-				++uart0_numchars_in_rxbuff;
-			} else {
-				// error...char is lost.
-			}
-			break;
-		case UART_THRE:            // Transmit Holding Register Empty interrupt
-			if(!rb_is_empty(&uart0_tx_rb_g)) {
-				success = rb_get_elem(&ch, &uart0_tx_rb_g);
-				if(!success) ch = '\0';
-				U0THR = ch;
-				uart0_kick_thr_int_g=false;
-			} else {
-				uart0_kick_thr_int_g=true;  // need to restart THR interrupt
-			}
-			break;
-		default:
-			break;
-		}
-		u0iir_value = U0IIR;
-	}
-	//u0lsr_value = U0LSR;
-	VICAddress = 0x0 ;
-	GREEN_LED_OFF;
+    u0iir_value = U0IIR;
+    while ((u0iir_value & 0x1) == 0) {
+        u0iir_intid = (0b111 & (u0iir_value >> 1));
+        switch (u0iir_intid) {
+            // receive line status, see page 417 lpc23xx user manual
+            // RLS Interrupt on: overrun error (OE), parity error (PE), framing error (FE) and break interrupt (BI).
+            case UART_RLS:
+                u0lsr_value = U0LSR;
+                break;
+            case UART_RDA:             // receive data available
+            case UART_CTI:             // Character time out indicated, could be same case as UART_RDA...
+                ch = (RB_ELEM) U0RBR;
+                if(!rb_is_full(&uart0_rb_rx_g)) {
+                    rb_put_elem(ch, &uart0_rb_rx_g);
+                } else {
+                    // error...char is lost.
+                }
+                break;
+            case UART_THRE:            // Transmit Holding Register Empty interrupt
+                if(!rb_is_empty(&uart0_tx_rb_g)) {
+                    success = rb_get_elem(&ch, &uart0_tx_rb_g);
+                    if(!success) ch = '@';
+                    U0THR = ch;
+                    uart0_kick_thr_int_g=false;
+                } else {
+                    uart0_kick_thr_int_g=true;  // need to restart THR interrupt
+                }
+                break;
+            default:
+                break;
+        }
+        u0iir_value = U0IIR;
+    }
+    VICAddress = 0x0 ;
 }
 
 /*! \brief use interrupt based uart
  *
  * @param ch 8 bit char
+ *
+ * \return false on buffer full.
  */
-void uart0_putchar_intr(char ch) {
-	UART0_THRE_INT_DISABLE ;
-	UART0_RXLS_INT_DISABLE ;
+bool uart0_putchar_intr(char ch) {
 
-	if(!rb_is_full(&uart0_tx_rb_g)){
-	    if(uart0_kick_thr_int_g) {
-	    	uart0_kick_thr_int_g = false;
-	    	U0THR = ch;
-	    } else {
-	    	rb_put_elem(ch, &uart0_tx_rb_g);
-	    }
-	} else {
-		// uart0_putchar('f');
-	}
-	UART0_THRE_INT_ENABLE ;
-	UART0_RXLS_INT_ENABLE ;
+    if(!rb_is_full(&uart0_tx_rb_g)){
+        if(uart0_kick_thr_int_g) {
+            uart0_kick_thr_int_g = false;
+            U0THR = ch;
+        } else {
+            rb_put_elem(ch, &uart0_tx_rb_g);
+        }
+    } else {
+          return(false);  // rb is full...char lost.
+    }
+    return(true);
 }
 
 /*! \brief put a char to the uart0 ringbuffer
@@ -393,16 +384,12 @@ void uart0_putchar(char ch) {
  *
  * Assumes null termination of string.
  */
-void uart0_putstring_intr(const char *s) {
-
-	UART0_THRE_INT_DISABLE ;
-	UART0_RXLS_INT_DISABLE ;
-
+bool uart0_putstring_intr(const char *s) {
+        bool success=false;
     while(*s) {
-        uart0_putchar_intr(*s++); // put a char
+        success = uart0_putchar_intr(*s++);
     }
-    UART0_THRE_INT_ENABLE ;
-    UART0_RXLS_INT_ENABLE ;
+    return success;
 }
 
 /*
@@ -425,14 +412,11 @@ void uart0_putstring(const char *s) {
  *
  */
 char uart0_getchar_intr(void)  {
-	RB_ELEM ch;
+    RB_ELEM ch;
 
     if(!rb_is_empty(&uart0_rb_rx_g)) {
-    	rb_get_elem(&ch, &uart0_rb_rx_g);
-    	UART0_RBR_INT_DISABLE ;
-    	uart0_numchars_in_rxbuff = rb_numentries(&uart0_rb_rx_g);
-    	UART0_RBR_INT_ENABLE ;
-    	return((char) ch);
+        rb_get_elem(&ch, &uart0_rb_rx_g);
+        return((char) ch);
     }
     return('\0');
 }
@@ -447,30 +431,6 @@ char uart0_getchar (void)  {
     return (U0RBR);
 }
 
-
-/*! \brief Interrupt version of getstring from uart
- * uart0_getstring_intr
- * --------------------------------------
- * receive chars from the serial port until
- *   '\n'.
- * \warning maximum length of line is UART_MAXBUFFER-1 chars.
- */
-//char* uart0_getstring (void) {
-//
-//    static char uart0_linebuffer[UART_MAXBUFFER] ;
-//
-//    char       current = ' ';
-//    uint32_t   index   = 0;
-//
-//    while((current != '\n' && current != '\r') && index < UART_MAXBUFFER-1) {
-//        current                 = uart0_getchar_intr();
-//        uart0_linebuffer[index] = current;
-//        ++index;
-//    }
-//    uart0_linebuffer[index]     = '\0';
-//
-//    return(uart0_linebuffer);
-//}
 /*
  * uart0_getstring
  * --------------------------------------

@@ -176,8 +176,8 @@ char*           util_uitoa(uint32_t val, uint32_t base) ;
 void            debug_msg(char* msg) ;
 void            debug_val(char* msg, int32_t val, uint32_t base) ;
 
-void            putstring_lpc(uartport p, const char *s) ;
-void            putchar_lpc(uartport p,  char c) ;
+bool            putstring_lpc(uartport p, const char *s) ;
+bool            putchar_lpc(uartport p,  char c) ;
 
 void            util_waitticks(uint32_t ticks) ;
 

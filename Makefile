@@ -26,7 +26,7 @@ CP              := $(CROSSCMP)/bin/$(CROSSNAME)-objcopy
 OD              := $(CROSSCMP)/bin/$(CROSSNAME)-objdump
 
 #DEBUG           ?= -DDEBUG_ADC
-#DEBUG           = -DDEBUG_USB
+#DEBUG           = -DDEBUG_UTIL
  
 INCLUDE         := -I.\
                    -I./include\

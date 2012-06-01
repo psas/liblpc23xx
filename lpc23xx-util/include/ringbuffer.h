@@ -65,9 +65,9 @@ void rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
 
 void rb_get_string(RB_ELEM* s, Ringbuffer* rb);
 
-bool rb_is_full(Ringbuffer* rb);
+inline bool rb_is_full(Ringbuffer* rb);
 
-bool rb_is_empty(Ringbuffer* rb);
+inline bool rb_is_empty(Ringbuffer* rb);
 
 RB_ELEM rb_max_size(Ringbuffer* rb);
 
