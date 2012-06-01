@@ -16,13 +16,14 @@ LPC23XX_PART   ?= -DGFE_LPC2368
 #LPC2378_PORT    = -DLPC2378_PORTB
 
 CROSSCMP        := /opt/cross
+CROSSNAME		:= arm-elf
 
-CC              := $(CROSSCMP)/bin/arm-elf-gcc
-LD              := $(CROSSCMP)/bin/arm-elf-ld
-AR              := $(CROSSCMP)/bin/arm-elf-ar
-AS              := $(CROSSCMP)/bin/arm-elf-as
-CP              := $(CROSSCMP)/bin/arm-elf-objcopy
-OD              := $(CROSSCMP)/bin/arm-elf-objdump
+CC              := $(CROSSCMP)/bin/$(CROSSNAME)-gcc
+LD              := $(CROSSCMP)/bin/$(CROSSNAME)-ld
+AR              := $(CROSSCMP)/bin/$(CROSSNAME)-ar
+AS              := $(CROSSCMP)/bin/$(CROSSNAME)-as
+CP              := $(CROSSCMP)/bin/$(CROSSNAME)-objcopy
+OD              := $(CROSSCMP)/bin/$(CROSSNAME)-objdump
 
 DEBUG           ?= -g
 #DEBUG           ?= -DDEBUG_ADC

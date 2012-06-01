@@ -98,7 +98,7 @@ void print_lpc(uartport fd, const char *format, va_list args ) {
  * printf_lpc
  */
 void printf_lpc(uartport fd, const char *format, ... ) {
-    va_list args = NULL;
+    va_list args;
     va_start( args, format );
 
     print_lpc(fd, format, args);
