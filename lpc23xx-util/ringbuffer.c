@@ -160,9 +160,11 @@ bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
  * including the '\n'. The 's' line ELEMS storage must have at least
  * MAX_RINGBUFFER_ELEMS+1 of free space.
  *
+ * returns length of string including '\n', not including '\0'
+ *
  * \warning depends on RB_ELEM of appropriate type (char)
  */
-void rb_get_line(RB_ELEM* s, Ringbuffer* rb) {
+uint16_t rb_get_line(RB_ELEM* s, Ringbuffer* rb) {
 
 	uint8_t j = 0;
 
@@ -172,6 +174,8 @@ void rb_get_line(RB_ELEM* s, Ringbuffer* rb) {
 		if(s[j] == '\n') break;
 	}
 	s[j+1]='\0';
+
+	return(j);
 }
 
 /*! \brief Remove a string from the ringbuffer

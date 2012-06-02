@@ -61,7 +61,7 @@ bool rb_insert_string(char* s, Ringbuffer* rb);
 
 bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb);
 
-void rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
+uint16_t rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
 
 void rb_get_string(RB_ELEM* s, Ringbuffer* rb);
 

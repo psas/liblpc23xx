@@ -455,3 +455,19 @@ char* uart0_getstring (void) {
     return(uart0_linebuffer);
 }
 
+/*
+ * uart0_getstring_intr
+ * --------------------------------------
+ * Pull characters from the RX Ringbuffer until '\n'
+ *
+ * maximum length of line is MAX_RINGBUFFER_ELEMS+1 chars.
+ */
+char* uart0_getstring_intr (void) {
+
+    static char uart0_linebuffer[MAX_RINGBUFFER_ELEMS+1] ;
+
+    rb_get_line((RB_ELEM *) uart0_linebuffer, &uart0_rb_rx_g);
+
+    return(uart0_linebuffer);
+}
+
