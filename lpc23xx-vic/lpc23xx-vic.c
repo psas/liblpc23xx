@@ -37,6 +37,7 @@
 #include "lpc23xx-vic.h"
 
 
+#pragma GCC optimize ("O3")
 /*! \brief turn interrupts off at the CPU status register
  *
  * @return
@@ -101,4 +102,5 @@ uint32_t vic_enableFIQ(void) {
     return _cpsr;
 }
 
+#pragma GCC optimize ("O0")
 

@@ -27,7 +27,7 @@
 /*! \brief blink a light
  *
  */
-static void do_task() {
+void do_task() {
 	volatile uint32_t x        = 0;
 	const    uint32_t interval = 2000000;
 	char     ch ;
@@ -257,7 +257,7 @@ int main (void) {
 	vic_enableIRQ();
 	vic_enableFIQ();
 
-	uart0_putstring("\r\n***USB0 putstr polled***\r\n\r\n");
+	//uart0_putstring("\r\n***USB0 putstr polled***\r\n\r\n");
 
 	printf_lpc(UART0, "\r\n***USB0 printf_lpc (interrupt-based) 0d%d...0x%x...0b%b\r\n\r\n", 15,15,15);
 

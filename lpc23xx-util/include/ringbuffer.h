@@ -5,11 +5,10 @@
 #ifndef RINGBUFFER_H_
 #define RINGBUFFER_H_
 
+
 #include <stdint.h>
 #include <stdbool.h>
 
-/*! A function to enable and disable interrupts */
-extern void util_enable_(bool state);
 
 /*! \ingroup ringbuffer
  *
@@ -65,15 +64,17 @@ uint16_t rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
 
 void rb_get_string(RB_ELEM* s, Ringbuffer* rb);
 
-inline bool rb_is_full(Ringbuffer* rb);
+bool rb_is_full(Ringbuffer* rb);
 
-inline bool rb_is_empty(Ringbuffer* rb);
+bool rb_is_empty(Ringbuffer* rb);
 
 RB_ELEM rb_max_size(Ringbuffer* rb);
 
 RB_ELEM rb_numentries(Ringbuffer* rb);
 
 //! @}
+
+
 
 #endif
 

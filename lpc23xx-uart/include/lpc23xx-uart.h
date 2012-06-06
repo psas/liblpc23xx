@@ -36,6 +36,8 @@
 
 #define         UART_MAXBUFFER            250
 
+
+
 /*
  * PCLKSEL0
  */
@@ -260,7 +262,7 @@ bool           uart0_init_rb() ;
 uart_iir_intid get_uart0_iir_intid(uint32_t u0iir);
 void           get_uart0_lsr_status(uart_lsr_status* lsrstatus) ;
 
-void           uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ")));
+void           uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ") , optimize("O3")));
 
 bool           uart0_putchar_intr(char ch) ;
 void           uart0_putchar(char ch) ;
@@ -274,3 +276,4 @@ char           uart0_getchar (void) ;
 char*          uart0_getstring (void) ;
 
 #endif
+

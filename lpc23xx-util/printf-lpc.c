@@ -37,6 +37,7 @@
 
 #include "printf-lpc.h"
 
+#pragma GCC optimize ("O3")
 /*!
  * doubles (%g) might be accommodated with dtoa() from gcc/newlib dist, but
  * this uses a large amount of code space. Is it really necessary? Omitted
@@ -104,3 +105,4 @@ void printf_lpc(uartport fd, const char *format, ... ) {
 }
 
 
+#pragma GCC optimize ("O0")

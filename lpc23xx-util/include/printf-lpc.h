@@ -32,11 +32,13 @@
 #ifndef _PRINTF_LPC_H
 #define _PRINTF_LPC_H
 
+
 #include <stdarg.h>
 #include <stdint.h>
 
 #include "ringbuffer.h"
 #include "lpc23xx-uart.h"
+
 
 
 

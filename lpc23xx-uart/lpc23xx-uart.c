@@ -39,12 +39,16 @@
 
 #include "lpc23xx-uart.h"
 
+
+#pragma GCC optimize ("O3")
 uart_status         uart0_status_g;
 
 Ringbuffer          uart0_rb_rx_g;
 Ringbuffer          uart0_tx_rb_g;
 
 bool                uart0_kick_thr_int_g     = true;
+
+static char         uart0_linebuffer[MAX_RINGBUFFER_ELEMS+1] ;
 
 /*! \brief enable the interrupts on uartport u
  *
@@ -355,7 +359,9 @@ bool uart0_putchar_intr(char ch) {
             uart0_kick_thr_int_g = false;
             U0THR = ch;
         } else {
+        	vic_cpu_disable_interrupts();
             rb_put_elem(ch, &uart0_tx_rb_g);
+            vic_cpu_enable_interrupts();
         }
     } else {
           return(false);  // rb is full...char lost.
@@ -386,8 +392,9 @@ void uart0_putchar(char ch) {
  */
 bool uart0_putstring_intr(const char *s) {
         bool success=false;
-    while(*s) {
-        success = uart0_putchar_intr(*s++);
+    while(*s != '\0') {
+        success = uart0_putchar_intr(*s);
+        ++s;
     }
     return success;
 }
@@ -415,7 +422,9 @@ char uart0_getchar_intr(void)  {
     RB_ELEM ch;
 
     if(!rb_is_empty(&uart0_rb_rx_g)) {
+        vic_cpu_disable_interrupts();
         rb_get_elem(&ch, &uart0_rb_rx_g);
+        vic_cpu_enable_interrupts();
         return((char) ch);
     }
     return('\0');
@@ -464,10 +473,12 @@ char* uart0_getstring (void) {
  */
 char* uart0_getstring_intr (void) {
 
-    static char uart0_linebuffer[MAX_RINGBUFFER_ELEMS+1] ;
-
+    vic_cpu_disable_interrupts();
     rb_get_line((RB_ELEM *) uart0_linebuffer, &uart0_rb_rx_g);
+    vic_cpu_enable_interrupts();
 
     return(uart0_linebuffer);
 }
 
+
+#pragma GCC optimize ("O0")

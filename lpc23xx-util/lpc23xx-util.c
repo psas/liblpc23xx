@@ -210,8 +210,7 @@ void rb_print_buffer(Ringbuffer* rb) {
 void rb_print_state(Ringbuffer* rb) {
 
 	printf_lpc(UART0,"\r\nStatus: ");
-	printf_lpc(UART0,"Num entries: %d\n\r\n\r", rb->num_entries);
-
+	printf_lpc(UART0,"Num entries: %d\n\r\n\r", (rb->num_entries));
 }
 
 /*

@@ -15,6 +15,8 @@
  * @{
  */
 
+#pragma GCC optimize ("O3")
+
 /*! \brief Initialize a Ringbuffer_s
  *
  * \param[in] rb pointer to a Ringbuffer_s
@@ -24,7 +26,6 @@
  * \warning By convention in this ADT, unused entries in the
  *   ring buffer are marked with '0'.
  *
- * \warning During initialization, interrupts are disabled.
  */
 bool rb_initialize(Ringbuffer* rb) {
 	uint8_t i = 0;
@@ -33,8 +34,6 @@ bool rb_initialize(Ringbuffer* rb) {
 
 	/* maximum size of this ringbuffer is 8 bit */
 	if(MAX_RINGBUFFER_ELEMS > 255) return(false);
-
-	vic_cpu_disable_interrupts();
 
 	for(i=0; i<MAX_RINGBUFFER_ELEMS; ++i) {
 		rb->rbuff[i]='\0';
@@ -48,8 +47,6 @@ bool rb_initialize(Ringbuffer* rb) {
 	vic_enableIRQ();
 	vic_enableFIQ();
 
-	vic_cpu_enable_interrupts();
-
 	return(true);
 }
 
@@ -62,12 +59,9 @@ bool rb_initialize(Ringbuffer* rb) {
  */
 bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
 {
-	bool status = true;
-
-	vic_cpu_disable_interrupts();
+	volatile bool status = true;
 
 	if(rb == NULL) {
-		vic_cpu_enable_interrupts();
 		return(false);
 	}
 
@@ -82,8 +76,6 @@ bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
 	} else {
 		status=false;
 	}
-
-	vic_cpu_enable_interrupts();
 
 	return(status);
 }
@@ -129,8 +121,6 @@ bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
 	if(c  == NULL) {return(false);}
 	if(rb == NULL) {return(false);}
 
-	vic_cpu_disable_interrupts();
-
 	if(rb->num_entries != 0) {
 		*c = rb->rbuff[rb->headidx];
 		rb->rbuff[rb->headidx] = '\0';
@@ -141,11 +131,8 @@ bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
 			rb->headidx = 0;
 		}
 	} else {
-		vic_cpu_enable_interrupts();
 		return(false);
 	}
-
-	vic_cpu_enable_interrupts();
 	return(true);
 }
 
@@ -201,7 +188,7 @@ void rb_get_string(RB_ELEM* s, Ringbuffer* rb) {
 }
 
 /*! \brief Returns the full or not full state of ringbuffer */
-inline bool rb_is_full(Ringbuffer* rb) {
+bool rb_is_full(Ringbuffer* rb) {
 
 	if(rb == NULL) {return(false);}
 
@@ -209,7 +196,7 @@ inline bool rb_is_full(Ringbuffer* rb) {
 }
 
 /*! \brief Returns the empty or not empty state of ringbuffer */
-inline bool rb_is_empty(Ringbuffer* rb) {
+bool rb_is_empty(Ringbuffer* rb) {
 	if(rb == NULL) {return(false);}
 	return((rb->num_entries)==0);
 }
@@ -221,9 +208,12 @@ uint8_t rb_max_size(Ringbuffer* rb) {
 }
 
 /*! \brief Returns the current number of entries in ringbuffer */
-inline uint8_t rb_numentries(Ringbuffer* rb) {
+uint8_t rb_numentries(Ringbuffer* rb) {
 	if(rb == NULL) {return(false);}
 	return(rb->num_entries);
 }
+
+#pragma GCC optimize ("O0")
+
 
 //! @}
