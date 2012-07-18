@@ -60,7 +60,7 @@
 #define     SSEL_LOW                   (FIO0CLR |= (1<<16))
 
 // P1.0  is for a second device in master mode SPI
-#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL1 =  (PINSEL2 & ~(0x11)     ) | (0x00))
+#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL2 =  (PINSEL2 & ~(0x3)     ) | (0x00))
 #define     PINMODE_SPI_MASTERM_SSEL_1_NOPULL    (PINMODE2 = (PINMODE2 & ~(0x3))      | (0x2 ))
 #define     FIO_SPI_SSEL_1                       (FIO1DIR |= 0x1)
 #define     SSEL_1_HIGH                          (FIO1SET |= 0x1)

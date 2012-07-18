@@ -188,6 +188,7 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     FIO_SPI_SSEL;
     SSEL_HIGH;
 
+    //todo: more graceful additional device handling
     // no second device pin initialized.
     // PINSEL_SPI_MASTERM_SSEL_1         // P1.0
     // PINMODE_SPI_MASTERM_SSEL_1_NOPULL //

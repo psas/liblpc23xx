@@ -16,7 +16,7 @@ LPC23XX_PART   ?= -DGFE_LPC2368
 #LPC2378_PORT    = -DLPC2378_PORTB
 
 CROSSCMP        := /opt/cross
-CROSSNAME		:= arm-elf
+CROSSNAME       := arm-elf
 
 CC              := $(CROSSCMP)/bin/$(CROSSNAME)-gcc
 LD              := $(CROSSCMP)/bin/$(CROSSNAME)-ld

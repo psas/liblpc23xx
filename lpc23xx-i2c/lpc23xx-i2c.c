@@ -141,7 +141,6 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
             ENABLE_I2C0_INT;
 
             VICVectAddr9 = (unsigned int) i2c0_isr;
-            VICAddress = 0x0;      // clear VIC address
 
             I2C0CONCLR   = I2C_SIC;
 

@@ -18,7 +18,7 @@
 #include "printf-lpc.h"
 
 #include "olimex2378-util.h"
-#include "twodevice-test.h"
+#include "twodevice-example.h"
 
 i2c_master_xact_t       xact_s;
 i2c_master_xact_t       xact0_s;

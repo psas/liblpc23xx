@@ -40,29 +40,29 @@
  * PCLKSEL0
  */
 
-#define         PCLKSEL0_UART0_MASK       ( ~(0x11<<6) )
-#define         PCLKSEL0_UART0_DIV1       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x01<<6) )
-#define         PCLKSEL0_UART0_DIV2       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x10<<6) )
+#define         PCLKSEL0_UART0_MASK       ( ~(0x3<<6) )
+#define         PCLKSEL0_UART0_DIV1       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x1<<6) )
+#define         PCLKSEL0_UART0_DIV2       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x2<<6) )
 #define         PCLKSEL0_UART0_DIV4       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) )
-#define         PCLKSEL0_UART0_DIV8       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x11<<6) )
+#define         PCLKSEL0_UART0_DIV8       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x3<<6) )
 
-#define         PCLKSEL0_UART1_MASK       ( ~(0x11<<8) )
-#define         PCLKSEL0_UART1_DIV1       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x01<<8) )
-#define         PCLKSEL0_UART1_DIV2       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x10<<8) )
+#define         PCLKSEL0_UART1_MASK       ( ~(0x3<<8) )
+#define         PCLKSEL0_UART1_DIV1       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x1<<8) )
+#define         PCLKSEL0_UART1_DIV2       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x2<<8) )
 #define         PCLKSEL0_UART1_DIV4       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) )
-#define         PCLKSEL0_UART1_DIV8       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x11<<8) )
+#define         PCLKSEL0_UART1_DIV8       ( PCLKSEL0 = (PCLKSEL0 & PCLKSEL0_UART0_MASK) | (0x3<<8) )
 
-#define         PCLKSEL1_UART2_MASK       ( ~(0x11<<16) )
-#define         PCLKSEL1_UART2_DIV1       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x01<<16) )
-#define         PCLKSEL1_UART2_DIV2       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x10<<16) )
+#define         PCLKSEL1_UART2_MASK       ( ~(0x3<<16) )
+#define         PCLKSEL1_UART2_DIV1       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x1<<16) )
+#define         PCLKSEL1_UART2_DIV2       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x2<<16) )
 #define         PCLKSEL1_UART2_DIV4       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) )
-#define         PCLKSEL1_UART2_DIV8       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x11<<16) )
+#define         PCLKSEL1_UART2_DIV8       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART2_MASK) | (0x3<<16) )
 
-#define         PCLKSEL1_UART3_MASK       ( ~(0x11<<18) )
-#define         PCLKSEL1_UART3_DIV1       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x01<<18) )
-#define         PCLKSEL1_UART3_DIV2       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x10<<18) )
+#define         PCLKSEL1_UART3_MASK       ( ~(0x3<<18) )
+#define         PCLKSEL1_UART3_DIV1       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x1<<18) )
+#define         PCLKSEL1_UART3_DIV2       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x2<<18) )
 #define         PCLKSEL1_UART3_DIV4       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) )
-#define         PCLKSEL1_UART3_DIV8       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x11<<18) )
+#define         PCLKSEL1_UART3_DIV8       ( PCLKSEL1 = (PCLKSEL1 & PCLKSEL1_UART3_MASK) | (0x3<<18) )
 
 /*
  * PCONP Peripheral Power control
