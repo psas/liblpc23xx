@@ -187,7 +187,7 @@ bool rb_test() {
 	for(i = 0 ; i < 20 ; ++i) {
 		rb_insert_string("01234567890123456789",rb);
 	}
-
+	rb_print_state(rb);
 	if(!rb_get_elem(&element,rb)) {
 		printf_lpc(UART0,"Failed to get uint8");
 		pass = false;

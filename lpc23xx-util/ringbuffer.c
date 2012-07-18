@@ -61,6 +61,8 @@ bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
 {
 	volatile bool status = true;
 
+	vic_cpu_disable_interrupts();
+
 	if(rb == NULL) {
 		return(false);
 	}
@@ -77,6 +79,7 @@ bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
 		status=false;
 	}
 
+	vic_cpu_enable_interrupts();
 	return(status);
 }
 
