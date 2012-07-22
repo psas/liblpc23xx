@@ -36,7 +36,7 @@
 #include "printf-lpc.h"
 
 
-/*! \defgroup printf-lpc Printf utility for liblpc21xx
+/*! \defgroup printf-lpc Printf utility for liblpc23xx
  * @{
  */
 

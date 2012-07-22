@@ -1,5 +1,4 @@
 
-
 /* Copyright (C) 2011 Keith Wilson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,27 +22,6 @@
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
  * authorization from the authors.
- */
-
-/*
- * lpc23xx-binsem.s
- */
-
-/*
- *  http://en.wikipedia.org/wiki/Application_binary_interface#EABI
- *
- *  EABI says r0-r3 are reserved for calling and return
- *
- *  The EABI standard dictates that the ARM Stack be:
- *  "Full Descending" which means that stores need to decrement beforehand and loads must increment
- *  afterward. You can use the actual addressing types "DB" and "IA" or just "FD" on the assembly instructions.
- */
-
-/*
- * FOR ARM:
- * sp is r13
- * lr is r14
- * pc is r15
  */
 
 .text

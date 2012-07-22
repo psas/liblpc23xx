@@ -1,4 +1,5 @@
-
+/*! \file lpc23xx-binsem.h
+ */
 
 /* Copyright (C) 2011 Keith Wilson.
  *
@@ -25,15 +26,34 @@
  * authorization from the authors.
  */
 
-/*
- * lpc23xx-binsem.h
- */
-
-
 #ifndef _LPC23XX_BINSEM_H
 #define _LPC23XX_BINSEM_H
 
 #include <stdint.h>
+
+/*! \defgroup lpc23xx-binsem Binary Semaphore Implementation
+ * @{
+ */
+
+/*! \brief Binary semaphore implementation for lpc23xx ARM7
+ *
+ * Header file notes for lpc23xx-binsem.s
+ *
+ *  \sa http://en.wikipedia.org/wiki/Application_binary_interface#EABI
+ *
+ *  EABI says r0-r3 are reserved for calling and return
+ *
+ *  The EABI standard dictates that the ARM Stack be:
+ *  "Full Descending" which means that stores need to decrement beforehand and loads must increment
+ *  afterward. You can use the actual addressing types "DB" and "IA" or just "FD" on the assembly instructions.
+ */
+
+/*!
+ *    FOR ARM:
+ *    sp is r13
+ *    lr is r14
+ *    pc is r15
+ */
 
 typedef         volatile uint32_t        bin_semaphore;
 
@@ -72,4 +92,6 @@ uint32_t get_binsem(bin_semaphore* binsem_addr, uint32_t wait_count);
 uint32_t release_binsem(bin_semaphore* binsem);
 
 #endif
+
+//! @}
 

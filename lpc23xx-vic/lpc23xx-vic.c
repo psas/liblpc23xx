@@ -1,3 +1,5 @@
+/*! \file lpc23xx-vic.c
+ */
 
 /* Copyright (C) 2011 Keith Wilson.
  *
@@ -24,11 +26,6 @@
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-vic.c
- */
-
 #include <stdint.h>
 
 #include "lpc23xx.h"
@@ -36,8 +33,11 @@
 #include "lpc23xx-util.h"
 #include "lpc23xx-vic.h"
 
+/*! \defgroup lpc23xx-vic Vectored Interrupt Controller for liblpc23xx
+ * @{
+ */
 
-#pragma GCC optimize ("O3")
+
 /*! \brief turn interrupts off at the CPU status register
  *
  * @return
@@ -49,14 +49,14 @@ void vic_cpu_disable_interrupts() {
 
 /*! \brief turn interrupts on at the CPU status register
  *
- * @return
  */
 void vic_cpu_enable_interrupts() {
 	vic_enableIRQ();
 	vic_enableFIQ();
 }
-/* 
- * vic_disableIRQ
+
+/*! \brief Turn off IRQ 
+ *
  * The IRQ bit in the CPSR must be cleared for IRQ ints 
  *
  * This function returns the value of cpsr prior to clear 
@@ -69,8 +69,7 @@ uint32_t vic_disableIRQ(void) {
     return _cpsr;
 }
 
-/*
- * vic_enableIRQ
+/*! \brief Turn on IRQ
  */
 uint32_t vic_enableIRQ(void) {
     uint32_t _cpsr;
@@ -80,8 +79,7 @@ uint32_t vic_enableIRQ(void) {
     return _cpsr;
 }
 
-/*
- * vic_disableFIQ
+/*! \brief Turn OFF FIQ
  */
 uint32_t vic_disableFIQ(void) {
     uint32_t _cpsr;
@@ -91,8 +89,7 @@ uint32_t vic_disableFIQ(void) {
     return _cpsr;
 }
 
-/*
- * vic_enableFIQ
+/*! \brief Turn on FIQ
  */
 uint32_t vic_enableFIQ(void) {
     uint32_t _cpsr;
@@ -102,5 +99,5 @@ uint32_t vic_enableFIQ(void) {
     return _cpsr;
 }
 
-#pragma GCC optimize ("O0")
+//! @}
 
