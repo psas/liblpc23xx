@@ -1,3 +1,5 @@
+/*! \file printf-lpc.c
+*/
 
 /* Copyright (C) 2011 Keith Wilson.
  *
@@ -24,10 +26,6 @@
  * authorization from the authors.
  */
 
-
-/*! \file printf_lpc.c
- */
-
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -37,15 +35,21 @@
 
 #include "printf-lpc.h"
 
-#pragma GCC optimize ("O3")
-/*!
- * doubles (%g) might be accommodated with dtoa() from gcc/newlib dist, but
- * this uses a large amount of code space. Is it really necessary? Omitted
- * for now.
+
+/*! \defgroup printf-lpc Printf utility for liblpc21xx
+ * @{
  */
 
-/*!
- * print_lpc
+
+/*! \brief parse the va_list and print a format spec
+ *
+ * @param fd
+ * @param format
+ * @param args
+ *
+ * \warning doubles (%g) might be accommodated with dtoa() from gcc/newlib dist, but
+ * this uses a large amount of code space. Is it really necessary? Omitted
+ * for now.
  */
 void print_lpc(uartport fd, const char *format, va_list args ) {
 
@@ -60,42 +64,44 @@ void print_lpc(uartport fd, const char *format, va_list args ) {
                 break;
             }
             if( *curFormatPtr == 'd') {
-            	const int valToPrint = va_arg( args, int );
-            	putstring_lpc(fd,util_itoa(valToPrint,DEC));
+                const int valToPrint = va_arg( args, int );
+                putstring_lpc(fd,util_itoa(valToPrint,DEC));
             } else if( *curFormatPtr == 'u') {
-            	const unsigned int valToPrint = va_arg( args, unsigned int );
-            	putstring_lpc(fd,util_uitoa(valToPrint,DEC));
+                const unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd,util_uitoa(valToPrint,DEC));
             } else if( *curFormatPtr == 'X') {
-            	unsigned int valToPrint = va_arg( args, unsigned int );
-            	putstring_lpc(fd, util_uitoa(valToPrint,HEX));
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,HEX));
             } else if( *curFormatPtr == 'x') {
-            	unsigned int valToPrint = va_arg( args, unsigned int );
-            	putstring_lpc(fd, util_uitoa(valToPrint,HEX));
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,HEX));
             } else if( *curFormatPtr == 'o') {
-            	unsigned int valToPrint = va_arg( args, unsigned int );
-            	putstring_lpc(fd, util_uitoa(valToPrint,OCT));
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,OCT));
             } else if( *curFormatPtr == 'b') {
-            	unsigned int valToPrint = va_arg( args, unsigned int );
-            	putstring_lpc(fd, util_uitoa(valToPrint,BIN));
+                unsigned int valToPrint = va_arg( args, unsigned int );
+                putstring_lpc(fd, util_uitoa(valToPrint,BIN));
             } else if( *curFormatPtr == 's') {
-            	char *s = (char *) va_arg( args, int );
-            	putstring_lpc(fd, s);
+                char *s = (char *) va_arg( args, int );
+                putstring_lpc(fd, s);
             } else if( *curFormatPtr == 'c') {
-            	char ch = (char)va_arg( args, int );
-            	putchar_lpc(fd, ch);
+                char ch = (char)va_arg( args, int );
+                putchar_lpc(fd, ch);
             } else if( *curFormatPtr == '%') {
-            	putchar_lpc(fd, '%');
+                putchar_lpc(fd, '%');
             } else {
-            	//dont know what to do with this format string
-            	putchar_lpc(fd, '%');
-            	putchar_lpc(fd, *curFormatPtr);
+                //dont know what to do with this format string
+                putchar_lpc(fd, '%');
+                putchar_lpc(fd, *curFormatPtr);
             }
         }
     }
 }
 
-/*! \break up the va_list
- * printf_lpc
+/*! \brief break up the va_list
+ *
+ * @param fd
+ * @param format
  */
 void printf_lpc(uartport fd, const char *format, ... ) {
     va_list args;
@@ -104,5 +110,4 @@ void printf_lpc(uartport fd, const char *format, ... ) {
     print_lpc(fd, format, args);
 }
 
-
-#pragma GCC optimize ("O0")
+//! @}

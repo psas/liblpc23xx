@@ -5,7 +5,6 @@
 #ifndef RINGBUFFER_H_
 #define RINGBUFFER_H_
 
-
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -26,15 +25,9 @@ typedef     uint8_t                 RB_ELEM;
 /*! \brief Define the maximum number of bytes in a ringbuffer. */
 #define     MAX_RINGBUFFER_ELEMS    254
 
-
-/*!
- * Ringbuffer
+/*! \brief basic structure to hold ringbuffer
  *
- * Ring buffer structure for uint8.
- *
- * \warning
- * For char, will need to cast uint8_t to char
- * where appropriate.
+ * \warning only tested for uint8_t
  */
 typedef struct {
     /*! storage array for ringbuffer elements */
@@ -50,7 +43,6 @@ typedef struct {
     /*! full or empty state of ringbuffer */
     bool      rbfull                        ;
 } Ringbuffer;
-
 
 bool rb_initialize(Ringbuffer* rb);
 
@@ -72,9 +64,7 @@ RB_ELEM rb_max_size(Ringbuffer* rb);
 
 RB_ELEM rb_numentries(Ringbuffer* rb);
 
-//! @}
-
-
-
 #endif
+
+//! @}
 
