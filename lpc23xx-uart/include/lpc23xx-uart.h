@@ -7,17 +7,17 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the names of the authors or their
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
@@ -168,13 +168,13 @@
 #define         P0_TXD1_ENABLE            0x40000000
 
 #define         SET_TXD1                  ( PINSEL0 = ( ( PINSEL0 & P0_TXD1_MASK ) | P0_TXD1_ENABLE ) )
-#define         CLEAR_TXD1                ( PINSEL0 = ( ( PINSEL0 & P0_TXD1_MASK ) ) 
+#define         CLEAR_TXD1                ( PINSEL0 = ( ( PINSEL0 & P0_TXD1_MASK ) )
 
 #define         P1_RXD1_MASK              (~(0x3))
 #define         P1_RXD1_ENABLE            0x1
 
 #define         SET_RXD1                  ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) | P1_RXD1_ENABLE ) )
-#define         CLEAR_RXD1                ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) ) 
+#define         CLEAR_RXD1                ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) )
 
 #define         DLAB_MASK                 ( ~((0x1)<<7) )
 #define         SET_DLAB0                 ( U0LCR = ( U0LCR  | (0x1<<7) ) )
@@ -262,9 +262,9 @@ bool           uart0_init_rb() ;
 uart_iir_intid get_uart0_iir_intid(uint32_t u0iir);
 void           get_uart0_lsr_status(uart_lsr_status* lsrstatus) ;
 
-void           uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ") , optimize("O3")));
+void           uart0_interrupt_service(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
-bool           uart0_putchar_intr(char ch) ;
+volatile bool           uart0_putchar_intr(char ch) ;
 void           uart0_putchar(char ch) ;
 
 bool           uart0_putstring_intr(const char *s) ;

@@ -13,11 +13,13 @@
 #include "lpc23xx-vic.h"
 
 #include "ringbuffer.h"
-#include "printf-lpc.h"
+//#include "printf-lpc.h"
 
 #include "lpc23xx-util.h"
 
 #include "util-test.h"
+
+#pragma GCC optimize("O0")
 
 #ifdef DEBUG_COLORS
 
@@ -40,15 +42,15 @@ void do_task() {
             led_toggle(BLUE_LED);
             uart0_numchars_in_rxbuff = rb_numentries(&uart0_rb_rx_g);
             if(uart0_numchars_in_rxbuff > 0) {
-                printf_lpc(UART0,"Char(s) received: ");
+                uart0_putstring_intr("Char(s) received: ");
                 while (uart0_numchars_in_rxbuff > 0) {
                     ch = uart0_getchar_intr();
-                    printf_lpc(UART0," %c ", ch);
+                    uart0_putchar_intr(ch);
                     uart0_numchars_in_rxbuff = rb_numentries(&uart0_rb_rx_g);
                 }
-                printf_lpc(UART0,"\r\n");
+                uart0_putstring_intr("\r\n");
             } else {
-                printf_lpc(UART0,".");
+               uart0_putstring_intr(".");
             }
         }
     }
@@ -61,150 +63,160 @@ void do_task() {
  */
 bool rb_test() {
 
-    Ringbuffer        rbst;
-    Ringbuffer*       rb = &rbst;
+    static    Ringbuffer        rbst;
+    Ringbuffer*                 rb = &rbst;
 
     bool      pass = true;
     uint8_t   element;
-    uint8_t   getstr[MAX_RINGBUFFER_ELEMS];
-    uint8_t   i;
+    static    uint8_t   getstr[MAX_RINGBUFFER_ELEMS];
+   // uint8_t   i;
 
-    printf_lpc(UART0,"\n\r----------\n\rStart test\n\r");
+    uart0_putstring_intr("\n\r----------\n\rStart test\n\r");
+
 
     if(!rb_initialize(rb)) {
-        printf_lpc(UART0,"Failed to init rb\n\r");
+        uart0_putstring_intr("Failed to init rb\n\r");
         pass = false;
     }
 
     rb_print_state(rb);
 
-    printf_lpc(UART0,"Insert a line\r\n");
+    uart0_putstring_intr("Insert a line\r\n");
     if(!rb_insert_string("Hello line\r\r\n", rb)) {
-        printf_lpc(UART0,"Failed to insert line:\t%s\r\n", "Hello line\r\n");
+        uart0_putstring_intr("Failed to insert line: Hello Line\r\n");
         pass = false;
     }
 
     rb_print_state(rb);
+
     rb_get_line(getstr, rb);
 
-    printf_lpc(UART0,"Got a line:\t-->%s<--\r\n", getstr);
+    uart0_putstring_intr("Got a line:\t-->");
+    uart0_putstring_intr((const char *) getstr);
+    uart0_putstring_intr("<--\r\n");
 
     rb_print_state(rb);
 
     if(!rb_initialize(rb)) {
-        printf_lpc(UART0,"Failed to re-init (2) rb\n\r");
+        uart0_putstring_intr("Failed to re-init (2) rb\n\r");
         pass = false;
     }
 
-    printf_lpc(UART0,"Insert %c\r\n", 'a');
+    uart0_putstring_intr("Insert 'a'\r\n");
     if(!rb_put_elem('a',rb)) {
-        printf_lpc(UART0,"Failed to insert uint8 %c\n\r", 'a');
+        uart0_putstring_intr("Failed to insert uint8 'a'\n\r");
         pass=false;
     }
 
     if(rb->num_entries != 1) {
-        printf_lpc(UART0,"ERROR: Number of entries should be 1\r\n");
+        uart0_putstring_intr("ERROR: Number of entries should be 1\r\n");
         pass = false;
     }
 
-    printf_lpc(UART0,"Get uint8 %c\r\n", 'a');
+    uart0_putstring_intr("Get uint8 'a'\r\n");
     if(!rb_get_elem(&element, rb)) {
-        printf_lpc(UART0,"Failed to get uint8 %c\n\r", 'a');
+        uart0_putstring_intr("Failed to get uint8 'a'\n\r");
         pass = false;
     } else if (element  != 'a') {
-        printf_lpc(UART0,"wrong get uint8 %c\n\r", 'a');
+        uart0_putstring_intr("wrong get uint8 'a'\n\r");
         pass = false;
     } else {}
 
 
     if(rb->num_entries != 0) {
-        printf_lpc(UART0,"ERROR: Number of entries should be 0\r\n");
+        uart0_putstring_intr("ERROR: Number of entries should be 0\r\n");
         pass = false;
     }
 
     rb_print_state(rb);
 
-    printf_lpc(UART0,"Get a uint8 from empty rb...\r\n");
+    uart0_putstring_intr("Get a uint8 from empty rb...\r\n");
+
     if(rb_get_elem(&element,rb)) {
-        printf_lpc(UART0,"***FAIL! Got a uint8 from empty rb\r\n");
+        uart0_putstring_intr("***FAIL! Got a uint8 from empty rb\r\n");
         pass = false;
     } else {
-        printf_lpc(UART0,"***PASS get from empty rb.\r\n");
+        uart0_putstring_intr("***PASS get from empty rb.\r\n");
     }
 
     if(rb->num_entries != 0) {
-        printf_lpc(UART0,"ERROR: Number of entries should be 0\r\n");
+        uart0_putstring_intr("ERROR: Number of entries should be 0\r\n");
         pass = false;
     }
 
-    printf_lpc(UART0,"Insert uint8 b\t");
+    uart0_putstring_intr("Insert uint8 b\t");
     if(!rb_put_elem('b',rb)) {
-        printf_lpc(UART0,"Failed to insert uint8 %c\n\r", 'b');
+        uart0_putstring_intr("Failed to insert uint8");
         pass = false;
     }
 
     if(rb->num_entries != 1) {
-        printf_lpc(UART0,"ERROR: Number of entries should be 1\r\n");
+        uart0_putstring_intr("ERROR: Number of entries should be 1\r\n");
         pass = false;
     }
 
     rb_print_state(rb);
-
-    printf_lpc(UART0,"Insert string\r\n");
+//
+    uart0_putstring_intr("Insert string\r\n");
     if(!rb_insert_string("1234\n\r\n\r\t-->Ring-buffer!<--\r\n ",rb)) {
-        printf_lpc(UART0,"Failed to insert string");
+        uart0_putstring_intr("Failed to insert string");
         pass = false;
         rb_print_state(rb);
-        if(!rb_is_full(rb)) printf_lpc(UART0,"FAIL: Should report full\r\n");
+        if(!rb_is_full(rb)) uart0_putstring_intr("FAIL: Should report full\r\n");
     }
 
     rb_print_state(rb);
 
-    if(!rb_get_elem(&element,rb)) {
-        printf_lpc(UART0,"Failed to get uint8");
-        pass = false;
-    } else {
-        printf_lpc(UART0,"Got a uint8: %c\n\r", element);
-    }
+//    if(!rb_get_elem(&element,rb)) {
+//        uart0_putstring_intr("Failed to get uint8");
+//        pass = false;
+//    } else {
+//        uart0_putstring_intr("Got a uint8: ");
+//        uart0_putchar_intr(element);
+//        uart0_putstring_intr("\r\n");
+//    }
+//
+//    if(!rb_put_elem('c',rb)) {
+//        uart0_putstring_intr("Failed to insert uint8 ");
+//        uart0_putchar_intr('c');
+//        pass = false;
+//    }
+//
+//    rb_get_string(getstr, rb);
 
-    if(!rb_put_elem('c',rb)) {
-        printf_lpc(UART0,"Failed to insert uint8 %c", 'c');
-        pass = false;
-    }
+//    uart0_putstring_intr("got string");
+//
+//    if(!rb_is_empty(rb))
+//    {
+//        uart0_putstring_intr("FAIL: Should report empty\n\r");
+//        pass = false;
+//    }
+//    rb_print_state(rb);
+//
+//    for(i = 0 ; i < 20 ; ++i) {
+//        rb_insert_string("01234567890123456789",rb);
+//    }
+//    rb_print_state(rb);
+//    if(!rb_get_elem(&element,rb)) {
+//        uart0_putstring_intr("Failed to get uint8");
+//        pass = false;
+//    } else {
+//        uart0_putstring_intr("Got a uint8: ");
+//        uart0_putchar_intr((char) element);
+//        uart0_putstring_intr("\r\n");
+//    }
+//
+//    rb_print_state(rb);
+//
+//    rb_get_string(getstr, rb);
+//    uart0_putstring_intr("got string");
+//    if(strncmp((char*) getstr, "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123",MAX_RINGBUFFER_ELEMS) !=0) {
+//        uart0_putstring_intr("FAIL: Strings not equal\n\r");
+//        pass = false;
+//    }
+//    rb_print_state(rb);
 
-    rb_get_string(getstr, rb);
-
-    printf_lpc(UART0, "got string: -->%s<--\r\n", getstr);
-
-    if(!rb_is_empty(rb))
-    {
-        printf_lpc(UART0,"FAIL: Should report empty\n\r");
-        pass = false;
-    }
-    rb_print_state(rb);
-
-    for(i = 0 ; i < 20 ; ++i) {
-        rb_insert_string("01234567890123456789",rb);
-    }
-    rb_print_state(rb);
-    if(!rb_get_elem(&element,rb)) {
-        printf_lpc(UART0,"Failed to get uint8");
-        pass = false;
-    } else {
-        printf_lpc(UART0,"Got a uint8: %c\n\r", element);
-    }
-
-    rb_print_state(rb);
-
-    rb_get_string(getstr, rb);
-    printf_lpc(UART0,"got string: -->%s<--\r\n", getstr);
-    if(strncmp((char*) getstr, "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123",MAX_RINGBUFFER_ELEMS) !=0) {
-        printf_lpc(UART0,"FAIL: Strings not equal\n\r");
-        pass = false;
-    }
-    rb_print_state(rb);
-
-    (pass) ? printf_lpc(UART0,"PASSED RINGBUFFER TESTS\r\n") : printf_lpc(UART0,"FAILED RINGBUFFER TESTS\r\n");
+  //  (pass) ? uart0_putstring_intr("PASSED RINGBUFFER TESTS\r\n") : uart0_putstring_intr("FAILED RINGBUFFER TESTS\r\n");
 
     return(pass);
 }
@@ -248,18 +260,17 @@ int main (void) {
     vic_disableIRQ();
     vic_disableFIQ();
 
-    uart0_init_rb();
+    if(!uart0_init_rb()) {
+    	RED_LED_ON;
+    	while (1);
+    }
 
     uart_enable_interrupt(UART0);
 
     vic_enableIRQ();
     vic_enableFIQ();
 
-    //uart0_putstring("\r\n***USB0 putstr polled***\r\n\r\n");
-
-    printf_lpc(UART0, "\r\n***USB0 printf_lpc (interrupt-based) 0d%d...0x%x...0b%b\r\n\r\n", 15,15,15);
-
-    printf_lpc(UART0,"\r\n***Starting UTIL timing test.***\r\n\r\n");
+    uart0_putstring_intr("\r\n***Starting UTIL timing test.***\r\n\r\n");
 
     /* get counter value */
     timer_init(TIMER_0,  (uint32_t) 0x0 , CCLK_DIV1);
@@ -269,15 +280,15 @@ int main (void) {
     msecs = 200;
     ticks = millisecondsToCPUTicks(msecs);
 
-    printf_lpc(UART0,"--> ticks in %u msecs are %u\r\n",msecs, ticks);
+   // printf_lpc(UART0,"--> ticks in %u msecs are %u\r\n",msecs, ticks);
 
     start = T0TC;
     util_wait_msecs(msecs) ;
     stop  = T0TC;
     difftime = stop - start;
     error    = difftime - ticks;
-    printf_lpc(UART0, "difftime is: %u\r\n", difftime);
-    printf_lpc(UART0, "error is: %d ticks.\r\n", error);
+   // printf_lpc(UART0, "difftime is: %u\r\n", difftime);
+   // printf_lpc(UART0, "error is: %d ticks.\r\n", error);
 
     RESET_TIMER0;
     START_TIMER0;
@@ -285,23 +296,25 @@ int main (void) {
     usecs = 200;
     ticks = microsecondsToCPUTicks(usecs);
 
-    printf_lpc(UART0,"--> ticks in %u usecs are %u\r\n",msecs, ticks);
-
+    uart0_putstring_intr("--->tics in xxx usecs are xxx\r\n");
+//    printf_lpc(UART0,"--> ticks in %u usecs are %u\r\n",msecs, ticks);
+//
     start = T0TC;
     util_wait_usecs(usecs) ;
     stop  = T0TC;
     difftime = stop - start;
     error    = difftime - ticks;
-    printf_lpc(UART0, "difftime is: %u\r\n", difftime);
-    printf_lpc(UART0, "error is: %d ticks.\r\n", error);
+//    printf_lpc(UART0, "difftime is: %u\r\n", difftime);
+//    printf_lpc(UART0, "error is: %d ticks.\r\n", error);
 
-    printf_lpc(UART0, "\r\n*** Test ringbuffer...\r\n");
-    rb_test() ;
+      uart0_putstring_intr("\r\n*** Test ringbuffer...\r\n");
+      rb_test() ;
 
-    printf_lpc(UART0, "\r\n***util-test done, now spin on UART0 test with I/O (please hit some keys!!!) ***\r\n");
+    uart0_putstring_intr("\r\n***util-test done, now spin on UART0 test with I/O (please hit some keys!!!) ***\r\n-\r\n");
 
     do_task();
 
     return(0);
 
 }
+#pragma GCC optimize("O3")

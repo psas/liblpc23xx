@@ -23,7 +23,7 @@
 typedef     uint8_t                 RB_ELEM;
 
 /*! \brief Define the maximum number of bytes in a ringbuffer. */
-#define     MAX_RINGBUFFER_ELEMS    254
+#define     MAX_RINGBUFFER_ELEMS    255
 
 /*! \brief basic structure to hold ringbuffer
  *
@@ -46,11 +46,11 @@ typedef struct {
 
 bool rb_initialize(Ringbuffer* rb);
 
-bool rb_put_elem(RB_ELEM c, Ringbuffer* rb);
+volatile bool rb_put_elem(RB_ELEM c, Ringbuffer* rb);
 
 bool rb_insert_string(char* s, Ringbuffer* rb);
 
-bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb);
+volatile bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb);
 
 uint16_t rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
 

@@ -10,6 +10,7 @@
 
 #include "ringbuffer.h"
 
+#pragma GCC optimize("O0")
 /*! \defgroup ringbuffer Ring buffer ADT
  * @{
  */
@@ -54,11 +55,11 @@ bool rb_initialize(Ringbuffer* rb) {
  *
  * \warning tailidx always points at first empty space
  */
-bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
+volatile bool rb_put_elem(RB_ELEM c, Ringbuffer* rb)
 {
-    volatile bool status = true;
-
     vic_cpu_disable_interrupts();
+
+    volatile bool status = true;
 
     if(rb == NULL) {
         return(false);
@@ -117,7 +118,7 @@ bool rb_insert_string(char* s, Ringbuffer* rb)
  *
  * \warning Any RB_ELEM removed is replaced with a '0'
  */
-bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
+volatile bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
     if(c  == NULL) {return(false);}
     if(rb == NULL) {return(false);}
 
@@ -228,5 +229,6 @@ uint8_t rb_numentries(Ringbuffer* rb) {
     if(rb == NULL) {return(false);}
     return(rb->num_entries);
 }
+#pragma GCC optimize("O3")
 
 //! @}

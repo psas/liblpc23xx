@@ -7,17 +7,17 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the names of the authors or their
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
@@ -40,7 +40,7 @@
 #include "lpc23xx-uart.h"
 
 
-#pragma GCC optimize ("O3")
+#pragma GCC optimize ("O0")
 uart_status         uart0_status_g;
 
 Ringbuffer          uart0_rb_rx_g;
@@ -352,20 +352,21 @@ void uart0_interrupt_service() {
  *
  * \return false on buffer full.
  */
-bool uart0_putchar_intr(char ch) {
+volatile bool uart0_putchar_intr(char ch) {
 
+	vic_cpu_disable_interrupts();
     if(!rb_is_full(&uart0_tx_rb_g)){
         if(uart0_kick_thr_int_g) {
             uart0_kick_thr_int_g = false;
             U0THR = ch;
         } else {
-        	vic_cpu_disable_interrupts();
             rb_put_elem(ch, &uart0_tx_rb_g);
-            vic_cpu_enable_interrupts();
         }
     } else {
+    	  vic_cpu_enable_interrupts();
           return(false);  // rb is full...char lost.
     }
+    vic_cpu_enable_interrupts();
     return(true);
 }
 
@@ -391,12 +392,19 @@ void uart0_putchar(char ch) {
  * Assumes null termination of string.
  */
 bool uart0_putstring_intr(const char *s) {
-        bool success=false;
-    while(*s != '\0') {
-        success = uart0_putchar_intr(*s);
-        ++s;
-    }
-    return success;
+	bool success=false;
+
+	char* slocal       = (char* )s;
+	static char  outch;
+
+	outch = *slocal;
+
+	while(outch != '\0') {
+		success = uart0_putchar_intr(outch);
+		++slocal;
+		outch = *slocal;
+	}
+	return success;
 }
 
 /*
@@ -481,4 +489,4 @@ char* uart0_getstring_intr (void) {
 }
 
 
-#pragma GCC optimize ("O0")
+#pragma GCC optimize ("O3")

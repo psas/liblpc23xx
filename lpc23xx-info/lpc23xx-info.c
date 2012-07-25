@@ -1,3 +1,5 @@
+/*! \file lpc23xx-info.c
+ */
 
 /* Copyright (C) 2011 Keith Wilson.
  *
@@ -24,10 +26,6 @@
  * authorization from the authors.
  */
 
-/*
- * lpc23xx-info.c
- */
-
 #include <stdint.h>
 #include "lpc23xx.h"
 
@@ -35,7 +33,7 @@
 
 struct liblpc23xx_info brd;
 
-/**
+/*!
  * \mainpage liblpc23xx-0.1 API Reference
  *
  * \section intro Introduction
@@ -78,7 +76,7 @@ make tests
  * \section gitrepo Git Repository
  *
  * The source code is managed with <a href="http://git-scm.com/">Git</a>. The
- * main repository can be found at <a href="http://git.psas.pdx.edu/git">PSAS Git repository></a>.
+ * main repository can be found at <a href="http://git.psas.pdx.edu/git">PSAS Git repository</a>.
  * A copy can be obtained with the command:
 \code
 git clone git://git.psas.pdx.edu/git/liblpc23xx.git

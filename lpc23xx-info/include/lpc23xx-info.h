@@ -1,7 +1,6 @@
 
 
-/*
- * lpc23xx-info.h
+/*! \file lpc23xx-info.h
  */
 
 extern struct liblpc23xx_info {
