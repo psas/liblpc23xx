@@ -36,8 +36,6 @@
 
 #define         UART_MAXBUFFER            250
 
-
-
 /*
  * PCLKSEL0
  */

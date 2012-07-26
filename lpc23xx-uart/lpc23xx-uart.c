@@ -40,7 +40,6 @@
 #include "lpc23xx-uart.h"
 
 
-#pragma GCC optimize ("O0")
 uart_status         uart0_status_g;
 
 Ringbuffer          uart0_rb_rx_g;
@@ -489,4 +488,3 @@ char* uart0_getstring_intr (void) {
 }
 
 
-#pragma GCC optimize ("O3")

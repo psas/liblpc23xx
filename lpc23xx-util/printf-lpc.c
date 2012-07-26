@@ -40,8 +40,6 @@
  * @{
  */
 
-#pragma GCC optimize("O0")
-
 /*! \brief parse the va_list and print a format spec
  *
  * @param fd
@@ -111,5 +109,4 @@ void printf_lpc(uartport fd, const char *format, ... ) {
     print_lpc(fd, format, args);
 }
 
-#pragma GCC optimize("O3")
 //! @}

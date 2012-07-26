@@ -44,25 +44,25 @@ typedef struct {
     bool      rbfull                        ;
 } Ringbuffer;
 
-bool rb_initialize(Ringbuffer* rb);
+bool          rb_initialize(Ringbuffer* rb);
 
 volatile bool rb_put_elem(RB_ELEM c, Ringbuffer* rb);
 
-bool rb_insert_string(char* s, Ringbuffer* rb);
+bool          rb_insert_string(char* s, Ringbuffer* rb);
 
 volatile bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb);
 
-uint16_t rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
+uint16_t      rb_get_line(RB_ELEM* s, Ringbuffer* rb) ;
 
-void rb_get_string(RB_ELEM* s, Ringbuffer* rb);
+void          rb_get_string(RB_ELEM* s, Ringbuffer* rb);
 
-bool rb_is_full(Ringbuffer* rb);
+bool          rb_is_full(Ringbuffer* rb);
 
-bool rb_is_empty(Ringbuffer* rb);
+bool          rb_is_empty(Ringbuffer* rb);
 
-RB_ELEM rb_max_size(Ringbuffer* rb);
+RB_ELEM       rb_max_size(Ringbuffer* rb);
 
-RB_ELEM rb_numentries(Ringbuffer* rb);
+RB_ELEM       rb_numentries(Ringbuffer* rb);
 
 #endif
 

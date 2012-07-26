@@ -10,7 +10,6 @@
 
 #include "ringbuffer.h"
 
-#pragma GCC optimize("O0")
 /*! \defgroup ringbuffer Ring buffer ADT
  * @{
  */
@@ -229,6 +228,6 @@ uint8_t rb_numentries(Ringbuffer* rb) {
     if(rb == NULL) {return(false);}
     return(rb->num_entries);
 }
-#pragma GCC optimize("O3")
+
 
 //! @}
