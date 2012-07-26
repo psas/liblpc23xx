@@ -86,20 +86,24 @@
 // ( i2c clock speed ref: lpc23xx user manual p516)
 // i2c standard clock speed goes to 100kHz
 
-#define I2C0_IS_CCLK_DIV1   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x01 << 14)))
-#define I2C0_IS_CCLK_DIV2   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x10 << 14)))
-#define I2C0_IS_CCLK_DIV4   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x00 << 14)))
-#define I2C0_IS_CCLK_DIV8   (PCLKSEL0 = ((PCLKSEL0  & ~(11<<14)) | (0x11 << 14)))
+#define PCLK_I2C0_BIT	14
+#define PCLK_I2C1_BIT	6
+#define PCLK_I2C2_BIT	20
 
-#define I2C1_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x01 << 6)))
-#define I2C1_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x10 << 6)))
-#define I2C1_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x00 << 6)))
-#define I2C1_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<6)) | (0x11 << 6)))
+#define I2C0_IS_CCLK_DIV1   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b01 << PCLK_I2C0_BIT)))
+#define I2C0_IS_CCLK_DIV2   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b10 << PCLK_I2C0_BIT)))
+#define I2C0_IS_CCLK_DIV4   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b00 << PCLK_I2C0_BIT)))
+#define I2C0_IS_CCLK_DIV8   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b11 << PCLK_I2C0_BIT)))
 
-#define I2C2_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x01 << 20)))
-#define I2C2_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x10 << 20)))
-#define I2C2_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x00 << 20)))
-#define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(11<<20)) | (0x11 << 20)))
+#define I2C1_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b01 << PCLK_I2C1_BIT)))
+#define I2C1_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b10 << PCLK_I2C1_BIT)))
+#define I2C1_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b00 << PCLK_I2C1_BIT)))
+#define I2C1_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b11 << PCLK_I2C1_BIT)))
+
+#define I2C2_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b01 << PCLK_I2C2_BIT)))
+#define I2C2_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b10 << PCLK_I2C2_BIT)))
+#define I2C2_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b00 << PCLK_I2C2_BIT)))
+#define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b11 << PCLK_I2C2_BIT)))
 
 // p516: Max rate is 400kHz according to lpc23xx manual.
 //#define I2SCLHIGH           90
@@ -233,6 +237,7 @@ uint8_t i2c_create_write_address(uint8_t addr) ;
 void    i2c_init_state( i2c_master_xact_t* s) ;
 void    i2c_init(i2c_iface channel, i2c_pinsel pin) ;
 void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;
+void    i2c_kHz(i2c_iface channel, uint32_t freq) ;
 void    i2c0_get_read_data(i2c_master_xact_t* s) ;
 
 void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
