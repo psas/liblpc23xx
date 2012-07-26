@@ -34,6 +34,8 @@
 
 #include "lpc23xx.h"
 
+#include "lpc23xx-pll.h"
+#include "lpc23xx-types.h"
 #include "lpc23xx-binsem.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
@@ -108,33 +110,7 @@ void i2c_init_state( i2c_master_xact_t* s) {
  * 3. Set I/O pins to correct mode
  * 4. Configure interrupt in VIC
  */
-//void i2c1_alt_init(){
-//	init_binsem(&i2c1_binsem_g);
-//
-//	i2c_init_state( &i2c1_s_g );
-//
-//	POWER_I2C1_ON;
-//
-//	I2C1CONCLR = 0x7C;
-//	I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
-//
-//	I2C2_IS_CCLK_DIV1;
-//	I2C1SCLL   = I2SCLLOW;
-//	I2C1SCLH   = I2SCLHIGH;
-//
-//	I2C1_ENABLE_SDA1_ALT_PIN;
-//	I2C1_ENABLE_SCL1_ALT_PIN;
-//
-//	// reference: lpc23xx usermanual p158 table 107 footnote 2
-//	I2C1_SDA1_ALT_PULLUP;
-//
-//	// vic
-//	// set up VIC p93 table 86 lpc23xx user manual
-//	ENABLE_I2C1_INT;
-//	VICVectAddr19 = (unsigned int) i2c1_isr;
-//
-//	I2C1CONCLR    = I2C_SIC;
-//}
+
 
 void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
@@ -182,7 +158,7 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
             I2C1CONCLR = 0x7C;
             I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
 
-            I2C2_IS_CCLK_DIV1;
+            I2C1_IS_CCLK_DIV1;
             I2C1SCLL   = I2SCLLOW;
             I2C1SCLH   = I2SCLHIGH;
             if(pin == I2C1_ALTPIN){
@@ -220,8 +196,8 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             // I2C clock
             I2C2_IS_CCLK_DIV1;
-            I2C1SCLL   = I2SCLLOW;
-            I2C1SCLH   = I2SCLHIGH;
+            I2C2SCLL   = I2SCLLOW;
+            I2C2SCLH   = I2SCLHIGH;
 
             I2C2_ENABLE_SDA2_PIN;
             I2C2_ENABLE_SCL2_PIN;
@@ -265,6 +241,56 @@ void i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) {
             // error !!
             break;
     }
+}
+
+/*
+ * i2c_kHz
+ * set the i2c channel to a custom freq at an even duty cycle.
+ * Frequency in kHz, allowed values are between 1 and 400
+ */
+void i2c_kHz(i2c_iface channel, uint32_t freq){
+	if(freq > 400 || freq < 1){ //p516 of the user manual, max i2c freq is 400kHz.
+		return;
+	}
+	Freq curr_freq = pllquery_cclk_mhz();
+	uint32_t divider = 4;
+	uint16_t count = 300;
+
+	switch(channel){
+	case I2C0:
+		divider = (PCLKSEL0 & (0b11 << PCLK_I2C0_BIT)) >> PCLK_I2C0_BIT;
+		break;
+	case I2C1:
+		divider = (PCLKSEL1 & (0b11 << PCLK_I2C1_BIT)) >> PCLK_I2C1_BIT;
+		break;
+	case I2C2:
+		divider = (PCLKSEL1 & (0b11 << PCLK_I2C2_BIT)) >> PCLK_I2C2_BIT;
+		break;
+	default:
+		//nope
+		break;
+	}
+
+	switch(divider){
+	case 1:
+		divider = 1;
+		break;
+	case 2:
+		divider = 2;
+		break;
+	case 0:
+		divider = 4;
+		break;
+	case 3:
+		divider = 8;
+		break;
+	default:
+		divider = 4;
+		break;
+	}
+
+	count = curr_freq/(2*freq*1000*divider);
+	i2c_freq(channel, count, count);
 }
 
 /*
@@ -1130,6 +1156,10 @@ void start_i2c2_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
     }
 }
 
+/*
+ * start_i2c_master_xact
+ * Input: Pointer to i2c_master_t structure with xaction data
+ */
 void start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s, XACT_FnCallback* xact_fn){
     switch(i2c_ch){
     case I2C0:
