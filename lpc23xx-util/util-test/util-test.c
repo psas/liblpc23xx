@@ -22,8 +22,8 @@
 /*! \brief blink a light, get chars from terminal and echo.
  */
 void do_task() {
-    volatile uint32_t x        = 0;
-    const    uint32_t interval = 2000000;
+    volatile uint32_t x               = 0;
+    const    uint32_t interval        = 2000000;
     char     ch ;
     int      uart0_numchars_in_rxbuff = 0;
     x = 0;

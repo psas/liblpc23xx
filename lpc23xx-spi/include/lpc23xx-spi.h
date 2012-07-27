@@ -7,17 +7,17 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the names of the authors or their
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
@@ -99,13 +99,16 @@
 #define     SPI_SR_WCOL                6
 #define     SPI_SR_SPIF                7
 
-typedef enum {SPI_50KHZ=50000,
+typedef enum {
+	SPI_50KHZ =50000,
     SPI_100KHZ=100000,
     SPI_250KHZ=250000,
-    SPI_500KHZ=500000} spi_freq;
+    SPI_500KHZ=500000
+} spi_freq;
 
 // lpc23xx_um v3 p462
-typedef enum {SPI_8BITS =0x8,
+typedef enum {
+	SPI_8BITS =0x8,
     SPI_9BITS =0x9,
     SPI_10BITS=0xa,
     SPI_11BITS=0xb,
@@ -113,7 +116,8 @@ typedef enum {SPI_8BITS =0x8,
     SPI_13BITS=0xd,
     SPI_14BITS=0xe,
     SPI_15BITS=0xf,
-    SPI_16BITS=0x0} spi_xfernumbits ;
+    SPI_16BITS=0x0
+} spi_xfernumbits ;
 
 uint8_t    spi_readstatus();
 

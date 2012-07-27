@@ -1,5 +1,5 @@
 /*
-	LPCUSB, an USB device driver for LPC microcontrollers	
+	LPCUSB, an USB device driver for LPC microcontrollers
 	Copyright (C) 2006 Bertrik Sikken (bertrik@sikken.nl)
 
 	Redistribution and use in source and binary forms, with or without
@@ -16,7 +16,7 @@
 	THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
 	IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 	OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, 
+	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
 	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
 	NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -28,10 +28,10 @@
 
 /** @file
 	Control transfer handler.
-	
+
 	This module handles control transfers and is normally installed on the
 	endpoint 0 callback.
-	
+
 	Control transfers can be of the following type:
 	0 Standard;
 	1 Class;
@@ -76,11 +76,11 @@ static uint8_t				*apbDataStore[4] = {NULL, NULL, NULL, NULL};
 /**
 	Local function to handle a request by calling one of the installed
 	request handlers.
-		
+
 	In case of data going from host to device, the data is at *ppbData.
 	In case of data going from device to host, the handler can either
 	choose to write its data at *ppbData or update the data pointer.
-		
+
 	@param [in]		pSetup		The setup packet
 	@param [in,out]	*piLen		Pointer to data length
 	@param [in,out]	ppbData		Data buffer.
@@ -91,12 +91,12 @@ static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 {
 	TFnHandleRequest *pfnHandler;
 	int iType;
-	
+
 	iType = REQTYPE_GET_TYPE(pSetup->bmRequestType);
 	pfnHandler = apfnReqHandlers[iType];
 	if (pfnHandler == NULL) {
 		DBG(UART0,"No handler for reqtype %d\n", iType);
-		return FALSE;
+		return false;
 	}
 
 	return pfnHandler(pSetup, piLen, ppbData);
@@ -105,7 +105,7 @@ static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 
 /**
 	Local function to stall the control endpoint
-	
+
 	@param [in]	bEPStat	Endpoint status
  */
 static void StallControlPipe(uint8_t bEPStat)
@@ -113,7 +113,7 @@ static void StallControlPipe(uint8_t bEPStat)
 	uint8_t	*pb;
 	int	i;
 
-	USBHwEPStall(0x80, TRUE);
+	USBHwEPStall(0x80, true);
 
 // dump setup packet
 	DBG(UART0,"STALL on [");
@@ -176,7 +176,7 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 				DataIn();
 			}
 		}
-		else {		
+		else {
 			if (iResidue > 0) {
 				// store data
 				iChunk = USBHwEPRead(0x00, pbData, iResidue);
@@ -212,14 +212,14 @@ void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat)
 		DataIn();
 	}
 	else {
-		ASSERT(FALSE);
+		ASSERT(false);
 	}
 }
 
 
 /**
 	Registers a callback for handling requests
-		
+
 	@param [in]	iType			Type of request, e.g. REQTYPE_TYPE_STANDARD
 	@param [in]	*pfnHandler		Callback function pointer
 	@param [in]	*pbDataStore	Data storage area for this type of request

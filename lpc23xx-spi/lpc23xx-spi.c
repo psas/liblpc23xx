@@ -1,4 +1,7 @@
 
+/*! \file lpc23xx-spi.c
+ */
+
 /* Copyright (C) 2011 Keith Wilson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -7,30 +10,27 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the names of the authors or their
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-spi.c
- */
-
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
 #include "lpc23xx.h"
 #include "lpc23xx-types.h"
 
@@ -46,7 +46,7 @@
 /*
  * spi_abrt
  */
-inline BOOL spi_abrt(uint8_t spi_status) {
+inline bool spi_abrt(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
 }
 
@@ -54,28 +54,28 @@ inline BOOL spi_abrt(uint8_t spi_status) {
 /*
  * spi_modf
  */
-inline BOOL spi_modf(uint8_t spi_status) {
+inline bool spi_modf(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_MODF)) >> SPI_SR_MODF) );
 }
 
 /*
  * spi_rovr
  */
-inline BOOL spi_rovr(uint8_t spi_status) {
+inline bool spi_rovr(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ROVR)) >> SPI_SR_ROVR) );
 }
 
 /*
  * spi_wcol
  */
-inline BOOL spi_wcol(uint8_t spi_status) {
+inline bool spi_wcol(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_WCOL)) >> SPI_SR_WCOL) );
 }
 
 /*
  * spi_spif
  */
-inline BOOL spi_spif(uint8_t spi_status) {
+inline bool spi_spif(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_SPIF)) >> SPI_SR_SPIF) );
 }
 
@@ -107,7 +107,7 @@ uint8_t spi_readstatus() {
  */
 void spi_waitSPIF() {
     uint32_t waitcount = 200000000;
-    while ((spi_spif(S0SPSR)==FALSE) && (waitcount > 0 )) {
+    while ((spi_spif(S0SPSR)==false) && (waitcount > 0 )) {
         waitcount--;
     }
 }
@@ -124,12 +124,14 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
     S0SPDR = data;
 }
 
-/*
+/*! \brief SPI Master transaction for 16 bits.
+ *
  * spi_init_master_MSB_16
- * scale:   factor to divide cclk for spi peripheral
- * spifreq: frequency to run SCLK. 
+ *
+ * scale:    factor to divide cclk for spi peripheral
+ * spifreq:  frequency to run SCLK.
  * example:  spi_init(CCLK_DIV8, SPI_100KHZ) ;
- * 
+ *
  * master mode, MSB first, 16 bits per transfer
  *
  */
@@ -191,11 +193,11 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     // no second device pin initialized.
     // PINSEL_SPI_MASTERM_SSEL_1         // P1.0
     // PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
-    // FIO_SPI_SSEL_1; 
-    // SSEL_1_HIGH;    
+    // FIO_SPI_SSEL_1;
+    // SSEL_1_HIGH;
 
     // master mode, MSB first, 16 bits per transfer
-    S0SPCR = (0x1 << SPI_CR_BITENABLE) | (0x1 << SPI_CR_MSTR) | (0x0 << SPI_CR_BITS); 
+    S0SPCR = (0x1 << SPI_CR_BITENABLE) | (0x1 << SPI_CR_MSTR) | (0x0 << SPI_CR_BITS);
 
     ccount  = spi_pclk/spifreq;
 #ifdef DEBUG_SPI
@@ -210,9 +212,8 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     S0SPCCR                 = (uint8_t) ccount;
 
-    spi_status              = spi_readstatus();
-
 #ifdef DEBUG_SPI
+    spi_status              = spi_readstatus();
     printf_lpc(UART0, "spi_status is %u\n", spi_status);
 
     printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
