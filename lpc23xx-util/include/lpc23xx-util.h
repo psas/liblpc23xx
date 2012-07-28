@@ -71,6 +71,11 @@
 typedef enum {FLASH_SLOW=0, FLASH_NORMAL, FLASH_FAST} flashspeed_type;
 typedef enum {RED_LED=0, BLUE_LED, GREEN_LED}         ledcolor_type;
 
+
+#define P0_PULLUP_MODE       0b00
+#define P0_NOPULL_MODE       0b10
+#define P0_PULLDOWN_MODE     0b11
+
 void init_color_led() ;
 void all_led_off() ;
 void cycle_led() ;

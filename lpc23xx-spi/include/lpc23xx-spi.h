@@ -38,29 +38,44 @@
 #include "lpc23xx-pll.h"
 #include "lpc23xx-util.h"
 
+#define     FN_SCK_PINSEL0              0b11
+#define     FN_MISO_PINSEL1             0b11
+#define     FN_MOSI_PINSEL1             0b11
+#define     FN_SSEL_PINSEL1             0b11
+
+#define     P0_15_PINSEL0                 30
+#define     P0_16_PINSEL1                  0
+#define     P0_17_PINSEL1                  2
+#define     P0_18_PINSEL1                  4
+
 //P0.15
-#define     PINSEL_SPI_SCK             (PINSEL0  = (PINSEL0  & ~(0x3 << 30)) | (0x3 << 30))
-#define     PINMODE_SPI_SCK_NOPULL     (PINMODE0 = (PINMODE0 & ~(0x3 << 30)) | (0x2 << 30))
+#define     PINSEL_SPI_SCK             (PINSEL0  = (PINSEL0  & ~(0x3 << P0_15_PINSEL0)) | (FN_SCK_PINSEL0  << P0_15_PINSEL0))
+#define     PINMODE_SPI_SCK_NOPULL     (PINMODE0 = (PINMODE0 & ~(0x3 << P0_15_PINSEL0)) | (P0_NOPULL_MODE  << P0_15_PINSEL0))
+#define     PINMODE_SPI_SCK_PULLUP     (PINMODE0 = (PINMODE0 & ~(0x3 << P0_15_PINSEL0)) | (P0_PULLUP_MODE  << P0_15_PINSEL0))
 
 //P0.17
-#define     PINSEL_SPI_MISO            (PINSEL1  = (PINSEL1  & ~(0x3 << 2)) | (0x3 << 2))
-#define     PINMODE_SPI_MISO_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << 2)) | (0x2 << 2))
+#define     PINSEL_SPI_MISO            (PINSEL1  = (PINSEL1  & ~(0x3 << P0_17_PINSEL1)) | (FN_MISO_PINSEL1 << P0_17_PINSEL1))
+#define     PINMODE_SPI_MISO_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_17_PINSEL1)) | (P0_NOPULL_MODE  << P0_17_PINSEL1))
+#define     PINMODE_SPI_MISO_PULLUP    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_17_PINSEL1)) | (P0_PULLUP_MODE  << P0_17_PINSEL1))
 
 //P0.18
-#define     PINSEL_SPI_MOSI            (PINSEL1  = (PINSEL1  & ~(0x3 << 4)) | (0x3 << 4))
-#define     PINMODE_SPI_MOSI_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << 4)) | (0x2 << 4))
+#define     PINSEL_SPI_MOSI            (PINSEL1  = (PINSEL1  & ~(0x3 << P0_18_PINSEL1)) | (FN_MOSI_PINSEL1 << P0_18_PINSEL1))
+#define     PINMODE_SPI_MOSI_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_18_PINSEL1)) | (P0_NOPULL_MODE  << P0_18_PINSEL1))
+#define     PINMODE_SPI_MOSI_PULLUP    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_18_PINSEL1)) | (P0_PULLUP_MODE  << P0_18_PINSEL1))
 
 // P0.16 is SSEL, use as GPIO in master mode SPI
-#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  & ~(0x3)     ) | (0x3))
-#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  & ~(0x3)     ) )
-#define     PINMODE_SPI_SSEL_NOPULL    (PINMODE1  = (PINMODE1 & ~(0x3))     | (0x2 ))
+#define     PINSEL_SPI_SLAVEM_SSEL     (PINSEL1  = (PINSEL1  & ~(0x3 << P0_16_PINSEL1)) | (FN_SSEL_PINSEL1 << P0_16_PINSEL1 ))
+#define     PINSEL_SPI_MASTERM_SSEL_0  (PINSEL1  = (PINSEL1  & ~(0x3 << P0_16_PINSEL1)))
+#define     PINMODE_SPI_SSEL_NOPULL    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_16_PINSEL1)) | (P0_NOPULL_MODE  << P0_16_PINSEL1 ))
+#define     PINMODE_SPI_SSEL_PULLUP    (PINMODE1 = (PINMODE1 & ~(0x3 << P0_16_PINSEL1)) | (P0_PULLUP_MODE  << P0_16_PINSEL1 ))
 
+#define     FIO_UNMASK_SSEL            (FIO0MASK = (FIO0MASK & ~(1<<16)))
 #define     FIO_SPI_SSEL               (FIO0DIR |= (1<<16))
 #define     SSEL_HIGH                  (FIO0SET |= (1<<16))
 #define     SSEL_LOW                   (FIO0CLR |= (1<<16))
 
 // P1.0  is for a second device in master mode SPI
-#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL1 =  (PINSEL2 & ~(0x11)     ) | (0x00))
+#define     PINSEL_SPI_MASTERM_SSEL_1            (PINSEL1  =  (PINSEL2 & ~(0x11)    ) | (0x00))
 #define     PINMODE_SPI_MASTERM_SSEL_1_NOPULL    (PINMODE2 = (PINMODE2 & ~(0x3))      | (0x2 ))
 #define     FIO_SPI_SSEL_1                       (FIO1DIR |= 0x1)
 #define     SSEL_1_HIGH                          (FIO1SET |= 0x1)

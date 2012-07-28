@@ -134,13 +134,21 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
  *
  * master mode, MSB first, 16 bits per transfer
  *
+ * PULLUP Configuration Default
+ * MISO - PULLUP
+ * MOSI - PULLUP
+ * SCK  - PULLUP
+ * SSEL - NONE
+ *
+ * Default Setting for SSEL is HIGH
+ * \todo Discuss whether this is a good or bad idea.
+ *
  */
 void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     Freq                cclk;
     uint32_t            spi_pclk = 0;
     uint32_t            ccount;
-    volatile uint8_t    spi_status;
 
     FIO_ENABLE;
 
@@ -176,13 +184,13 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     }
 
     PINSEL_SPI_SCK ;
-    PINMODE_SPI_SCK_NOPULL ;
+    PINMODE_SPI_SCK_PULLUP ;
 
     PINSEL_SPI_MISO ;
-    PINMODE_SPI_MISO_NOPULL ;
+    PINMODE_SPI_MISO_PULLUP ;
 
     PINSEL_SPI_MOSI ;
-    PINMODE_SPI_MOSI_NOPULL ;
+    PINMODE_SPI_MOSI_PULLUP ;
 
     // SSEL for master mode.
     PINSEL_SPI_MASTERM_SSEL_0 ;
@@ -208,11 +216,13 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     if(ccount % 2)   ccount -= 1;  // must be even number
 
+    if(ccount < 8)   ccount = 8;   // min value for ccr (p 463, user manual.)
     if(ccount > 254) ccount = 254; // max value for ccr
 
     S0SPCCR                 = (uint8_t) ccount;
 
 #ifdef DEBUG_SPI
+    volatile uint8_t    spi_status;
     spi_status              = spi_readstatus();
     printf_lpc(UART0, "spi_status is %u\n", spi_status);
 
