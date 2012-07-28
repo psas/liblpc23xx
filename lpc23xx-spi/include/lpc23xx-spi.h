@@ -35,8 +35,14 @@
 #include "lpc23xx.h"
 #include "lpc23xx-types.h"
 
+#include "lpc23xx-binsem.h"
+
 #include "lpc23xx-pll.h"
 #include "lpc23xx-util.h"
+
+#define     SPI_MAX_BUFFER              64
+
+
 
 #define     FN_SCK_PINSEL0              0b11
 #define     FN_MISO_PINSEL1             0b11
@@ -114,6 +120,13 @@
 #define     SPI_SR_WCOL                6
 #define     SPI_SR_SPIF                7
 
+#define     SPI_BINSEM_WAITTICKS       3000
+
+#define     VIC_SPI_BIT                10
+
+#define     ENABLE_SPI_INT             (VICIntEnable = (VICIntEnable | (1<<VIC_SPI_BIT)))
+#define     DISABLE_I2C0_INT           (VICIntEnable = (VICIntEnable & ~(1<<VIC_SPI_BIT)))
+
 typedef enum {
 	SPI_50KHZ =50000,
     SPI_100KHZ=100000,
@@ -132,13 +145,38 @@ typedef enum {
     SPI_14BITS=0xe,
     SPI_15BITS=0xf,
     SPI_16BITS=0x0
-} spi_xfernumbits ;
+} spi_xfernumbits;
+
+typedef enum {
+	SPI_READ=0,
+	SPI_WRITE
+} spi_xact_tag;
+
+typedef struct spi_master_xact {
+
+	 spi_xact_tag  tag;
+
+	 uint8_t       spi_dummyval;
+
+     uint8_t       spi_tx_buffer[SPI_MAX_BUFFER];  // Transmit data for transaction
+     uint8_t       spi_rd_buffer[SPI_MAX_BUFFER];  // Receive  data for transaction
+
+     uint32_t      write_length;
+     uint32_t      read_length;
+
+     uint32_t      xact_active;
+     uint32_t      xact_success;
+
+} spi_master_xact_t;
+
+typedef void (SPI_XACT_FnCallback) (spi_master_xact_t* caller, spi_master_xact_t* spi);
 
 uint8_t    spi_readstatus();
 
 void       spi_waitSPIF() ;
 void       spi_transact(uint16_t data, spi_xfernumbits bits) ;
 void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) ;
+void       spi_isr(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
 
 #endif

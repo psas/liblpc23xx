@@ -43,13 +43,20 @@
 
 #include "lpc23xx-spi.h"
 
+SPI_XACT_FnCallback*      _spi_FnCallback_g;
+
+bin_semaphore             spi_binsem_g;
+
+spi_master_xact_t         spi_s_g;
+
+spi_master_xact_t*        spi_s_caller_g;
+
 /*
  * spi_abrt
  */
 inline bool spi_abrt(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
 }
-
 
 /*
  * spi_modf
@@ -99,6 +106,58 @@ uint8_t spi_readstatus() {
 }
 
 
+/*!\ Brief Start a SPI interrupt based transaction
+ *
+ * @param s         Pointer to a structure with xact information
+ * @param xact_fn   Pointer to a function to call at end of xaction
+ */
+void start_spi_master_xact(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn) {
+
+    uint16_t i;
+
+    if(s!=NULL) {
+        // See if we can obtain the semaphore. If the semaphore is not available
+        // wait SPI_BINSEM_WAIT msecs to see if it becomes free.
+        if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
+        	spi_s_g.spi_dummyval          = s->spi_dummyval;
+        	spi_s_g.tag                   = s->tag;
+            for(i=0; i<SPI_MAX_BUFFER; ++i) {
+                spi_s_g.spi_tx_buffer[i]  = s->spi_tx_buffer[i];
+                spi_s_g.spi_rd_buffer[i]  = s->spi_rd_buffer[i];
+            }
+            spi_s_g.write_length          = s->write_length;
+            spi_s_g.read_length           = s->read_length;
+            spi_s_g.xact_active           = 1;
+            spi_s_g.xact_success          = 0;
+            s->xact_active                = 1;
+            s->xact_success               = 0;
+            spi_s_caller_g                = s;
+            _spi_FnCallback_g             = xact_fn;
+
+            // Start the transaction
+            S0SPDR                        = spi_s_g.spi_tx_buffer[0];
+        } else {
+            uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
+        }
+    } else {
+        uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, structure pointer is NULL. Skipping.\n");
+    }
+}
+
+/*! \brief ISR for SPI Transaction
+ *
+ *  Interrupts happen when SPIF is high, cleared when?
+ */
+void spi_isr(void) {
+
+// Get/Put data until xact complete
+// Fill out structures
+// Execute callback function in non-interrupt thread.
+	 _spi_FnCallback_g( spi_s_caller_g, &spi_s_g );
+
+}
+
+
 /*
  * spi_waitSPIF
  * 200000000 count here is about 10 second wait at pclk 72Mhz?
@@ -122,6 +181,23 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
 
     // this starts the transaction.
     S0SPDR = data;
+}
+
+/*! \brief Initialize the SPI Xact state structure
+ */
+void spi_init_state( spi_master_xact_t* s) {
+    int i = 0;
+
+    s->tag                  = SPI_READ;
+    s->spi_dummyval         = 0xFF;
+    for(i=0; i<SPI_MAX_BUFFER; i++) {
+        s->spi_tx_buffer[i] = 0;
+        s->spi_rd_buffer[i] = 0;
+    }
+    s->write_length          = 0x0;
+    s->read_length           = 0x0;
+    s->xact_active           = 0x0;
+    s->xact_success          = 0x0;
 }
 
 /*! \brief SPI Master transaction for 16 bits.
@@ -155,6 +231,9 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     mam_enable();
 
     SPI_PWR_ON;
+
+    init_binsem( &spi_binsem_g );
+    spi_init_state( &spi_s_g );
 
     // cclk value
     cclk = pllquery_cclk_mhz();
@@ -220,6 +299,9 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     if(ccount > 254) ccount = 254; // max value for ccr
 
     S0SPCCR                 = (uint8_t) ccount;
+
+    VICVectAddr10 = (unsigned int) spi_isr;
+    VICAddress    = 0x0;
 
 #ifdef DEBUG_SPI
     volatile uint8_t    spi_status;

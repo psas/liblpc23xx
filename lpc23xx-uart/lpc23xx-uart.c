@@ -212,6 +212,8 @@ void uart0_init_115200(void) {
 
     uart0_status_g.baudrate = ZERO_H_B;
 
+    uart0_init_rb();
+
     // Enable GPIO for TXD/RXD
     SET_RXD0_TXD0;
 
@@ -260,6 +262,7 @@ void uart0_init_115200(void) {
     uart0_status_g.baudrate = ONE_FIFTEEN_TWO_H_B;
 
 }
+
 /*! \brief initialize the ringbuffer structure
  *
  */
