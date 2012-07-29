@@ -26,8 +26,6 @@
  * authorization from the authors.
  */
 
-
-
 #ifndef _LPC23XX_SPI_H
 #define _LPC23XX_SPI_H
 
@@ -45,8 +43,6 @@
 #include "lpc23xx-util.h"
 
 #define     SPI_MAX_BUFFER              64
-
-
 
 #define     FN_SCK_PINSEL0              0b11
 #define     FN_MISO_PINSEL1             0b11
@@ -93,7 +89,6 @@
 #define     FIO_SPI_SSEL_1                       (FIO1DIR |= 0x1)
 #define     SSEL_1_HIGH                          (FIO1SET |= 0x1)
 #define     SSEL_1_LOW                           (FIO1CLR |= 0x1)
-
 
 #define     PCONP_PCSPI                8
 
@@ -174,11 +169,10 @@ typedef enum {
 	SPI_SCK_LSB_FIRST
 } spi_lsbf;
 
-
 /*! \struct spi_master_xact
- *  \brief transaction data stored here for SPI
+ *  \brief Transaction data stored here for SPI
  *
- * Pleae see page 462 of LPC23xx user manual for details
+ * Please see page 462 of LPC23xx user manual for details
  */
 typedef struct spi_master_xact {
 

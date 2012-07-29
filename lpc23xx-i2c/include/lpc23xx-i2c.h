@@ -183,6 +183,9 @@ typedef enum {
     I2C_ERROR
 } i2c_state;
 
+/*! \struct i2c_master_xact
+ *  \brief Structure to hold i2c transaction data
+ */
 typedef struct i2c_master_xact {
      i2c_state state;
 
