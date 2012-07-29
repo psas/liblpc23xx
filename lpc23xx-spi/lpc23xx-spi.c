@@ -1,4 +1,3 @@
-
 /*! \file lpc23xx-spi.c
  */
 
@@ -51,43 +50,40 @@ spi_master_xact_t         spi_s_g;
 
 spi_master_xact_t*        spi_s_caller_g;
 
-/*
- * spi_abrt
+static uint16_t           spi_wbytes_total;
+static uint16_t           spi_rbytes_total;
+
+/*!
  */
 inline bool spi_abrt(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
 }
 
-/*
- * spi_modf
+/*!
  */
 inline bool spi_modf(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_MODF)) >> SPI_SR_MODF) );
 }
 
-/*
- * spi_rovr
+/*!
  */
 inline bool spi_rovr(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_ROVR)) >> SPI_SR_ROVR) );
 }
 
-/*
- * spi_wcol
+/*!
  */
 inline bool spi_wcol(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_WCOL)) >> SPI_SR_WCOL) );
 }
 
-/*
- * spi_spif
+/*!
  */
 inline bool spi_spif(uint8_t spi_status) {
     return( ((spi_status & (0x1 << SPI_SR_SPIF)) >> SPI_SR_SPIF) );
 }
 
-/*
- * spi_status
+/*! \brief debugging function
  */
 uint8_t spi_readstatus() {
     uint8_t spi_status;
@@ -111,22 +107,29 @@ uint8_t spi_readstatus() {
  * @param s         Pointer to a structure with xact information
  * @param xact_fn   Pointer to a function to call at end of xaction
  */
-void start_spi_master_xact(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn) {
+void start_spi_master_xact_intr(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn) {
 
     uint16_t i;
-
+    spi_wbytes_total = 0;
+    spi_rbytes_total = 0;
     if(s!=NULL) {
         // See if we can obtain the semaphore. If the semaphore is not available
         // wait SPI_BINSEM_WAIT msecs to see if it becomes free.
         if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
+        	spi_s_g.spi_numbits           = s->spi_numbits;
         	spi_s_g.spi_dummyval          = s->spi_dummyval;
         	spi_s_g.tag                   = s->tag;
-            for(i=0; i<SPI_MAX_BUFFER; ++i) {
+            for(i=0; i<s->write_length; ++i) {
                 spi_s_g.spi_tx_buffer[i]  = s->spi_tx_buffer[i];
+            }
+            for(i=0; i<s->read_length; ++i) {
                 spi_s_g.spi_rd_buffer[i]  = s->spi_rd_buffer[i];
             }
             spi_s_g.write_length          = s->write_length;
             spi_s_g.read_length           = s->read_length;
+            spi_s_g.spi_cpha_val          = s->spi_cpha_val;
+            spi_s_g.spi_cpol_val          = s->spi_cpol_val;
+            spi_s_g.spi_lsbf_val          = s->spi_lsbf_val;
             spi_s_g.xact_active           = 1;
             spi_s_g.xact_success          = 0;
             s->xact_active                = 1;
@@ -134,32 +137,55 @@ void start_spi_master_xact(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn) {
             spi_s_caller_g                = s;
             _spi_FnCallback_g             = xact_fn;
 
+            S0SPCR = (S0SPCR  |  (0x1 << SPI_CR_BITENABLE));
+
+            S0SPCR = ((S0SPCR & ~(0x1 << SPI_CR_CPHA)) | (spi_s_g.spi_cpha_val    << SPI_CR_CPHA));
+            S0SPCR = ((S0SPCR & ~(0x1 << SPI_CR_CPOL)) | (spi_s_g.spi_cpol_val    << SPI_CR_CPOL));
+            S0SPCR = (S0SPCR  |  (0x1 << SPI_CR_MSTR));
+            S0SPCR = ((S0SPCR & ~(0x1 << SPI_CR_LSBF)) | (spi_s_g.spi_lsbf_val    << SPI_CR_CPOL));
+            S0SPCR = (S0SPCR  |  (0x1 << SPI_CR_SPIE));
+            S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (spi_s_g.spi_numbits     << SPI_CR_BITS));
+
             // Start the transaction
+            ++spi_wbytes_total;
+            spi_s_g.xact_active = 1;
             S0SPDR                        = spi_s_g.spi_tx_buffer[0];
         } else {
-            uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
+          //  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
         }
     } else {
-        uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, structure pointer is NULL. Skipping.\n");
+      //  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, structure pointer is NULL. Skipping.\n");
     }
 }
 
 /*! \brief ISR for SPI Transaction
  *
- *  Interrupts happen when SPIF is high, cleared when?
+ *  Interrupts happen when SPIF is high, cleared when:
+ *    1: read of S0SPSR
+ *    2: then read S0SPDR
  */
 void spi_isr(void) {
+	uint8_t status;
 
-// Get/Put data until xact complete
-// Fill out structures
-// Execute callback function in non-interrupt thread.
-	 _spi_FnCallback_g( spi_s_caller_g, &spi_s_g );
+	status = S0SPSR;  // clear the SPIF first
 
+	if(spi_wbytes_total < spi_s_g.write_length) {
+		S0SPDR = spi_s_g.spi_tx_buffer[spi_wbytes_total];
+		++spi_wbytes_total;
+	} else if (spi_rbytes_total<spi_s_g.read_length) {
+		spi_s_g.spi_rd_buffer[spi_rbytes_total] = S0SPDR;
+		++spi_rbytes_total;
+		S0SPDR = spi_s_g.spi_dummyval;  // trigger another read...
+	} else {
+		_spi_FnCallback_g( spi_s_caller_g, &spi_s_g );
+		spi_s_g.xact_active = 0;
+	}
+	VICAddress    = 0x0;
 }
 
 
-/*
- * spi_waitSPIF
+/*! \brief Poll on SPIF
+ *
  * 200000000 count here is about 10 second wait at pclk 72Mhz?
  * Shouldn't hang here forever...
  * Alternative is to use interrupt instead of polling.
@@ -171,8 +197,10 @@ void spi_waitSPIF() {
     }
 }
 
-/*
- * spi_transact
+/*! \brief Start a polled transaction
+ *
+ * @param data
+ * @param bits
  */
 void spi_transact(uint16_t data, spi_xfernumbits bits) {
 
@@ -184,6 +212,8 @@ void spi_transact(uint16_t data, spi_xfernumbits bits) {
 }
 
 /*! \brief Initialize the SPI Xact state structure
+ *
+ * @param s
  */
 void spi_init_state( spi_master_xact_t* s) {
     int i = 0;
@@ -263,19 +293,22 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     }
 
     PINSEL_SPI_SCK ;
-    PINMODE_SPI_SCK_PULLUP ;
+    PINMODE_SPI_SCK_NOPULL ;
 
     PINSEL_SPI_MISO ;
     PINMODE_SPI_MISO_PULLUP ;
 
     PINSEL_SPI_MOSI ;
-    PINMODE_SPI_MOSI_PULLUP ;
+    PINMODE_SPI_MOSI_NOPULL ;
 
     // SSEL for master mode.
     PINSEL_SPI_MASTERM_SSEL_0 ;
-    PINMODE_SPI_SSEL_NOPULL ;
+    PINMODE_SPI_SSEL_PULLUP ;
     FIO_SPI_SSEL;
+
     SSEL_HIGH;
+    SCK_HIGH;
+    MOSI_HIGH;
 
     // no second device pin initialized.
     // PINSEL_SPI_MASTERM_SSEL_1         // P1.0
