@@ -32,7 +32,7 @@ void do_task() {
         if (x == interval) {
 
             x = 0;
-            led_toggle(BLUE_LED);
+            // led_toggle(BLUE_LED);
             uart0_numchars_in_rxbuff = rb_numentries(&uart0_rb_rx_g);
             if(uart0_numchars_in_rxbuff > 0) {
                 uart0_putstring_intr("Char(s) received: ");
@@ -234,27 +234,27 @@ int main (void) {
 
     FIO_ENABLE;
 
-    RED_LED_UNMASK;
-    BLUE_LED_UNMASK;
-    GREEN_LED_UNMASK;
-
-    RED_LED_ENABLE;
-    GREEN_LED_ENABLE;
-    BLUE_LED_ENABLE;
-
-    RED_LED_OFF;
-    BLUE_LED_OFF;
-    GREEN_LED_OFF;
-
-    color_led_flash(3, BLUE_LED,  FLASH_FAST ) ;
-
-    BLUE_LED_OFF;
+//    RED_LED_UNMASK;
+//    BLUE_LED_UNMASK;
+//    GREEN_LED_UNMASK;
+//
+//    RED_LED_ENABLE;
+//    GREEN_LED_ENABLE;
+//    BLUE_LED_ENABLE;
+//
+//    RED_LED_OFF;
+//    BLUE_LED_OFF;
+//    GREEN_LED_OFF;
+//
+//    color_led_flash(3, BLUE_LED,  FLASH_FAST ) ;
+//
+//    BLUE_LED_OFF;
 
     vic_disableIRQ();
     vic_disableFIQ();
 
     if(!uart0_init_rb()) {
-    	RED_LED_ON;
+//    	RED_LED_ON;
     	while (1);
     }
 

@@ -297,7 +297,7 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
     }
 
     PINSEL_SPI_SCK ;
-    PINMODE_SPI_SCK_NOPULL ;
+    PINMODE_SPI_SCK_NOPULL;
 
     PINSEL_SPI_MISO ;
     PINMODE_SPI_MISO_PULLUP ;

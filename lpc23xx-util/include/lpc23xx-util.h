@@ -25,63 +25,23 @@
  */
 
 
-/*
- * lpc23xx-util.h
+/*! \file lpc23xx-util.h
  */
 
 #ifndef _LPC23XX_UTIL_H
 #define _LPC23XX_UTIL_H
 
+/*! \ingroup lpc23xx-spi
+ *
+ * @{
+ */
 #include "lpc23xx.h"
 #include "lpc23xx-uart.h"
 #include "ringbuffer.h"
 
-
-#define RED_LED_PIN          19
-#define BLUE_LED_PIN         22
-#define GREEN_LED_PIN        25
-
-#define RED_LED_UNMASK       ( FIO1MASK = FIO1MASK & (~(1<<RED_LED_PIN)))
-#define RED_LED_MASK         ( FIO1MASK = FIO1MASK | (1<<RED_LED_PIN))
-
-#define RED_LED_ENABLE       ( FIO1DIR |= (1 << RED_LED_PIN) )
-#define RED_LED_DISABLE      ( FIO1DIR = FIO1DIR & (~(1<<RED_LED_PIN)) )
-
-#define BLUE_LED_UNMASK      ( FIO1MASK = FIO1MASK & (~(1<<BLUE_LED_PIN)))
-#define BLUE_LED_MASK        ( FIO1MASK = FIO1MASK | (1<<BLUE_LED_PIN))
-
-#define BLUE_LED_ENABLE      ( FIO1DIR |= (1 << BLUE_LED_PIN) )
-#define BLUE_LED_DISABLE     ( FIO1DIR = FIO1DIR & (~(1<<BLUE_LED_PIN)) )
-
-#define GREEN_LED_UNMASK     ( FIO1MASK = FIO1MASK & (~(1<<GREEN_LED_PIN)))
-#define GREEN_LED_MASK       ( FIO1MASK = FIO1MASK | (1<<GREEN_LED_PIN))
-
-#define GREEN_LED_ENABLE     ( FIO1DIR |= (1 << GREEN_LED_PIN) )
-#define GREEN_LED_DISABLE    ( FIO1DIR = FIO1DIR & (~(1<<GREEN_LED_PIN)) )
-
-#define RED_LED_ON           ( FIO1SET = (1 << RED_LED_PIN) )
-#define RED_LED_OFF          ( FIO1CLR = (1 << RED_LED_PIN) )
-
-#define BLUE_LED_ON          ( FIO1SET = (1 << BLUE_LED_PIN) )
-#define BLUE_LED_OFF         ( FIO1CLR = (1 << BLUE_LED_PIN) )
-
-#define GREEN_LED_ON         ( FIO1SET = (1 << GREEN_LED_PIN) )
-#define GREEN_LED_OFF        ( FIO1CLR = (1 << GREEN_LED_PIN) )
-
-typedef enum {FLASH_SLOW=0, FLASH_NORMAL, FLASH_FAST} flashspeed_type;
-typedef enum {RED_LED=0, BLUE_LED, GREEN_LED}         ledcolor_type;
-
-
 #define P0_PULLUP_MODE       0b00
 #define P0_NOPULL_MODE       0b10
 #define P0_PULLDOWN_MODE     0b11
-
-void init_color_led() ;
-void all_led_off() ;
-void cycle_led() ;
-void color_led_flash(uint32_t cycles, ledcolor_type led, flashspeed_type speed ) ;
-void led_toggle(ledcolor_type led);
-
 
 // Use typeof to avoid side effects from MAX(i++,j++) type of call.
 //  (only evaluate each variable once.)
@@ -189,4 +149,5 @@ void            util_waitticks(uint32_t ticks) ;
 void            util_wait_msecs(uint32_t msecs) ;
 void            util_wait_usecs(uint32_t usecs) ;
 
+// @}
 #endif
