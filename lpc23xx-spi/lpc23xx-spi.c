@@ -26,6 +26,10 @@
  * authorization from the authors.
  */
 
+/*! \defgroup lpc23xx-spi SPI utility for liblpc23xx
+ * @{
+ */
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>

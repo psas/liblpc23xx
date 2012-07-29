@@ -1,4 +1,7 @@
 
+/*! \file lpc23xx-i2c.c
+ */
+
 /* Copyright (C) 2011 Keith Wilson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,9 +27,8 @@
  * authorization from the authors.
  */
 
-
-/*
- * lpc23xx-i2c.c
+/*! \defgroup lpc23xx-i2c i2c utility for liblpc23xx
+ * @{
  */
 
 #include <stdint.h>
@@ -1171,3 +1173,6 @@ void start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s, XACT_FnCallba
     	break;
     }
 }
+
+/*! @} */
+

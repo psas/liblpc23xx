@@ -31,6 +31,11 @@
 #ifndef _LPC23XX_SPI_H
 #define _LPC23XX_SPI_H
 
+/*! \ingroup lpc23xx-spi
+ *
+ * @{
+ */
+
 #include "lpc23xx.h"
 #include "lpc23xx-types.h"
 
@@ -209,6 +214,6 @@ void       spi_transact(uint16_t data, spi_xfernumbits bits);
 void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
 void       start_spi_master_xact_intr(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn);
 
-
+//! @]
 
 #endif
