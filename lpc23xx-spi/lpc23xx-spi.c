@@ -175,7 +175,7 @@ static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
  * @param s         Pointer to a structure with xact information
  * @param xact_fn   Pointer to a function to call at end of xaction
  */
-void start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) {
+bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) {
 
 	uint16_t i;
 	uint8_t  status_reg;
@@ -185,11 +185,11 @@ void start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
 	if(s!=NULL) {
 		// bounds check on transaction
 		if((s->write_numbytes >= SPI_MAX_BUFFER) || (s->read_numbytes >= SPI_MAX_BUFFER)) {
-			return;
+			return false;
 		}
 
 		// See if we can obtain the semaphore. If the semaphore is not available
-		// wait SPI_BINSEM_WAIT msecs to see if it becomes free.
+		// wait to see if it becomes free.
 		if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
 
 			spi_copy_spi_xact(&spi_xact_g, s);
@@ -213,11 +213,14 @@ void start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
 			status_reg                = S0SPSR;
 			S0SPDR                    = spi_xact_g.writebuf[i];
 		} else {
+			return false;
 			//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
 		}
 	} else {
+		return false;
 		//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, structure pointer is NULL. Skipping.\n");
 	}
+	return true;
 }
 
 /*! \brief ISR for SPI Transaction
@@ -230,18 +233,93 @@ void spi_isr(void) {
 	uint8_t status;
 
 	status = S0SPSR;  // clear the SPIF first
+	uint8_t  status_reg;
+	uint8_t  data_reg;
 
-	if(spi_wbytes_total < spi_s_g.write_length) {
-		S0SPDR = spi_s_g.spi_tx_buffer[spi_wbytes_total];
-		++spi_wbytes_total;
-	} else if (spi_rbytes_total<spi_s_g.read_length) {
-		spi_s_g.spi_rd_buffer[spi_rbytes_total] = S0SPDR;
-		++spi_rbytes_total;
-		S0SPDR = spi_s_g.spi_dummyval;  // trigger another read...
-	} else {
-		_spi_FnCallback_g( spi_s_caller_g, &spi_s_g );
-		spi_s_g.xact_active = 0;
+	// read status  to clear IF
+	status_reg = SPID.STATUS;
+
+	// spi_process_status(&status_reg);  // write this later for collision, other error processing...
+
+	switch(spi_status_g.xact_state) {
+	case SPI_IDLE_ST:                      // one write has been done...SPI starts with write...
+		spi_status_g.read_index   = 0;
+		spi_status_g.write_index  = 1;
+
+		if(spi_d_status.write_index < spi_d_xact.write_numbytes ) {
+			spi_d_status.xact_state   = SPI_WRITE_ST;
+			SPID.DATA = spi_d_xact.writebuf[spi_d_status.write_index] ;
+			spi_d_status.write_index  += 1;
+		} else {
+			spi_d_status.xact_state = SPI_READ_ST;
+			SPID.DATA = spi_d_xact.dummy_value;
+		}
+		break;
+	case SPI_WRITE_ST:
+		if(spi_d_status.write_index < spi_d_xact.write_numbytes) {
+			if(spi_d_status.write_index < SPI_BUFFER_MAX) {
+				spi_d_status.xact_state   = SPI_WRITE_ST;
+				spi_d_status.write_index += 1;
+				SPID.DATA                 = spi_d_xact.writebuf[spi_d_status.write_index] ;
+			} else {
+				spi_d_status.xact_state   = SPI_ERROR_ST;
+				data_reg                  = SPID.DATA;
+			}
+		} else if (spi_d_status.read_index < spi_d_xact.read_numbytes) {      // get the first read byte.
+			spi_d_xact.readbuf[spi_d_status.read_index] = SPID.DATA;
+		spi_d_status.read_index                     += 1;
+		spi_d_status.xact_state                     = SPI_READ_ST;
+		} else {
+			_spi_d_FnCallback(spi_d_caller_xact, &spi_d_xact);
+
+			spi_d_status.read_index     = 0;
+			spi_d_status.write_index    = 0;
+			spi_d_status.xact_id        = SPI_IDLE;
+			spi_d_status.xact_state     = SPI_IDLE_ST;
+			spi_d_xact.dummy_value      = SPID.DATA;
+			if((spi_d_xact.id == SPI_ACCEL_READ_REG) || (spi_d_xact.id == SPI_ACCEL_WRITE_REG))  {
+				port_pin_high(&ACCEL_SPI_PORT, ACCEL_SCS_bm);
+			}
+		}
+		break;
+	case SPI_READ_ST:
+		spi_d_xact.readbuf[spi_d_status.read_index] = SPID.DATA;
+		spi_d_status.read_index                     += 1;
+		if( spi_d_status.read_index < spi_d_xact.read_numbytes) {
+			if(spi_d_status.read_index < SPI_BUFFER_MAX) {
+				spi_d_status.xact_state              = SPI_READ_ST;
+				SPID.DATA                            = spi_d_xact.dummy_value;    // drive another byte out of slave dev.
+			} else {
+				spi_d_status.xact_state              = SPI_ERROR_ST;
+				data_reg                             = SPID.DATA;
+			}
+		} else {
+			_spi_d_FnCallback(spi_d_caller_xact, &spi_d_xact);
+
+			spi_d_status.read_index     = 0;
+			spi_d_status.write_index    = 0;
+			spi_d_status.xact_id        = SPI_IDLE;
+			spi_d_status.xact_state     = SPI_IDLE_ST;
+			spi_d_xact.dummy_value      = SPID.DATA;
+			if((spi_d_xact.id == SPI_ACCEL_READ_REG) || (spi_d_xact.id == SPI_ACCEL_WRITE_REG))  {
+				port_pin_high(&ACCEL_SPI_PORT, ACCEL_SCS_bm);
+			}
+		}
+		break;
+	case SPI_ERROR_ST:
+		spi_d_status.read_index     = 0;
+		spi_d_status.write_index    = 0;
+		spi_d_status.xact_id        = SPI_ERROR;
+		spi_d_status.xact_state     = SPI_ERROR_ST;
+		break;
+	default:
+		spi_d_status.read_index     = 0;
+		spi_d_status.write_index    = 0;
+		spi_d_status.xact_id        = SPI_IDLE;
+		spi_d_status.xact_state     = SPI_IDLE_ST;
+		break;
 	}
+
 	VICAddress    = 0x0;
 }
 
@@ -358,7 +436,7 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
 	    // SSEL_1_HIGH;
 
 	    // master mode, MSB first, 16 bits per transfer
-	    S0SPCR = (0x1 << SPI_CR_BITENABLE) | (0x1 << SPI_CR_MSTR) | (SPI_16BITS << SPI_CR_BITS);
+	    S0SPCR = (0x1 << SPI_CR_MSTR) ;
 
 	    ccount  = spi_pclk/spifreq;
 	#ifdef DEBUG_SPI

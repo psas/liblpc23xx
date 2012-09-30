@@ -122,7 +122,7 @@
 #define     SPI_SR_WCOL                6
 #define     SPI_SR_SPIF                7
 
-#define     SPI_BINSEM_WAITTICKS       3000
+#define     SPI_BINSEM_WAITTICKS       25000
 
 #define     VIC_SPI_BIT                10
 
