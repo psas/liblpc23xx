@@ -150,11 +150,6 @@ typedef enum {
 } spi_xfernumbits;
 
 typedef enum {
-	SPI_READ=0,
-	SPI_WRITE
-} spi_xact_tag;
-
-typedef enum {
 	SPI_SCK_FIRST_CLK=0,
 	SPI_SCK_SECOND_CLK
 } spi_cpha;
@@ -169,35 +164,40 @@ typedef enum {
 	SPI_SCK_LSB_FIRST
 } spi_lsbf;
 
-/*! \struct spi_master_xact
- *  \brief Transaction data stored here for SPI
- *
- * Please see page 462 of LPC23xx user manual for details
- */
-typedef struct spi_master_xact {
+typedef enum {
+    SPI_IDLE_ST=0,
+    SPI_WRITE_ST,
+    SPI_READ_ST,
+    SPI_ERROR_ST
+} spi_state;
 
-	 spi_xact_tag    tag;
+typedef uint8_t       spi_xact_id;
+typedef uint8_t       spi_pending_count;
 
-	 spi_cpha        spi_cpha_val;
-	 spi_cpol        spi_cpol_val;
-	 spi_lsbf        spi_lsbf_val;
+//! Use this to set up a SPI transfer
+typedef struct _spi_master_xact {
+	spi_cpha          spi_cpha_val;
+    spi_cpol          spi_cpol_val;
+    spi_lsbf          spi_lsbf_val;
 
-	 uint8_t         spi_dummyval;
+    uint8_t           write_numbytes;
+    uint8_t           read_numbytes;
+    uint8_t           dummy_value;
+    uint8_t           writebuf[SPI_MAX_BUFFER];
+    uint8_t           readbuf[SPI_MAX_BUFFER];
+    spi_xact_id       id;
+} spi_master_xact;
 
-	 spi_xfernumbits spi_numbits;
+//! Use this to track a SPI transfer
+typedef struct _spi_xact_status {
+    uint8_t           read_index;
+    uint8_t           write_index;
+    spi_state         xact_state;
+    spi_pending_count xact_pending_count;
+    spi_xact_id       xact_id;
+} spi_xact_status;
 
-     uint8_t         spi_tx_buffer[SPI_MAX_BUFFER];  // Transmit data for transaction
-     uint8_t         spi_rd_buffer[SPI_MAX_BUFFER];  // Receive  data for transaction
-
-     uint32_t        write_length;
-     uint32_t        read_length;
-
-     uint32_t        xact_active;
-     uint32_t        xact_success;
-
-} spi_master_xact_t;
-
-typedef void (SPI_XACT_FnCallback) (spi_master_xact_t* caller, spi_master_xact_t* spi);
+typedef void (*SPI_XACT_FnCallback) (spi_master_xact* caller, spi_master_xact* spi_return);
 
 uint8_t    spi_readstatus();
 
@@ -205,9 +205,15 @@ void       spi_isr(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
 void       spi_waitSPIF();
 void       spi_transact(uint16_t data, spi_xfernumbits bits);
-void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
-void       start_spi_master_xact_intr(spi_master_xact_t* s, SPI_XACT_FnCallback* xact_fn);
 
-//! @]
+
+
+void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
+void       spi_init_xact_status( spi_xact_status* s) ;
+
+
+void       start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback* xact_fn);
+
+//! @}
 
 #endif
