@@ -46,121 +46,86 @@
 
 #include "lpc23xx-spi.h"
 
-static SPI_XACT_FnCallback      _spi_FnCallback_g;
+static SPI_XACT_FnCallback   _spi_FnCallback_g;
 
-bin_semaphore             spi_binsem_g;
+bin_semaphore                spi_binsem_g;
 
-spi_xact_status           spi_status_g;
+spi_xact_status              spi_status_g;
 
-spi_master_xact           spi_xact_g;
-spi_master_xact*           spi_caller_xact_g;
+spi_master_xact              spi_xact_g;
+spi_master_xact*             spi_caller_xact_g;
 
 /*!
  */
 inline bool spi_abrt(uint8_t spi_status) {
-    return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
+	return( ((spi_status & (0x1 << SPI_SR_ABRT)) >> SPI_SR_ABRT) );
 }
 
 /*!
  */
 inline bool spi_modf(uint8_t spi_status) {
-    return( ((spi_status & (0x1 << SPI_SR_MODF)) >> SPI_SR_MODF) );
+	return( ((spi_status & (0x1 << SPI_SR_MODF)) >> SPI_SR_MODF) );
 }
 
 /*!
  */
 inline bool spi_rovr(uint8_t spi_status) {
-    return( ((spi_status & (0x1 << SPI_SR_ROVR)) >> SPI_SR_ROVR) );
+	return( ((spi_status & (0x1 << SPI_SR_ROVR)) >> SPI_SR_ROVR) );
 }
 
 /*!
  */
 inline bool spi_wcol(uint8_t spi_status) {
-    return( ((spi_status & (0x1 << SPI_SR_WCOL)) >> SPI_SR_WCOL) );
+	return( ((spi_status & (0x1 << SPI_SR_WCOL)) >> SPI_SR_WCOL) );
 }
 
 /*!
  */
 inline bool spi_spif(uint8_t spi_status) {
-    return( ((spi_status & (0x1 << SPI_SR_SPIF)) >> SPI_SR_SPIF) );
+	return( ((spi_status & (0x1 << SPI_SR_SPIF)) >> SPI_SR_SPIF) );
 }
 
 /*! \brief debugging function
  */
-uint8_t spi_readstatus() {
-    uint8_t spi_status;
+static uint8_t spi_readstatus() {
+	uint8_t spi_status;
 
-    spi_status = S0SPSR;
+	spi_status = S0SPSR;
 
 #ifdef DEBUG_SPI
-    if(spi_abrt(spi_status)) printf_lpc(UART0,"ABRT set\n");
-    if(spi_modf(spi_status)) printf_lpc(UART0,"MODF set\n");
-    if(spi_rovr(spi_status)) printf_lpc(UART0,"ROVR set\n");
-    if(spi_wcol(spi_status)) printf_lpc(UART0,"WCOL set\n");
-    if(spi_spif(spi_status)) printf_lpc(UART0,"SPIF set\n");
+	if(spi_abrt(spi_status)) printf_lpc(UART0,"ABRT set\n");
+	if(spi_modf(spi_status)) printf_lpc(UART0,"MODF set\n");
+	if(spi_rovr(spi_status)) printf_lpc(UART0,"ROVR set\n");
+	if(spi_wcol(spi_status)) printf_lpc(UART0,"WCOL set\n");
+	if(spi_spif(spi_status)) printf_lpc(UART0,"SPIF set\n");
 #endif
 
-    return (spi_status);
+	return (spi_status);
 }
 
-/*! \brief Start a SPI Interrupt transaction on PORT D
+/*! \brief Initialize the SPI Xact state structure
  *
- * copy data into local spi_d_xact structure. This leaves the caller free to
- * set up another SPI transaction.
- *
- * @param caller        Pointer to a structure with transaction information
- * @param callback_fn   Pointer to a function to call at end of transaction
+ * @param s
  */
-void spi_start_xact_intr(spi_master_xact* caller, SPI_XACT_FnCallback callback_fn) {
-    uint8_t   i          = 0;
-    uint8_t   status_reg = 0;
+static void spi_init_xact_status( spi_xact_status* s) {
 
-    ++spi_d_status.xact_pending_count;
-
-    // block if another SPI transaction is already active.
-    while(spi_d_status.xact_id != SPI_IDLE) { _delay_ms(SPI_PENDING_LOOP_MS);    }
-
-    --spi_d_status.xact_pending_count;
-
-    spi_d_caller_xact         = caller;
-    _spi_d_FnCallback         = callback_fn;
-
-    // start a transaction
-    // copy caller data into spi_d_xact
-    spi_d_xact.dummy_value    = caller->dummy_value;
-    spi_d_xact.id             = caller->id;
-    spi_d_xact.read_numbytes  = caller->read_numbytes;
-    spi_d_xact.write_numbytes = caller->write_numbytes;
-
-    if((spi_d_xact.write_numbytes < SPI_BUFFER_MAX) && (spi_d_xact.read_numbytes < SPI_BUFFER_MAX)) {
-        for(i=0; i<spi_d_xact.write_numbytes; ++i) {
-            spi_d_xact.writebuf[i] = caller->writebuf[i];
-        }
-    } else {
-        return;
-    }
-    // read IF from Status register to clear
-    status_reg                = SPID.STATUS;
-
-    if((spi_d_xact.id == SPI_ACCEL_READ_REG) || (spi_d_xact.id == SPI_ACCEL_WRITE_REG))  {
-        // Activate the CS for Accelerometer.
-        port_pin_low(&ACCEL_SPI_PORT, ACCEL_SCS_bm);
-    }
-
-    // put the first write byte into the data buffer to begin transaction. This will generate an interrupt.
-    SPID.DATA  = spi_d_xact.writebuf[0];
+	s->read_index           = 0;
+	s->write_index          = 0;
+	s->xact_id              = SPI_DEFAULT_XACT_ID;
+	s->xact_state           = SPI_IDLE_ST;
+	s->xact_pending_count   = 0;
 }
 
 static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
 	uint8_t i = 0;
 
-	to->spi_cpha_val      = from->spi_cpha_val;
-	to->spi_cpol_val      = from->spi_cpol_val;
-	to->spi_lsbf_val      = from->spi_lsbf_val;
-	to->dummy_value       = from->dummy_value;
-	to->id                = from->id;
-	to->read_numbytes     = from->read_numbytes;
-	to->write_numbytes    = from->write_numbytes;
+	to->spi_cpha_val        = from->spi_cpha_val;
+	to->spi_cpol_val        = from->spi_cpol_val;
+	to->spi_lsbf_val        = from->spi_lsbf_val;
+	to->dummy_value         = from->dummy_value;
+	to->id                  = from->id;
+	to->read_numbytes       = from->read_numbytes;
+	to->write_numbytes      = from->write_numbytes;
 
 	for (i=0; i< (to->write_numbytes); ++i) {
 		to->writebuf[i] = from->writebuf[i];
@@ -170,6 +135,111 @@ static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
 	}
 }
 
+/*! SPI Master Mode initialization for interrupt based transactions
+ *
+ * @param scale
+ * @param spifreq
+ */
+void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
+	Freq                cclk;
+	uint32_t            spi_pclk = 0;
+	uint32_t            ccount;
+
+	FIO_ENABLE;
+
+	mam_enable();
+
+	SPI_PWR_ON;
+
+	init_binsem( &spi_binsem_g );
+	spi_init_xact_status( &spi_status_g );
+
+	// cclk value
+	cclk = pllquery_cclk_mhz();
+
+	switch(scale) {
+	case CCLK_DIV1:
+		SPI_CLK_IS_CCLK_DIV1;
+		spi_pclk = cclk;
+		break;
+	case CCLK_DIV2:
+		SPI_CLK_IS_CCLK_DIV2;
+		spi_pclk = cclk/2;
+		break;
+	case CCLK_DIV4:
+		SPI_CLK_IS_CCLK_DIV4;
+		spi_pclk = cclk/4;
+		break;
+	case CCLK_DIV8:
+		SPI_CLK_IS_CCLK_DIV8;
+		spi_pclk = cclk/8;
+		break;
+	default:
+#ifdef DEBUG_SPI
+printf_lpc(UART0,"Bad choice for scale value.\n");
+#endif
+break;
+	}
+
+	PINSEL_SPI_SCK ;
+	PINMODE_SPI_SCK_NOPULL;
+
+	PINSEL_SPI_MISO ;
+	PINMODE_SPI_MISO_PULLUP ;
+
+	PINSEL_SPI_MOSI ;
+	PINMODE_SPI_MOSI_NOPULL ;
+
+	// SSEL for master mode.
+	PINSEL_SPI_MASTERM_SSEL_0 ;
+	PINMODE_SPI_SSEL_PULLUP ;
+	FIO_SPI_SSEL;
+
+	SSEL_HIGH;
+	SCK_HIGH;
+	MOSI_HIGH;
+
+	// no second device pin initialized.
+	// PINSEL_SPI_MASTERM_SSEL_1         // P1.0
+	// PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
+	// FIO_SPI_SSEL_1;
+	// SSEL_1_HIGH;
+
+	// master mode, MSB first, 16 bits per transfer
+	S0SPCR = (0x1 << SPI_CR_MSTR) ;
+
+	ccount  = spi_pclk/spifreq;
+#ifdef DEBUG_SPI
+	if(ccount > 255) {
+		printf_lpc(UART0, "ccount is out of range for requested spi clock frequency %u\n", spifreq);
+	}
+#endif
+
+	if(ccount % 2)   ccount -= 1;  // must be even number
+
+	if(ccount < 8)   ccount = 8;   // min value for ccr (p 463, user manual.)
+	if(ccount > 254) ccount = 254; // max value for ccr
+
+	S0SPCCR                 = (uint8_t) ccount;
+
+
+
+#ifdef DEBUG_SPI
+	volatile uint8_t    spi_status;
+	spi_status              = spi_readstatus();
+	printf_lpc(UART0, "spi_status is %u\n", spi_status);
+
+	printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
+	printf_lpc(UART0, "spifreq is  %u\n", spifreq);
+	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+#endif
+
+	VICVectAddr10 = (unsigned int) spi_isr;
+	VICAddress    = 0x0;
+
+}
+
 /*!\ Brief Start a SPI interrupt based transaction
  *
  * @param s         Pointer to a structure with xact information
@@ -177,7 +247,6 @@ static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
  */
 bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) {
 
-	uint16_t i;
 	uint8_t  status_reg;
 
 	_spi_FnCallback_g        = *xact_fn;
@@ -211,7 +280,7 @@ bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
 
 			// read SPIF then write Data register to clear IF
 			status_reg                = S0SPSR;
-			S0SPDR                    = spi_xact_g.writebuf[i];
+			S0SPDR                    = spi_xact_g.writebuf[0];
 		} else {
 			return false;
 			//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
@@ -230,93 +299,89 @@ bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
  *    2: then read S0SPDR
  */
 void spi_isr(void) {
-	uint8_t status;
 
-	status = S0SPSR;  // clear the SPIF first
-	uint8_t  status_reg;
-	uint8_t  data_reg;
+	uint8_t  status_reg = 0;
+	uint8_t  data_reg   = 0;
 
 	// read status  to clear IF
-	status_reg = SPID.STATUS;
-
-	// spi_process_status(&status_reg);  // write this later for collision, other error processing...
+	status_reg = spi_readstatus();
 
 	switch(spi_status_g.xact_state) {
 	case SPI_IDLE_ST:                      // one write has been done...SPI starts with write...
 		spi_status_g.read_index   = 0;
 		spi_status_g.write_index  = 1;
 
-		if(spi_d_status.write_index < spi_d_xact.write_numbytes ) {
-			spi_d_status.xact_state   = SPI_WRITE_ST;
-			SPID.DATA = spi_d_xact.writebuf[spi_d_status.write_index] ;
-			spi_d_status.write_index  += 1;
+		if(spi_status_g.write_index < spi_xact_g.write_numbytes ) {
+			spi_status_g.xact_state   = SPI_WRITE_ST;
+			S0SPDR = spi_xact_g.writebuf[spi_status_g.write_index] ;
+			spi_status_g.write_index  += 1;
 		} else {
-			spi_d_status.xact_state = SPI_READ_ST;
-			SPID.DATA = spi_d_xact.dummy_value;
+			spi_status_g.xact_state = SPI_READ_ST;
+			S0SPDR = spi_xact_g.dummy_value;
 		}
 		break;
 	case SPI_WRITE_ST:
-		if(spi_d_status.write_index < spi_d_xact.write_numbytes) {
-			if(spi_d_status.write_index < SPI_BUFFER_MAX) {
-				spi_d_status.xact_state   = SPI_WRITE_ST;
-				spi_d_status.write_index += 1;
-				SPID.DATA                 = spi_d_xact.writebuf[spi_d_status.write_index] ;
+		if(spi_status_g.write_index < spi_xact_g.write_numbytes) {
+			if(spi_status_g.write_index < SPI_MAX_BUFFER) {
+				spi_status_g.xact_state   = SPI_WRITE_ST;
+				spi_status_g.write_index += 1;
+				S0SPDR                 = spi_xact_g.writebuf[spi_status_g.write_index] ;
 			} else {
-				spi_d_status.xact_state   = SPI_ERROR_ST;
-				data_reg                  = SPID.DATA;
+				spi_status_g.xact_state   = SPI_ERROR_ST;
+				data_reg                  = S0SPDR;
 			}
-		} else if (spi_d_status.read_index < spi_d_xact.read_numbytes) {      // get the first read byte.
-			spi_d_xact.readbuf[spi_d_status.read_index] = SPID.DATA;
-		spi_d_status.read_index                     += 1;
-		spi_d_status.xact_state                     = SPI_READ_ST;
+		} else if (spi_status_g.read_index < spi_xact_g.read_numbytes) {      // get the first read byte.
+			spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
+			spi_status_g.read_index                     += 1;
+			spi_status_g.xact_state                     = SPI_READ_ST;
 		} else {
-			_spi_d_FnCallback(spi_d_caller_xact, &spi_d_xact);
+			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g);
 
-			spi_d_status.read_index     = 0;
-			spi_d_status.write_index    = 0;
-			spi_d_status.xact_id        = SPI_IDLE;
-			spi_d_status.xact_state     = SPI_IDLE_ST;
-			spi_d_xact.dummy_value      = SPID.DATA;
-			if((spi_d_xact.id == SPI_ACCEL_READ_REG) || (spi_d_xact.id == SPI_ACCEL_WRITE_REG))  {
-				port_pin_high(&ACCEL_SPI_PORT, ACCEL_SCS_bm);
-			}
+			spi_status_g.read_index     = 0;
+			spi_status_g.write_index    = 0;
+			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
+			spi_status_g.xact_state     = SPI_IDLE_ST;
+
+			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
+
+			SSEL_HIGH;
 		}
 		break;
 	case SPI_READ_ST:
-		spi_d_xact.readbuf[spi_d_status.read_index] = SPID.DATA;
-		spi_d_status.read_index                     += 1;
-		if( spi_d_status.read_index < spi_d_xact.read_numbytes) {
-			if(spi_d_status.read_index < SPI_BUFFER_MAX) {
-				spi_d_status.xact_state              = SPI_READ_ST;
-				SPID.DATA                            = spi_d_xact.dummy_value;    // drive another byte out of slave dev.
+		spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
+		spi_status_g.read_index                     += 1;
+		if( spi_status_g.read_index < spi_xact_g.read_numbytes) {
+			if(spi_status_g.read_index < SPI_MAX_BUFFER) {
+				spi_status_g.xact_state              = SPI_READ_ST;
+				S0SPDR                               = spi_xact_g.dummy_value;    // drive another byte out of slave dev.
 			} else {
-				spi_d_status.xact_state              = SPI_ERROR_ST;
-				data_reg                             = SPID.DATA;
+				spi_status_g.xact_state              = SPI_ERROR_ST;
+				data_reg                             = S0SPDR;
 			}
 		} else {
-			_spi_d_FnCallback(spi_d_caller_xact, &spi_d_xact);
+			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g);
 
-			spi_d_status.read_index     = 0;
-			spi_d_status.write_index    = 0;
-			spi_d_status.xact_id        = SPI_IDLE;
-			spi_d_status.xact_state     = SPI_IDLE_ST;
-			spi_d_xact.dummy_value      = SPID.DATA;
-			if((spi_d_xact.id == SPI_ACCEL_READ_REG) || (spi_d_xact.id == SPI_ACCEL_WRITE_REG))  {
-				port_pin_high(&ACCEL_SPI_PORT, ACCEL_SCS_bm);
-			}
+			spi_status_g.read_index     = 0;
+			spi_status_g.write_index    = 0;
+			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
+			spi_status_g.xact_state     = SPI_IDLE_ST;
+
+			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
+
+			SSEL_HIGH;
 		}
 		break;
 	case SPI_ERROR_ST:
-		spi_d_status.read_index     = 0;
-		spi_d_status.write_index    = 0;
-		spi_d_status.xact_id        = SPI_ERROR;
-		spi_d_status.xact_state     = SPI_ERROR_ST;
+		spi_status_g.read_index     = 0;
+		spi_status_g.write_index    = 0;
+		spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
+		spi_status_g.xact_state     = SPI_ERROR_ST;
 		break;
 	default:
-		spi_d_status.read_index     = 0;
-		spi_d_status.write_index    = 0;
-		spi_d_status.xact_id        = SPI_IDLE;
-		spi_d_status.xact_state     = SPI_IDLE_ST;
+		spi_status_g.read_index     = 0;
+		spi_status_g.write_index    = 0;
+		spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
+		spi_status_g.xact_state     = SPI_IDLE_ST;
 		break;
 	}
 
@@ -331,144 +396,12 @@ void spi_isr(void) {
  * Alternative is to use interrupt instead of polling.
  */
 void spi_waitSPIF() {
-    uint32_t waitcount = 200000000;
-    while ((spi_spif(S0SPSR)==false) && (waitcount > 0 )) {
-        waitcount--;
-    }
+	uint32_t waitcount = 200000000;
+	while ((spi_spif(S0SPSR)==false) && (waitcount > 0 )) {
+		waitcount--;
+	}
 }
 
-/*! \brief Start a polled transaction
- *
- * @param data
- * @param bits
- */
-void spi_transact(uint16_t data, spi_xfernumbits bits) {
-
-    // set number of bits to transfer.
-    S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
-
-    // this starts the transaction.
-    S0SPDR = data;
-}
-
-/*! \brief Initialize the SPI Xact state structure
- *
- * @param s
- */
-void spi_init_xact_status( spi_xact_status* s) {
-    int i = 0;
-
-    s->read_index           = 0;
-    s->write_index          = 0;
-    s->xact_id              = 0;
-    s->xact_pending_count   = 0;
-    s->xact_state           = SPI_IDLE_ST;
-}
-
-/*! SPI Master Mode initialization for interrupt based transactions
- *
- * @param scale
- * @param spifreq
- */
-void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
-	  Freq                cclk;
-	    uint32_t            spi_pclk = 0;
-	    uint32_t            ccount;
-
-	    FIO_ENABLE;
-
-	    mam_enable();
-
-	    SPI_PWR_ON;
-
-	    init_binsem( &spi_binsem_g );
-	    spi_init_xact_status()( &spi_s_g );
-
-	    // cclk value
-	    cclk = pllquery_cclk_mhz();
-
-	    switch(scale) {
-	        case CCLK_DIV1:
-	            SPI_CLK_IS_CCLK_DIV1;
-	            spi_pclk = cclk;
-	            break;
-	        case CCLK_DIV2:
-	            SPI_CLK_IS_CCLK_DIV2;
-	            spi_pclk = cclk/2;
-	            break;
-	        case CCLK_DIV4:
-	            SPI_CLK_IS_CCLK_DIV4;
-	            spi_pclk = cclk/4;
-	            break;
-	        case CCLK_DIV8:
-	            SPI_CLK_IS_CCLK_DIV8;
-	            spi_pclk = cclk/8;
-	            break;
-	        default:
-	#ifdef DEBUG_SPI
-	            printf_lpc(UART0,"Bad choice for scale value.\n");
-	#endif
-	            break;
-	    }
-
-	    PINSEL_SPI_SCK ;
-	    PINMODE_SPI_SCK_NOPULL;
-
-	    PINSEL_SPI_MISO ;
-	    PINMODE_SPI_MISO_PULLUP ;
-
-	    PINSEL_SPI_MOSI ;
-	    PINMODE_SPI_MOSI_NOPULL ;
-
-	    // SSEL for master mode.
-	    PINSEL_SPI_MASTERM_SSEL_0 ;
-	    PINMODE_SPI_SSEL_PULLUP ;
-	    FIO_SPI_SSEL;
-
-	    SSEL_HIGH;
-	    SCK_HIGH;
-	    MOSI_HIGH;
-
-	    // no second device pin initialized.
-	    // PINSEL_SPI_MASTERM_SSEL_1         // P1.0
-	    // PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
-	    // FIO_SPI_SSEL_1;
-	    // SSEL_1_HIGH;
-
-	    // master mode, MSB first, 16 bits per transfer
-	    S0SPCR = (0x1 << SPI_CR_MSTR) ;
-
-	    ccount  = spi_pclk/spifreq;
-	#ifdef DEBUG_SPI
-	    if(ccount > 255) {
-	        printf_lpc(UART0, "ccount is out of range for requested spi clock frequency %u\n", spifreq);
-	    }
-	#endif
-
-	    if(ccount % 2)   ccount -= 1;  // must be even number
-
-	    if(ccount < 8)   ccount = 8;   // min value for ccr (p 463, user manual.)
-	    if(ccount > 254) ccount = 254; // max value for ccr
-
-	    S0SPCCR                 = (uint8_t) ccount;
-
-
-
-	#ifdef DEBUG_SPI
-	    volatile uint8_t    spi_status;
-	    spi_status              = spi_readstatus();
-	    printf_lpc(UART0, "spi_status is %u\n", spi_status);
-
-	    printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
-	    printf_lpc(UART0, "spifreq is  %u\n", spifreq);
-	    printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
-	    printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
-	#endif
-
-	VICVectAddr10 = (unsigned int) spi_isr;
-	VICAddress    = 0x0;
-
-}
 
 /*! \brief SPI Master transaction for 16 bits.
  *
@@ -490,99 +423,110 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
  */
 void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
-    Freq                cclk;
-    uint32_t            spi_pclk = 0;
-    uint32_t            ccount;
+	Freq                cclk;
+	uint32_t            spi_pclk = 0;
+	uint32_t            ccount;
 
-    FIO_ENABLE;
+	FIO_ENABLE;
 
-    mam_enable();
+	mam_enable();
 
-    SPI_PWR_ON;
+	SPI_PWR_ON;
 
-    init_binsem( &spi_binsem_g );
-    spi_init_state( &spi_s_g );
+	init_binsem( &spi_binsem_g );
 
-    // cclk value
-    cclk = pllquery_cclk_mhz();
+	// cclk value
+	cclk = pllquery_cclk_mhz();
 
-    switch(scale) {
-        case CCLK_DIV1:
-            SPI_CLK_IS_CCLK_DIV1;
-            spi_pclk = cclk;
-            break;
-        case CCLK_DIV2:
-            SPI_CLK_IS_CCLK_DIV2;
-            spi_pclk = cclk/2;
-            break;
-        case CCLK_DIV4:
-            SPI_CLK_IS_CCLK_DIV4;
-            spi_pclk = cclk/4;
-            break;
-        case CCLK_DIV8:
-            SPI_CLK_IS_CCLK_DIV8;
-            spi_pclk = cclk/8;
-            break;
-        default:
+	switch(scale) {
+	case CCLK_DIV1:
+		SPI_CLK_IS_CCLK_DIV1;
+		spi_pclk = cclk;
+		break;
+	case CCLK_DIV2:
+		SPI_CLK_IS_CCLK_DIV2;
+		spi_pclk = cclk/2;
+		break;
+	case CCLK_DIV4:
+		SPI_CLK_IS_CCLK_DIV4;
+		spi_pclk = cclk/4;
+		break;
+	case CCLK_DIV8:
+		SPI_CLK_IS_CCLK_DIV8;
+		spi_pclk = cclk/8;
+		break;
+	default:
 #ifdef DEBUG_SPI
-            printf_lpc(UART0,"Bad choice for scale value.\n");
+printf_lpc(UART0,"Bad choice for scale value.\n");
 #endif
-            break;
-    }
+break;
+	}
 
-    PINSEL_SPI_SCK ;
-    PINMODE_SPI_SCK_NOPULL;
+	PINSEL_SPI_SCK ;
+	PINMODE_SPI_SCK_NOPULL;
 
-    PINSEL_SPI_MISO ;
-    PINMODE_SPI_MISO_PULLUP ;
+	PINSEL_SPI_MISO ;
+	PINMODE_SPI_MISO_PULLUP ;
 
-    PINSEL_SPI_MOSI ;
-    PINMODE_SPI_MOSI_NOPULL ;
+	PINSEL_SPI_MOSI ;
+	PINMODE_SPI_MOSI_NOPULL ;
 
-    // SSEL for master mode.
-    PINSEL_SPI_MASTERM_SSEL_0 ;
-    PINMODE_SPI_SSEL_PULLUP ;
-    FIO_SPI_SSEL;
+	// SSEL for master mode.
+	PINSEL_SPI_MASTERM_SSEL_0 ;
+	PINMODE_SPI_SSEL_PULLUP ;
+	FIO_SPI_SSEL;
 
-    SSEL_HIGH;
-    SCK_HIGH;
-    MOSI_HIGH;
+	SSEL_HIGH;
+	SCK_HIGH;
+	MOSI_HIGH;
 
-    // no second device pin initialized.
-    // PINSEL_SPI_MASTERM_SSEL_1         // P1.0
-    // PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
-    // FIO_SPI_SSEL_1;
-    // SSEL_1_HIGH;
+	// no second device pin initialized.
+	// PINSEL_SPI_MASTERM_SSEL_1         // P1.0
+	// PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
+	// FIO_SPI_SSEL_1;
+	// SSEL_1_HIGH;
 
-    // master mode, MSB first, 16 bits per transfer
-    S0SPCR = (0x1 << SPI_CR_BITENABLE) | (0x1 << SPI_CR_MSTR) | (SPI_16BITS << SPI_CR_BITS);
+	// master mode, MSB first, 16 bits per transfer
+	S0SPCR = (0x1 << SPI_CR_BITENABLE) | (0x1 << SPI_CR_MSTR) | (SPI_16BITS << SPI_CR_BITS);
 
-    ccount  = spi_pclk/spifreq;
+	ccount  = spi_pclk/spifreq;
 #ifdef DEBUG_SPI
-    if(ccount > 255) {
-        printf_lpc(UART0, "ccount is out of range for requested spi clock frequency %u\n", spifreq);
-    }
-#endif
-
-    if(ccount % 2)   ccount -= 1;  // must be even number
-
-    if(ccount < 8)   ccount = 8;   // min value for ccr (p 463, user manual.)
-    if(ccount > 254) ccount = 254; // max value for ccr
-
-    S0SPCCR                 = (uint8_t) ccount;
-
-
-
-#ifdef DEBUG_SPI
-    volatile uint8_t    spi_status;
-    spi_status              = spi_readstatus();
-    printf_lpc(UART0, "spi_status is %u\n", spi_status);
-
-    printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
-    printf_lpc(UART0, "spifreq is  %u\n", spifreq);
-    printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
-    printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+	if(ccount > 255) {
+		printf_lpc(UART0, "ccount is out of range for requested spi clock frequency %u\n", spifreq);
+	}
 #endif
 
+	if(ccount % 2)   ccount -= 1;  // must be even number
+
+	if(ccount < 8)   ccount = 8;   // min value for ccr (p 463, user manual.)
+	if(ccount > 254) ccount = 254; // max value for ccr
+
+	S0SPCCR                 = (uint8_t) ccount;
+
+#ifdef DEBUG_SPI
+	volatile uint8_t    spi_status;
+	spi_status              = spi_readstatus();
+	printf_lpc(UART0, "spi_status is %u\n", spi_status);
+
+	printf_lpc(UART0, "spi_pclk is %u\n", spi_pclk);
+	printf_lpc(UART0, "spifreq is  %u\n", spifreq);
+	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
+#endif
+
+}
+
+/*! \brief Start a polled transaction
+ *
+ * @param data
+ * @param bits
+ */
+void spi_transact(uint16_t data, spi_xfernumbits bits) {
+
+	// set number of bits to transfer.
+	S0SPCR = ((S0SPCR & ~(0xf << SPI_CR_BITS)) | (bits << SPI_CR_BITS)) ;
+
+	// this starts the transaction.
+	S0SPDR = data;
 }
 

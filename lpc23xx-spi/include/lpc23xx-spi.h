@@ -129,6 +129,9 @@
 #define     ENABLE_SPI_INT             (VICIntEnable = (VICIntEnable | (1<<VIC_SPI_BIT)))
 #define     DISABLE_I2C0_INT           (VICIntEnable = (VICIntEnable & ~(1<<VIC_SPI_BIT)))
 
+#define     SPI_DEFAULT_DUMMY_DATA     0xFF
+#define     SPI_DEFAULT_XACT_ID        0xFF
+
 typedef enum {
 	SPI_50KHZ =50000,
     SPI_100KHZ=100000,
@@ -199,20 +202,14 @@ typedef struct _spi_xact_status {
 
 typedef void (*SPI_XACT_FnCallback) (spi_master_xact* caller, spi_master_xact* spi_return);
 
-uint8_t    spi_readstatus();
-
 void       spi_isr(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
 void       spi_waitSPIF();
 void       spi_transact(uint16_t data, spi_xfernumbits bits);
 
-
-
 void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
-void       spi_init_xact_status( spi_xact_status* s) ;
 
-
-void       start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback* xact_fn);
+bool       start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) ;
 
 //! @}
 
