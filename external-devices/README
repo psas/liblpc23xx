@@ -1,0 +1,5 @@
+For drivers of external devices that use liblpc23xx
+
+
+It is recommended that the drivers follow the following guidelines:
+todo: define std interface
