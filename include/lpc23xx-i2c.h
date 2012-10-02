@@ -1,0 +1,1 @@
+../lpc23xx-i2c/include/lpc23xx-i2c.h
