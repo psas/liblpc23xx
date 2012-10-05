@@ -16,7 +16,7 @@ LPC23XX_PART   ?= -DGFE_LPC2368
 #LPC2378_PORT    = -DLPC2378_PORTB
 
 CROSSCMP        := /opt/cross
-CROSSNAME		:= arm-elf
+CROSSNAME       ?= arm-elf
 
 CC              := $(CROSSCMP)/bin/$(CROSSNAME)-gcc
 LD              := $(CROSSCMP)/bin/$(CROSSNAME)-ld
@@ -41,7 +41,8 @@ INCLUDE         := -I.\
                    -I./lpc23xx-vic/include\
                    -I./lpc23xx-binsem/include\
                    -I./lpc23xx-timer/include\
-                   -I./lpc23xx-usb/include
+                   -I./lpc23xx-usb/include\
+                   -I./lpc23xx-power/include
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-*/include/*.h)
@@ -66,7 +67,9 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c -Wall -Werror -g3 -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
+                  -Wall -Werror -Wno-error=unused-but-set-variable -g3 \
+                  -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
 
 ARCHIVEFLAGS    = rs
 

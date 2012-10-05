@@ -34,6 +34,7 @@
 #include "lpc23xx.h"
 #include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
+#include "lpc23xx-power.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
 #include "printf-lpc.h"
@@ -73,7 +74,7 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
     }
 
     // turn on power
-    ADC_PWR_ON;
+    POWER_AD_ON;
 
     // then enable ADC
     ADC_ENABLE;
@@ -109,7 +110,7 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
 void adc_disable(void) {
     // order matters see page 596 of user manual v3.
     ADC_DISABLE;
-    ADC_PWR_OFF;
+    POWER_AD_OFF;
 }
 
 /*

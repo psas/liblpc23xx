@@ -39,31 +39,7 @@
 // MAX values 
 #define I2C_MAX_BUFFER      64
 
-// VIC table page 94 lpc23xx manual
-#define VIC_I2C0_BIT        9
-#define VIC_I2C1_BIT        19
-#define VIC_I2C2_BIT        30
 
-#define ENABLE_I2C0_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C0_BIT)))
-#define ENABLE_I2C1_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C1_BIT)))
-#define ENABLE_I2C2_INT     (VICIntEnable = (VICIntEnable | (1<<VIC_I2C2_BIT)))
-
-#define DISABLE_I2C0_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C0_BIT)))
-#define DISABLE_I2C1_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C1_BIT)))
-#define DISABLE_I2C2_INT    (VICIntEnable = (VICIntEnable & ~(1<<VIC_I2C2_BIT)))
-
-// PCONP
-#define PCI2C0_BIT          7
-#define PCI2C1_BIT          19
-#define PCI2C2_BIT          26
-
-#define POWER_I2C0_ON       (PCONP = (PCONP | (1<<PCI2C0_BIT)))
-#define POWER_I2C1_ON       (PCONP = (PCONP | (1<<PCI2C1_BIT)))
-#define POWER_I2C2_ON       (PCONP = (PCONP | (1<<PCI2C2_BIT)))
-
-#define POWER_I2C0_OFF      (PCONP = (PCONP & ~(1<<PCI2C0_BIT)))
-#define POWER_I2C1_OFF      (PCONP = (PCONP & ~(1<<PCI2C1_BIT)))
-#define POWER_I2C2_OFF      (PCONP = (PCONP & ~(1<<PCI2C2_BIT)))
 
 
 // I2C CONSET and CONCLR Bits
@@ -170,6 +146,7 @@ typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 typedef enum { DEFAULT=0, I2C0_ALTPIN, I2C1_ALTPIN, I2C2_ALTPIN} i2c_pinsel;
 
 typedef enum { 
+	//todo: I2C_NOT_INITIALIZED
     I2C_IDLE = 0, 
     I2C_START,
     I2C_RESTART,

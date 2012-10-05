@@ -191,4 +191,20 @@ void pllstart_fourtyeightmhz(void) {
     pllstat.fcco_mhz = FOUR_EIGHTY_MHZ;
 }
 
+int pllstart(Freq cclk_mhz){
+    switch(cclk_mhz){
+    case FOURTY_EIGHT_MHZ:
+        pllstart_fourtyeightmhz();
+        return 0;
+    case SIXTY_MHZ:
+        pllstart_sixtymhz();
+        return 0;
+    case SEVENTY_TWO_MHZ:
+        pllstart_seventytwomhz();
+        return 0;
+    default:
+        return -1;
+    }
+    return -1;
+}
 

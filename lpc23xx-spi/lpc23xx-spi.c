@@ -35,6 +35,7 @@
 #include "lpc23xx-types.h"
 
 #include "lpc23xx-pll.h"
+#include "lpc23xx-power.h"
 #include "lpc23xx-mam.h"
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
@@ -144,7 +145,7 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     mam_enable();
 
-    SPI_PWR_ON;
+    POWER_SPI_ON;
 
     // cclk value
     cclk = pllquery_cclk_mhz();

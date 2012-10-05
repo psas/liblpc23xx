@@ -34,6 +34,7 @@
 #include "lpc23xx.h"
 #include "lpc23xx-mam.h"
 #include "lpc23xx-pll.h"
+#include "lpc23xx-power.h"
 #include "lpc23xx-uart.h"
 #include "printf-lpc.h"
 
@@ -46,66 +47,66 @@ void timer_init(timer_channel channel, uint32_t prescale, pclk_scale scale) {
 
     switch(channel) {
         case TIMER_0: 
-            TIMER_0_PWR_ON;
+            POWER_TIM0_ON;
             RESET_TIMER0;
             START_TIMER0;
             T0PC = prescale;
             switch(scale) {
                 case CCLK_DIV1:
-                    TIMER_0_CLK_IS_CCLK_DIV1;
+                    TIMER0_CLK_IS_CCLK_DIV1;
                     break;
                 case CCLK_DIV2:
-                    TIMER_0_CLK_IS_CCLK_DIV2;
+                    TIMER0_CLK_IS_CCLK_DIV2;
                     break;
                 case CCLK_DIV4:
-                    TIMER_0_CLK_IS_CCLK_DIV4;
+                    TIMER0_CLK_IS_CCLK_DIV4;
                     break;
                 case CCLK_DIV8:
-                    TIMER_0_CLK_IS_CCLK_DIV8;
+                    TIMER0_CLK_IS_CCLK_DIV8;
                     break;
                 default:
                     break;
             }
             break;
         case TIMER_1: 
-            TIMER_1_PWR_ON;
+            POWER_TIM1_ON;
             RESET_TIMER1;
             START_TIMER1;
             T1PC = prescale;
             switch(scale) {
                 case CCLK_DIV1:
-                    TIMER_1_CLK_IS_CCLK_DIV1;
+                    TIMER1_CLK_IS_CCLK_DIV1;
                     break;
                 case CCLK_DIV2:
-                    TIMER_1_CLK_IS_CCLK_DIV2;
+                    TIMER1_CLK_IS_CCLK_DIV2;
                     break;
                 case CCLK_DIV4:
-                    TIMER_1_CLK_IS_CCLK_DIV4;
+                    TIMER1_CLK_IS_CCLK_DIV4;
                     break;
                 case CCLK_DIV8:
-                    TIMER_1_CLK_IS_CCLK_DIV8;
+                    TIMER1_CLK_IS_CCLK_DIV8;
                     break;
                 default:
                     break;
             }
             break;
         case TIMER_2: 
-            TIMER_2_PWR_ON;
+            POWER_TIM2_ON;
             RESET_TIMER2;
             START_TIMER2;
             T2PC = prescale;
             switch(scale) {
                 case CCLK_DIV1:
-                    TIMER_2_CLK_IS_CCLK_DIV1;
+                    TIMER2_CLK_IS_CCLK_DIV1;
                     break;
                 case CCLK_DIV2:
-                    TIMER_2_CLK_IS_CCLK_DIV2;
+                    TIMER2_CLK_IS_CCLK_DIV2;
                     break;
                 case CCLK_DIV4:
-                    TIMER_2_CLK_IS_CCLK_DIV4;
+                    TIMER2_CLK_IS_CCLK_DIV4;
                     break;
                 case CCLK_DIV8:
-                    TIMER_2_CLK_IS_CCLK_DIV8;
+                    TIMER2_CLK_IS_CCLK_DIV8;
                     break;
                 default:
                     break;
@@ -113,22 +114,22 @@ void timer_init(timer_channel channel, uint32_t prescale, pclk_scale scale) {
 
             break;
         case TIMER_3: 
-            TIMER_3_PWR_ON;
+            POWER_TIM3_ON;
             RESET_TIMER3;
             START_TIMER3;
             T3PC = prescale;
             switch(scale) {
                 case CCLK_DIV1:
-                    TIMER_3_CLK_IS_CCLK_DIV1;
+                    TIMER3_CLK_IS_CCLK_DIV1;
                     break;
                 case CCLK_DIV2:
-                    TIMER_3_CLK_IS_CCLK_DIV2;
+                    TIMER3_CLK_IS_CCLK_DIV2;
                     break;
                 case CCLK_DIV4:
-                    TIMER_3_CLK_IS_CCLK_DIV4;
+                    TIMER3_CLK_IS_CCLK_DIV4;
                     break;
                 case CCLK_DIV8:
-                    TIMER_3_CLK_IS_CCLK_DIV8;
+                    TIMER3_CLK_IS_CCLK_DIV8;
                     break;
                 default:
                     break;
@@ -146,16 +147,16 @@ void timer_disable(timer_channel channel) {
 
     switch(channel) {
         case TIMER_0: 
-            TIMER_0_PWR_OFF;
+            POWER_TIM0_OFF;
             break;
         case TIMER_1: 
-            TIMER_1_PWR_OFF;
+            POWER_TIM1_OFF;
             break;
         case TIMER_2: 
-            TIMER_2_PWR_OFF;
+            POWER_TIM2_OFF;
             break;
         case TIMER_3: 
-            TIMER_3_PWR_OFF;
+            POWER_TIM3_OFF;
             break;
         default: 
             break;

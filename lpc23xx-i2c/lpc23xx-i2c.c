@@ -29,12 +29,18 @@
  * lpc23xx-i2c.c
  */
 
+//todo: if a callback is null?
+//todo: slave_address?
+//todo: void pointer in callback
+
+
 #include <stdint.h>
 #include <stdlib.h>
 
 #include "lpc23xx.h"
 
 #include "lpc23xx-pll.h"
+#include "lpc23xx-power.h"
 #include "lpc23xx-types.h"
 #include "lpc23xx-binsem.h"
 #include "lpc23xx-uart.h"
@@ -207,8 +213,8 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
-            ENABLE_I2C2_INT;
             VICVectAddr30 = (unsigned int) i2c2_isr;
+            ENABLE_I2C2_INT;
 
             I2C2CONCLR    = I2C_SIC;
             break;
@@ -1062,7 +1068,7 @@ void start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( get_binsem( &i2c0_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
-            for(i=0; i<I2C_MAX_BUFFER; ++i) {
+            for(i=0; i<I2C_MAX_BUFFER; ++i) {//todo: depend on write/read_length instead of MAX_BUFFER
                 i2c0_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
                 i2c0_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
             }

@@ -66,20 +66,9 @@
 #define     SSEL_1_HIGH                          (FIO1SET |= 0x1)
 #define     SSEL_1_LOW                           (FIO1CLR |= 0x1)
 
-
-#define     PCONP_PCSPI                8
-
-#define     SPI_PWR_ON                 (PCONP = (PCONP |  (1<<PCONP_PCSPI)))
-#define     SPI_PWR_OFF                (PCONP = (PCONP & ~(1<<PCONP_PCSPI)))
-
 // Clock
-#define     PCLKSEL0_PCLK_SPI          16
 
-#define     SPI_CLK_IS_CCLK_DIV1       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x1 << PCLKSEL0_PCLK_SPI)) )
-#define     SPI_CLK_IS_CCLK_DIV2       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x2 << PCLKSEL0_PCLK_SPI)) )
-#define     SPI_CLK_IS_CCLK_DIV4       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x0 << PCLKSEL0_PCLK_SPI)) )
-#define     SPI_CLK_IS_CCLK_DIV8       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x3 << PCLKSEL0_PCLK_SPI)) )
-
+//todo: why is this setting adc registers?
 #define     SPI_ENABLE                 (AD0CR = (AD0CR |  (1 << AD0CR_PDN)))
 #define     SPI_DISABLE                (AD0CR = (AD0CR & ~(1 << AD0CR_PDN)))
 

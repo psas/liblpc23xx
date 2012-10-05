@@ -34,16 +34,6 @@
 
 #include "lpc23xx-util.h"
 #include "lpc23xx-pll.h"
-// Clock
-#define     PCLKSEL0_PCLK_ADC     24
-
-#define     ADC_CLK_IS_CCLK_DIV1  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x1 << PCLKSEL0_PCLK_ADC)) )
-#define     ADC_CLK_IS_CCLK_DIV2  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x2 << PCLKSEL0_PCLK_ADC)) )
-#define     ADC_CLK_IS_CCLK_DIV4  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x0 << PCLKSEL0_PCLK_ADC)) )
-#define     ADC_CLK_IS_CCLK_DIV8  ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_ADC)) |(0x3 << PCLKSEL0_PCLK_ADC)) )
-
-// PCONP
-#define     PCONP_PCAD            12
 
 // AD0CR
 #define     AD0CR_CLKDIV          8
@@ -53,8 +43,7 @@
 #define     AD0CR_START           24
 #define     AD0CR_EDGE            24
 
-#define     ADC_PWR_ON            (PCONP = (PCONP |  (1<<PCONP_PCAD)))
-#define     ADC_PWR_OFF           (PCONP = (PCONP & ~(1<<PCONP_PCAD)))
+
 
 #define     ADC_ENABLE            (AD0CR = (AD0CR |  (1 << AD0CR_PDN)))
 #define     ADC_DISABLE           (AD0CR = (AD0CR & ~(1 << AD0CR_PDN)))
