@@ -29,11 +29,6 @@
  * lpc23xx-i2c.c
  */
 
-//todo: if a callback is null?
-//todo: slave_address?
-//todo: void pointer in callback
-
-
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -100,11 +95,10 @@ void i2c_init_state( i2c_master_xact_t* s) {
         s->i2c_tx_buffer[i] = 0;
         s->i2c_rd_buffer[i] = 0;
     }
-    s->i2c_ext_slave_address = 0x0;
     s->write_length          = 0x0;
     s->read_length           = 0x0;
-    s->xact_active           = 0x0;
-    s->xact_success          = 0x0;
+    s->xact_success          = false;
+    s->cb_data               = NULL;
 }
 
 /*
@@ -126,13 +120,13 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             i2c_init_state( &i2c0_s_g );
 
-            POWER_I2C0_ON;
+            POWER_ON(PCI2C0);
 
             I2C0CONCLR = 0x7C;
             I2C0CONSET = (I2C_I2EN | I2C_AA); // master mode
 
             // I2C clock
-            I2C0_IS_CCLK_DIV1;
+            SET_PCLK(PCLK_I2C0, CCLK_DIV1);
             I2C0SCLL   = I2SCLLOW;
             I2C0SCLH   = I2SCLHIGH;
 
@@ -144,7 +138,7 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
-            ENABLE_I2C0_INT;
+            ENABLE_INT(I2C0);
 
             VICVectAddr9 = (unsigned int) i2c0_isr;
             VICAddress = 0x0;      // clear VIC address
@@ -159,12 +153,12 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             i2c_init_state( &i2c1_s_g );
 
-            POWER_I2C1_ON;
+            POWER_ON(PCI2C1);
 
             I2C1CONCLR = 0x7C;
             I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
 
-            I2C1_IS_CCLK_DIV1;
+            SET_PCLK(PCLK_I2C1, CCLK_DIV1);
             I2C1SCLL   = I2SCLLOW;
             I2C1SCLH   = I2SCLHIGH;
             if(pin == I2C1_ALTPIN){
@@ -184,7 +178,7 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
-            ENABLE_I2C1_INT;
+            ENABLE_INT(VIC_I2C1);
             VICVectAddr19 = (unsigned int) i2c1_isr;
 
             I2C1CONCLR    = I2C_SIC;
@@ -195,13 +189,13 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             i2c_init_state( &i2c2_s_g );
 
-            POWER_I2C2_ON;
+            POWER_ON(PCI2C2);
 
             I2C2CONCLR = 0x7C;
             I2C2CONSET = (I2C_I2EN | I2C_AA); // master mode
 
             // I2C clock
-            I2C2_IS_CCLK_DIV1;
+            SET_PCLK(PCLK_I2C2, CCLK_DIV1);
             I2C2SCLL   = I2SCLLOW;
             I2C2SCLH   = I2SCLHIGH;
 
@@ -214,7 +208,7 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
             VICVectAddr30 = (unsigned int) i2c2_isr;
-            ENABLE_I2C2_INT;
+            ENABLE_INT(VIC_I2C2);
 
             I2C2CONCLR    = I2C_SIC;
             break;
@@ -264,13 +258,16 @@ void i2c_kHz(i2c_iface channel, uint32_t freq){
 
 	switch(channel){
 	case I2C0:
-		divider = (PCLKSEL0 & (0b11 << PCLK_I2C0_BIT)) >> PCLK_I2C0_BIT;
+		divider = (PCLKSEL0 & (0x3 << (PCLK_I2C0 & PCLK_PERIPHERIAL_MASK))) >>
+		           (PCLK_I2C0 & PCLK_PERIPHERIAL_MASK);
 		break;
 	case I2C1:
-		divider = (PCLKSEL1 & (0b11 << PCLK_I2C1_BIT)) >> PCLK_I2C1_BIT;
+		divider = (PCLKSEL1 & (0x3 << (PCLK_I2C1 & PCLK_PERIPHERIAL_MASK))) >>
+		           (PCLK_I2C1 & PCLK_PERIPHERIAL_MASK);
 		break;
 	case I2C2:
-		divider = (PCLKSEL1 & (0b11 << PCLK_I2C2_BIT)) >> PCLK_I2C2_BIT;
+		divider = (PCLKSEL1 & (0x3 << (PCLK_I2C2 & PCLK_PERIPHERIAL_MASK))) >>
+		           (PCLK_I2C2 & PCLK_PERIPHERIAL_MASK);
 		break;
 	default:
 		//nope
@@ -530,19 +527,15 @@ void i2c0_isr(void) {
         if(i2c0_s_g.state != I2C_ERROR) {
             i2c0_s_g.xact_success = 1;
         }
-        i2c0_s_g.xact_active = 0;
-
-        _i2c0_FnCallback_g( i2c0_s_caller_g, &i2c0_s_g );
+        if(_i2c0_FnCallback_g != NULL)
+            _i2c0_FnCallback_g( i2c0_s_caller_g, &i2c0_s_g);
         i2c_init_state(&i2c0_s_g) ;
         release_binsem(&i2c0_binsem_g);
     }
     I2C0CONCLR = I2C_SIC;
 
-    // p 91 LPC23xx_UM
-    VICAddress = 0x0;
-
     //    ISR_EXIT;
-
+    EXIT_INTERRUPT;
 }
 
 /*
@@ -776,19 +769,15 @@ void i2c1_isr(void) {
         if(i2c1_s_g.state != I2C_ERROR) {
             i2c1_s_g.xact_success = 1;
         }
-        i2c1_s_g.xact_active = 0;
-
-        _i2c1_FnCallback_g( i2c1_s_caller_g, &i2c1_s_g );
+        if(_i2c1_FnCallback_g != NULL)
+            _i2c1_FnCallback_g( i2c1_s_caller_g, &i2c1_s_g );
         i2c_init_state(&i2c1_s_g) ;
         release_binsem(&i2c1_binsem_g);
     }
     I2C1CONCLR = I2C_SIC;
 
-    // p 91 LPC23xx_UM
-    VICAddress = 0x0;
-
     //    ISR_EXIT;
-
+    EXIT_INTERRUPT;
 }
 
 /*
@@ -1022,19 +1011,16 @@ void i2c2_isr(void) {
         if(i2c2_s_g.state != I2C_ERROR) {
             i2c2_s_g.xact_success = 1;
         }
-        i2c2_s_g.xact_active = 0;
 
-        _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
+        if(_i2c2_FnCallback_g != NULL)
+            _i2c2_FnCallback_g( i2c2_s_caller_g, &i2c2_s_g );
         i2c_init_state(&i2c2_s_g) ;
         release_binsem(&i2c2_binsem_g);
     }
     I2C2CONCLR = I2C_SIC;
 
-    // p 91 LPC23xx_UM
-    VICAddress = 0x0;
-
     //    ISR_EXIT;
-
+    EXIT_INTERRUPT;
 }
 
 
@@ -1047,10 +1033,8 @@ caller->i2c_tx_buffer[i] = i2c->i2c_tx_buffer[i];
 caller->i2c_rd_buffer[i] = i2c->i2c_rd_buffer[i];
 }
 
-caller->i2cext_slave_address = i2c->i2cext_slave_address;
 caller->write_length         = i2c->write_length;
 caller->read_length          = i2c->read_length;
-caller->xact_active          = i2c->xact_active;
 caller->xact_success         = i2c->xact_success;
 // maybe trigger an interrupt here
 }
@@ -1068,18 +1052,16 @@ void start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( get_binsem( &i2c0_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
-            for(i=0; i<I2C_MAX_BUFFER; ++i) {//todo: depend on write/read_length instead of MAX_BUFFER
+            for(i=0; i<s->write_length; ++i) {
                 i2c0_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
-                i2c0_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
             }
-            i2c0_s_g.i2c_ext_slave_address = s->i2c_ext_slave_address;
             i2c0_s_g.write_length          = s->write_length;
             i2c0_s_g.read_length           = s->read_length;
-            i2c0_s_g.xact_active           = 1;
-            i2c0_s_g.xact_success          = 0;
-            s->xact_active                 = 1;
-            s->xact_success                = 0;
+            i2c0_s_g.xact_success          = false;
+            s->xact_success                = false;
+            i2c0_s_g.cb_data               = s->cb_data;
             i2c0_s_caller_g                = s;
+
             _i2c0_FnCallback_g             = xact_fn;
 
             //write 0x20 to I2CONSET to set the STA bit
@@ -1103,17 +1085,14 @@ void start_i2c1_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( get_binsem( &i2c1_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 1
-            for(i=0; i<I2C_MAX_BUFFER; ++i) {
+            for(i=0; i<s->write_length; ++i) {
                 i2c1_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
-                i2c1_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
             }
-            i2c1_s_g.i2c_ext_slave_address = s->i2c_ext_slave_address;
             i2c1_s_g.write_length          = s->write_length;
             i2c1_s_g.read_length           = s->read_length;
-            i2c1_s_g.xact_active           = 1;
-            i2c1_s_g.xact_success          = 0;
-            s->xact_active                 = 1;
-            s->xact_success                = 0;
+            i2c0_s_g.xact_success          = false;
+            s->xact_success                = false;
+            i2c0_s_g.cb_data               = s->cb_data;
             i2c1_s_caller_g                = s;
             _i2c1_FnCallback_g             = xact_fn;
 
@@ -1138,17 +1117,14 @@ void start_i2c2_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) {
         // See if we can obtain the semaphore. If the semaphore is not available 
         // wait I2C_BINSEM_WAIT msecs to see if it becomes free. 
         if( get_binsem( &i2c2_binsem_g, I2C_BINSEM_WAITTICKS ) == 1 ) {  // binsem for channel 0
-            for(i=0; i<I2C_MAX_BUFFER; ++i) {
+            for(i=0; i<s->write_length; ++i) {
                 i2c2_s_g.i2c_tx_buffer[i]  = s->i2c_tx_buffer[i];
-                i2c2_s_g.i2c_rd_buffer[i]  = s->i2c_rd_buffer[i];
             }
-            i2c2_s_g.i2c_ext_slave_address = s->i2c_ext_slave_address;
             i2c2_s_g.write_length          = s->write_length;
             i2c2_s_g.read_length           = s->read_length;
-            i2c2_s_g.xact_active           = 1;
-            i2c2_s_g.xact_success          = 0;
-            s->xact_active                 = 1;
-            s->xact_success                = 0;
+            i2c0_s_g.xact_success          = false;
+            s->xact_success                = false;
+            i2c0_s_g.cb_data               = s->cb_data;
             i2c2_s_caller_g                = s;
             _i2c2_FnCallback_g             = xact_fn;
 

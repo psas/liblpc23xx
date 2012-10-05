@@ -145,34 +145,11 @@ void spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq) {
 
     mam_enable();
 
-    POWER_SPI_ON;
+    POWER_ON(PCSPI);
 
     // cclk value
     cclk = pllquery_cclk_mhz();
-
-    switch(scale) {
-        case CCLK_DIV1:
-            SPI_CLK_IS_CCLK_DIV1;
-            spi_pclk = cclk;
-            break;
-        case CCLK_DIV2:
-            SPI_CLK_IS_CCLK_DIV2;
-            spi_pclk = cclk/2;
-            break;
-        case CCLK_DIV4:
-            SPI_CLK_IS_CCLK_DIV4;
-            spi_pclk = cclk/4;
-            break;
-        case CCLK_DIV8:
-            SPI_CLK_IS_CCLK_DIV8;
-            spi_pclk = cclk/8;
-            break;
-        default:
-#ifdef DEBUG_SPI
-            printf_lpc(UART0,"Bad choice for scale value.\n");
-#endif
-            break;
-    }
+    SET_PCLK(PCLK_SPI, scale);
 
     PINSEL_SPI_SCK ;
     PINMODE_SPI_SCK_NOPULL ;

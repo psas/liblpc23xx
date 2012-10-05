@@ -62,24 +62,6 @@
 // ( i2c clock speed ref: lpc23xx user manual p516)
 // i2c standard clock speed goes to 100kHz
 
-#define PCLK_I2C0_BIT	14
-#define PCLK_I2C1_BIT	6
-#define PCLK_I2C2_BIT	20
-
-#define I2C0_IS_CCLK_DIV1   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b01 << PCLK_I2C0_BIT)))
-#define I2C0_IS_CCLK_DIV2   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b10 << PCLK_I2C0_BIT)))
-#define I2C0_IS_CCLK_DIV4   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b00 << PCLK_I2C0_BIT)))
-#define I2C0_IS_CCLK_DIV8   (PCLKSEL0 = ((PCLKSEL0  & ~(0b11<<PCLK_I2C0_BIT)) | (0b11 << PCLK_I2C0_BIT)))
-
-#define I2C1_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b01 << PCLK_I2C1_BIT)))
-#define I2C1_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b10 << PCLK_I2C1_BIT)))
-#define I2C1_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b00 << PCLK_I2C1_BIT)))
-#define I2C1_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C1_BIT)) | (0b11 << PCLK_I2C1_BIT)))
-
-#define I2C2_IS_CCLK_DIV1   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b01 << PCLK_I2C2_BIT)))
-#define I2C2_IS_CCLK_DIV2   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b10 << PCLK_I2C2_BIT)))
-#define I2C2_IS_CCLK_DIV4   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b00 << PCLK_I2C2_BIT)))
-#define I2C2_IS_CCLK_DIV8   (PCLKSEL1 = ((PCLKSEL1  & ~(0b11<<PCLK_I2C2_BIT)) | (0b11 << PCLK_I2C2_BIT)))
 
 // p516: Max rate is 400kHz according to lpc23xx manual.
 //#define I2SCLHIGH           90
@@ -161,11 +143,10 @@ typedef struct i2c_master_xact {
 
      uint8_t   i2c_tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
      uint8_t   i2c_rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
-     uint8_t   i2c_ext_slave_address;
      uint32_t  write_length;
      uint32_t  read_length;
-     uint32_t  xact_active;
-     uint32_t  xact_success;
+     bool      xact_success;
+     void*     cb_data;
 
 } i2c_master_xact_t;
 

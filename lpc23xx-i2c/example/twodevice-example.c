@@ -30,11 +30,9 @@ i2c_master_xact_t       xact0_s;
 void xact_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c_s) {
     uint16_t i;
 
-    caller->i2c_ext_slave_address = i2c_s->i2c_ext_slave_address;
     caller->xact_success          = i2c_s->xact_success;
     caller->write_length          = i2c_s->write_length;
     caller->read_length           = i2c_s->read_length;
-    caller->xact_active           = i2c_s->xact_active;
 
     for(i=0; i<I2C_MAX_BUFFER; ++i) {
         caller->i2c_tx_buffer[i] = i2c_s->i2c_tx_buffer[i];

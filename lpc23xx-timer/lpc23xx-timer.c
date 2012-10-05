@@ -44,96 +44,34 @@
  * timer_init
  */
 void timer_init(timer_channel channel, uint32_t prescale, pclk_scale scale) {
-
     switch(channel) {
         case TIMER_0: 
-            POWER_TIM0_ON;
+            POWER_ON(PCTIM0);
             RESET_TIMER0;
             START_TIMER0;
             T0PC = prescale;
-            switch(scale) {
-                case CCLK_DIV1:
-                    TIMER0_CLK_IS_CCLK_DIV1;
-                    break;
-                case CCLK_DIV2:
-                    TIMER0_CLK_IS_CCLK_DIV2;
-                    break;
-                case CCLK_DIV4:
-                    TIMER0_CLK_IS_CCLK_DIV4;
-                    break;
-                case CCLK_DIV8:
-                    TIMER0_CLK_IS_CCLK_DIV8;
-                    break;
-                default:
-                    break;
-            }
+            SET_PCLK(PCLK_TIMER0, scale);
             break;
         case TIMER_1: 
-            POWER_TIM1_ON;
+            POWER_ON(PCTIM1);
             RESET_TIMER1;
             START_TIMER1;
             T1PC = prescale;
-            switch(scale) {
-                case CCLK_DIV1:
-                    TIMER1_CLK_IS_CCLK_DIV1;
-                    break;
-                case CCLK_DIV2:
-                    TIMER1_CLK_IS_CCLK_DIV2;
-                    break;
-                case CCLK_DIV4:
-                    TIMER1_CLK_IS_CCLK_DIV4;
-                    break;
-                case CCLK_DIV8:
-                    TIMER1_CLK_IS_CCLK_DIV8;
-                    break;
-                default:
-                    break;
-            }
+            SET_PCLK(PCLK_TIMER1, scale);
             break;
         case TIMER_2: 
-            POWER_TIM2_ON;
+            POWER_ON(PCTIM2);
             RESET_TIMER2;
             START_TIMER2;
             T2PC = prescale;
-            switch(scale) {
-                case CCLK_DIV1:
-                    TIMER2_CLK_IS_CCLK_DIV1;
-                    break;
-                case CCLK_DIV2:
-                    TIMER2_CLK_IS_CCLK_DIV2;
-                    break;
-                case CCLK_DIV4:
-                    TIMER2_CLK_IS_CCLK_DIV4;
-                    break;
-                case CCLK_DIV8:
-                    TIMER2_CLK_IS_CCLK_DIV8;
-                    break;
-                default:
-                    break;
-            }
-
+            SET_PCLK(PCLK_TIMER2, scale);
             break;
         case TIMER_3: 
-            POWER_TIM3_ON;
+            POWER_ON(PCTIM3);
             RESET_TIMER3;
             START_TIMER3;
             T3PC = prescale;
-            switch(scale) {
-                case CCLK_DIV1:
-                    TIMER3_CLK_IS_CCLK_DIV1;
-                    break;
-                case CCLK_DIV2:
-                    TIMER3_CLK_IS_CCLK_DIV2;
-                    break;
-                case CCLK_DIV4:
-                    TIMER3_CLK_IS_CCLK_DIV4;
-                    break;
-                case CCLK_DIV8:
-                    TIMER3_CLK_IS_CCLK_DIV8;
-                    break;
-                default:
-                    break;
-            }
+            SET_PCLK(PCLK_TIMER3, scale);
             break;
         default: 
             break;
@@ -144,19 +82,18 @@ void timer_init(timer_channel channel, uint32_t prescale, pclk_scale scale) {
  * timer_disable
  */
 void timer_disable(timer_channel channel) {
-
     switch(channel) {
-        case TIMER_0: 
-            POWER_TIM0_OFF;
+        case TIMER_0:
+            POWER_OFF(PCTIM0);
             break;
-        case TIMER_1: 
-            POWER_TIM1_OFF;
+        case TIMER_1:
+            POWER_OFF(PCTIM0);
             break;
         case TIMER_2: 
-            POWER_TIM2_OFF;
+            POWER_OFF(PCTIM0);
             break;
         case TIMER_3: 
-            POWER_TIM3_OFF;
+            POWER_OFF(PCTIM0);
             break;
         default: 
             break;

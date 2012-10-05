@@ -54,27 +54,12 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
     uint16_t cdiv=0;
 
     // adc clock
-    switch(scale) {
-        case CCLK_DIV1:
-            mam_enable();           // At CCLK/1 must use mam for consistent behavior?   
-            ADC_CLK_IS_CCLK_DIV1;
-            break;
-        case CCLK_DIV2:
-            ADC_CLK_IS_CCLK_DIV2;
-            break;
-        case CCLK_DIV4:
-            ADC_CLK_IS_CCLK_DIV4;
-            break;
-        case CCLK_DIV8:
-            ADC_CLK_IS_CCLK_DIV8;
-            break;
-        default:
-            while(1);  // not a valid choice, stop.
-            break;
-    }
+    if(scale == CCLK_DIV1)
+        mam_enable();           // At CCLK/1 must use mam for consistent behavior?
+    SET_PCLK(PCLK_ADC, scale);
 
     // turn on power
-    POWER_AD_ON;
+    POWER_ON(PCAD);
 
     // then enable ADC
     ADC_ENABLE;
@@ -110,7 +95,7 @@ void adc_init_cont(adc_channelmask channels, pclk_scale scale) {
 void adc_disable(void) {
     // order matters see page 596 of user manual v3.
     ADC_DISABLE;
-    POWER_AD_OFF;
+    POWER_OFF(PCAD);
 }
 
 /*

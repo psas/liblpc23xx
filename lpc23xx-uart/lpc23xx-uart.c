@@ -65,8 +65,8 @@ void uart_enable_interrupt(uartport u) {
             UART0_THRE_INT_DISABLE ;
 
             uart0_kick_thr_int_g = true;
-            SET_UART0_IRQ;
-            ENABLE_UART0_INT;
+            SET_IRQ(VIC_UART0);
+            ENABLE_INT(VIC_UART0);
             VIC_SET_UART0_PRIORITY(UART0_INTR_PRIORITY) ;
             VIC_SET_UART0_HANDLER(uart0_interrupt_service);
 
@@ -99,19 +99,19 @@ void uart_disable_interrupt(uartport u) {
     switch(u) {
         case UART0:
             U0IER =  U0IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-            DISABLE_UART0_INT ;
+            DISABLE_INT(VIC_UART0);
             break;
         case UART1:
             U1IER =  U1IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-            DISABLE_UART1_INT ;
+            DISABLE_INT(VIC_UART1);
             break;
         case UART2:
             U2IER =  U2IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-            DISABLE_UART2_INT ;
+            DISABLE_INT(VIC_UART2);
             break;
         case UART3:
             U3IER =  U3IER & ( ~( (1<<UART_RXLSIE_BIT) | (1<<UART_THREIE_BIT) | (1<<UART_RBRIE_BIT) ) );
-            DISABLE_UART3_INT ;
+            DISABLE_INT(VIC_UART3);
             break;
         default:
             break;
@@ -155,10 +155,10 @@ void uart0_init_9600(void) {
     SET_RXD0_TXD0;
 
     // turn on power.
-    POWER_UART0_ON;
+    POWER_ON(PCUART0);
 
     // divide cclk by one
-    UART0_CLK_IS_CCLK_DIV1;
+    SET_PCLK(PCLK_UART0, CCLK_DIV1);
 
     // enable divisor latch access
     SET_DLAB0;
@@ -217,10 +217,10 @@ void uart0_init_115200(void) {
     SET_RXD0_TXD0;
 
     // turn on power.
-    POWER_UART0_ON;
+    POWER_ON(PCUART0);
 
     // divide cclk by one
-    UART0_CLK_IS_CCLK_DIV1;
+    SET_PCLK(PCLK_UART0, CCLK_DIV1);
 
     // enable divisor latch access
     SET_DLAB0;
