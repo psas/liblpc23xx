@@ -34,6 +34,8 @@
  * @{
  */
 
+#include <stdbool.h>
+
 #include "lpc23xx.h"
 #include "lpc23xx-types.h"
 
@@ -103,9 +105,6 @@
 #define     SPI_CLK_IS_CCLK_DIV4       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x0 << PCLKSEL0_PCLK_SPI)) )
 #define     SPI_CLK_IS_CCLK_DIV8       ( PCLKSEL0 = ((PCLKSEL0 & ~(0x3<<PCLKSEL0_PCLK_SPI)) |(0x3 << PCLKSEL0_PCLK_SPI)) )
 
-#define     SPI_ENABLE                 (AD0CR = (AD0CR |  (1 << AD0CR_PDN)))
-#define     SPI_DISABLE                (AD0CR = (AD0CR & ~(1 << AD0CR_PDN)))
-
 // spi control register
 #define     SPI_CR_BITENABLE           2
 #define     SPI_CR_CPHA                3
@@ -122,12 +121,15 @@
 #define     SPI_SR_WCOL                6
 #define     SPI_SR_SPIF                7
 
+// spi interrupt register
+#define     SPI_IR_IF                  0
+
 #define     SPI_BINSEM_WAITTICKS       25000
 
 #define     VIC_SPI_BIT                10
 
 #define     ENABLE_SPI_INT             (VICIntEnable = (VICIntEnable | (1<<VIC_SPI_BIT)))
-#define     DISABLE_I2C0_INT           (VICIntEnable = (VICIntEnable & ~(1<<VIC_SPI_BIT)))
+#define     DISABLE_SPI_INT            (VICIntEnable = (VICIntEnable & ~(1<<VIC_SPI_BIT)))
 
 #define     SPI_DEFAULT_DUMMY_DATA     0xFF
 #define     SPI_DEFAULT_XACT_ID        0xFF
@@ -189,7 +191,7 @@ typedef struct _spi_master_xact {
     uint8_t           writebuf[SPI_MAX_BUFFER];
     uint8_t           readbuf[SPI_MAX_BUFFER];
     spi_xact_id       id;
-} spi_master_xact;
+} spi_master_xact_data;
 
 //! Use this to track a SPI transfer
 typedef struct _spi_xact_status {
@@ -200,16 +202,19 @@ typedef struct _spi_xact_status {
     spi_xact_id       xact_id;
 } spi_xact_status;
 
-typedef void (*SPI_XACT_FnCallback) (spi_master_xact* caller, spi_master_xact* spi_return);
+typedef void (*SPI_XACT_FnCallback) (spi_master_xact_data* caller, spi_master_xact_data* spi_return);
 
 void       spi_isr(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
 void       spi_waitSPIF();
 void       spi_transact(uint16_t data, spi_xfernumbits bits);
 
+void       spi_init_master_xact_data(spi_master_xact_data* s) ;
+
+void       spi_init_master_intr(pclk_scale scale, spi_freq spifreq) ;
 void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
 
-bool       start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) ;
+bool       start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xact_fn) ;
 
 //! @}
 

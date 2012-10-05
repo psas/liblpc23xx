@@ -46,14 +46,14 @@
 
 #include "lpc23xx-spi.h"
 
-static SPI_XACT_FnCallback   _spi_FnCallback_g;
+static SPI_XACT_FnCallback   _spi_FnCallback_g = NULL;
 
 bin_semaphore                spi_binsem_g;
 
 spi_xact_status              spi_status_g;
 
-spi_master_xact              spi_xact_g;
-spi_master_xact*             spi_caller_xact_g;
+spi_master_xact_data              spi_xact_g;
+spi_master_xact_data*             spi_caller_xact_g;
 
 /*!
  */
@@ -116,7 +116,7 @@ static void spi_init_xact_status( spi_xact_status* s) {
 	s->xact_pending_count   = 0;
 }
 
-static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
+static void spi_copy_spi_xact(spi_master_xact_data *to, spi_master_xact_data* from) {
 	uint8_t i = 0;
 
 	to->spi_cpha_val        = from->spi_cpha_val;
@@ -135,6 +135,32 @@ static void spi_copy_spi_xact(spi_master_xact *to, spi_master_xact* from) {
 	}
 }
 
+
+/*! \brief initialize the data structure for a transaction.
+ *
+ * @param s
+ *
+ * The default is SPI MODE 3 (rising edge sclk, sclk active low, MSB)
+ */
+void spi_init_master_xact_data(spi_master_xact_data* s) {
+	uint16_t   i = 0;
+
+	s->spi_cpha_val        = SPI_SCK_FIRST_CLK;
+	s->spi_cpol_val        = SPI_SCK_ACTIVE_LOW;
+	s->spi_lsbf_val        = SPI_DATA_MSB_FIRST;
+	s->dummy_value         = 0xaa;
+	s->id                  = 0xff;
+	s->read_numbytes       = 0;
+	s->write_numbytes      = 0;
+
+	for (i=0; i< SPI_MAX_BUFFER; ++i) {
+		s->writebuf[i] = 0;
+	}
+	for (i=0; i< SPI_MAX_BUFFER; ++i) {
+		s->readbuf[i]  = 0;
+	}
+}
+
 /*! SPI Master Mode initialization for interrupt based transactions
  *
  * @param scale
@@ -144,6 +170,8 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
 	Freq                cclk;
 	uint32_t            spi_pclk = 0;
 	uint32_t            ccount;
+
+    printf_lpc(UART0, "%s: Called\r\n", __func__);
 
 	FIO_ENABLE;
 
@@ -222,8 +250,6 @@ break;
 
 	S0SPCCR                 = (uint8_t) ccount;
 
-
-
 #ifdef DEBUG_SPI
 	volatile uint8_t    spi_status;
 	spi_status              = spi_readstatus();
@@ -235,9 +261,10 @@ break;
 	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
 #endif
 
-	VICVectAddr10 = (unsigned int) spi_isr;
-	VICAddress    = 0x0;
-
+	VICVectPriority10 = 0x5;
+	VICVectAddr10     = (unsigned int) spi_isr;
+	VICAddress        = 0x0;
+	DISABLE_SPI_INT;
 }
 
 /*!\ Brief Start a SPI interrupt based transaction
@@ -245,11 +272,11 @@ break;
  * @param s         Pointer to a structure with xact information
  * @param xact_fn   Pointer to a function to call at end of xaction
  */
-bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn) {
+bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xact_fn) {
 
 	uint8_t  status_reg;
 
-	_spi_FnCallback_g        = *xact_fn;
+	_spi_FnCallback_g        = xact_fn;
 
 	if(s!=NULL) {
 		// bounds check on transaction
@@ -260,6 +287,7 @@ bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
 		// See if we can obtain the semaphore. If the semaphore is not available
 		// wait to see if it becomes free.
 		if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
+			DISABLE_SPI_INT;
 
 			spi_copy_spi_xact(&spi_xact_g, s);
 
@@ -289,6 +317,7 @@ bool start_spi_master_xact_intr(spi_master_xact* s, SPI_XACT_FnCallback xact_fn)
 		return false;
 		//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, structure pointer is NULL. Skipping.\n");
 	}
+	ENABLE_SPI_INT;
 	return true;
 }
 
@@ -336,13 +365,14 @@ void spi_isr(void) {
 			spi_status_g.xact_state                     = SPI_READ_ST;
 		} else {
 			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g);
-
+			//( FIO1SET = (1 << 25) );
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
 			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
 			spi_status_g.xact_state     = SPI_IDLE_ST;
 
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
+			data_reg                    = S0SPDR;
 
 			SSEL_HIGH;
 		}
@@ -367,7 +397,7 @@ void spi_isr(void) {
 			spi_status_g.xact_state     = SPI_IDLE_ST;
 
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
-
+			data_reg                    = S0SPDR; // access data_reg to clear S0SPSR SPIF
 			SSEL_HIGH;
 		}
 		break;
@@ -384,7 +414,7 @@ void spi_isr(void) {
 		spi_status_g.xact_state     = SPI_IDLE_ST;
 		break;
 	}
-
+	S0SPINT       = (0x1 << SPI_IR_IF);   // clear int flag in INT register.
 	VICAddress    = 0x0;
 }
 

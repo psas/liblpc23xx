@@ -334,7 +334,7 @@ void uart0_interrupt_service() {
             case UART_THRE:            // Transmit Holding Register Empty interrupt
                 if(!rb_is_empty(&uart0_tx_rb_g)) {
                     success = rb_get_elem(&ch, &uart0_tx_rb_g);
-                    if(!success) ch = '@';
+                    // if(!success) ch = ;
                     U0THR = ch;
                     uart0_kick_thr_int_g=false;
                 } else {

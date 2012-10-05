@@ -35,6 +35,10 @@
  *
  * @{
  */
+
+#include <stdio.h>
+#include <stdint.h>
+
 #include "lpc23xx.h"
 #include "lpc23xx-uart.h"
 #include "ringbuffer.h"
