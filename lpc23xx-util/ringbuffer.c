@@ -118,8 +118,8 @@ bool rb_insert_string(char* s, Ringbuffer* rb)
  * \warning Any RB_ELEM removed is replaced with a '0'
  */
 volatile bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
-    if(c  == NULL) {return(false);}
-    if(rb == NULL) {return(false);}
+    if(c  == NULL) {*c='$'; return(false);}
+    if(rb == NULL) {*c='#'; return(false);}
 
     if(rb->num_entries != 0) {
         *c = rb->rbuff[rb->headidx];
@@ -131,6 +131,7 @@ volatile bool rb_get_elem(RB_ELEM* c, Ringbuffer* rb) {
             rb->headidx = 0;
         }
     } else {
+    	*c='-';
         return(false);
     }
     return(true);

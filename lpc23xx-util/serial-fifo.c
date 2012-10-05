@@ -1,6 +1,6 @@
 
 /*
-   LPCUSB, an USB device driver for LPC microcontrollers   
+   LPCUSB, an USB device driver for LPC microcontrollers
    Copyright (C) 2006 Bertrik Sikken (bertrik@sikken.nl)
 
    Redistribution and use in source and binary forms, with or without
@@ -17,7 +17,7 @@
    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
    OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, 
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -50,7 +50,7 @@ BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
         if (next == fifo->tail) {
             // full
             printf_lpc(UART0, "fifo_putword: FIFO full at %d\n", i);
-            return FALSE;
+            return false;
         } else {
         	printf_lpc(UART0, ".");
         }
@@ -64,7 +64,7 @@ BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
     fifo->head = next;
 
 
-    return TRUE;
+    return true;
 
 }
 
@@ -76,13 +76,13 @@ BOOL fifo_put(fifo_type *fifo, uint8_t c) {
     if (next == fifo->tail) {
         // full
         printf_lpc(UART0, "FIFO full\n");
-        return FALSE;
+        return false;
     }
 
     fifo->buf[fifo->head] = c;
     fifo->head = next;
 
-    return TRUE;
+    return true;
 }
 
 
@@ -91,7 +91,7 @@ BOOL fifo_get(fifo_type *fifo, uint8_t *pc) {
 
     // check if FIFO has data
     if (fifo->head == fifo->tail) {
-        return FALSE;
+        return false;
     }
 
     next = (fifo->tail + 1) % sizeof(fifo->buf);
@@ -99,7 +99,7 @@ BOOL fifo_get(fifo_type *fifo, uint8_t *pc) {
     *pc = fifo->buf[fifo->tail];
     fifo->tail = next;
 
-    return TRUE;
+    return true;
 }
 
 

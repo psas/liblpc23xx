@@ -6,9 +6,11 @@
 #ifndef _LPC23XX_TYPES_H
 #define _LPC23XX_TYPES_H
 
+#include <stdio.h>
+#include <stdbool.h>
 #include <stdint.h>
 
-typedef enum {FALSE=0, TRUE} BOOL;
+typedef _Bool               BOOL;
 
 #undef NULL
     #if defined(__cplusplus)

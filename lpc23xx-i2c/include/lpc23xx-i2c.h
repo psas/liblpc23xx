@@ -1,4 +1,7 @@
 
+/*! \file lpc23xx-i2c.h
+ */
+
 /* Copyright (C) 2011 Keith Wilson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -7,17 +10,17 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the names of the authors or their
  * institutions shall not be used in advertising or otherwise to promote the
  * sale, use or other dealings in this Software without prior written
@@ -25,18 +28,19 @@
  */
 
 
-/*
- * lpc23xx-i2c.h
- */
-
 #ifndef _LPC23XX_I2C_H
 #define _LPC23XX_I2C_H
+
+/*! \ingroup lpc23xx-i2c
+ *
+ * @{
+ */
 
 #include <stdint.h>
 
 #include "lpc23xx-binsem.h"
 
-// MAX values 
+// MAX values
 #define I2C_MAX_BUFFER      64
 
 // VIC table page 94 lpc23xx manual
@@ -73,13 +77,13 @@
 #define I2C_STO             (1<<4)
 #define I2C_STA             (1<<5)
 #define I2C_I2EN            (1<<6)
-        
+
 // CLEAR
 #define I2C_AAC             (1<<2)
 #define I2C_SIC             (1<<3)
 #define I2C_STAC            (1<<5)
 #define I2C_I2ENC           (1<<6)
-                           
+
 // I2C clock
 // Table 435 p496 lpc23xx
 //
@@ -112,7 +116,7 @@
 #define I2SCLLOW            300
 
 // Pinsel0 has builtin pullup. //should this be I2C0?
-// Pinsel1&2 do not. 
+// Pinsel1&2 do not.
 #define I2C1_SDA1_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<0))) // P0.0
 #define I2C1_SCL1_PULLUP    (PINMODE0 = (PINMODE0 & ~(3<<2))) // P0.1
 
@@ -169,8 +173,8 @@ typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 //See p156 and 158 of the lpc23xx user manual.
 typedef enum { DEFAULT=0, I2C0_ALTPIN, I2C1_ALTPIN, I2C2_ALTPIN} i2c_pinsel;
 
-typedef enum { 
-    I2C_IDLE = 0, 
+typedef enum {
+    I2C_IDLE = 0,
     I2C_START,
     I2C_RESTART,
     I2C_REPEATED_START,
@@ -179,6 +183,9 @@ typedef enum {
     I2C_ERROR
 } i2c_state;
 
+/*! \struct i2c_master_xact
+ *  \brief Structure to hold i2c transaction data
+ */
 typedef struct i2c_master_xact {
      i2c_state state;
 
@@ -229,7 +236,7 @@ void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 // void i2c0_isr(void) __attribute__ ((naked));  // use ISR_ENTRY/ISR_EXIT from lpc23xx-vic.h
 // void i2c1_isr(void) __attribute__ ((naked));
 // void i2c2_isr(void) __attribute__ ((naked));
-// 
+//
 // void i2cgeneral_call(i2c_iface channel);
 
 uint8_t i2c_create_read_address(uint8_t addr) ;
@@ -249,4 +256,5 @@ void I2C1_master_xact(i2c_master_xact_t&  s) ;
 void I2C2_master_xact(i2c_master_xact_t&  s) ;
 */
 
+//! @}
 #endif
