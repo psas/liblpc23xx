@@ -39,7 +39,7 @@ void fifo_init(fifo_type *fifo) {
 /**
  * put a uint32_t word into the uint8_t char fifo
  */
-BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
+bool fifo_putword(fifo_type *fifo, uint32_t w) {
     int     next;
 
     uint8_t i = 0;
@@ -68,7 +68,7 @@ BOOL fifo_putword(fifo_type *fifo, uint32_t w) {
 
 }
 
-BOOL fifo_put(fifo_type *fifo, uint8_t c) {
+bool fifo_put(fifo_type *fifo, uint8_t c) {
     int next;
 
     // check if FIFO has room
@@ -86,7 +86,7 @@ BOOL fifo_put(fifo_type *fifo, uint8_t c) {
 }
 
 
-BOOL fifo_get(fifo_type *fifo, uint8_t *pc) {
+bool fifo_get(fifo_type *fifo, uint8_t *pc) {
     int next;
 
     // check if FIFO has data

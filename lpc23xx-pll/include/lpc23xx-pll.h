@@ -99,14 +99,7 @@ typedef enum {CCLK_DIV1=1, CCLK_DIV2=2, CCLK_DIV4=0, CCLK_DIV6=3, CCLK_DIV8=3} p
  *CCLK_DIV8
  */
 //todo: error check?
-void inline SET_PCLK(pclk_peripheral peripheral, pclk_scale scale){
-    if((peripheral & PCLK_REGISTER_MASK) == PCLK_REG_1){
-        SET_PCLKSEL1_FIELD(peripheral, scale);
-    }else{
-        SET_PCLKSEL0_FIELD(peripheral, scale);
-    }
-}
-
+void inline SET_PCLK(pclk_peripheral peripheral, pclk_scale scale);
 //PLL
 
 #define         FEEDBYTE_A                 ((unsigned) 0xAA)

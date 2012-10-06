@@ -2,6 +2,22 @@
 #include "lpc23xx-power.h"
 #include "lpc23xx-pll.h"
 
+void inline POWER_ON(pconp_peripheral perf){
+    PCONP = (PCONP | perf) & PCONP_MASK;
+}
+void inline POWER_OFF(pconp_peripheral perf){
+    PCONP &= PCONP_MASK & ~(perf);
+}
+
+void inline ENABLE_WAKE_ON(intwake_bits module){
+    INTWAKE = (INTWAKE | module) & INTWAKE_MASK;
+}
+
+void inline DISABLE_WAKE_ON(intwake_bits module){
+    INTWAKE &= ~(module) & INTWAKE_MASK;
+}
+
+
 void safe_sleep(unsigned int intwake){
     /*
      * Save PLL state

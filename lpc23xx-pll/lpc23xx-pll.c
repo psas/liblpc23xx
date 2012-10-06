@@ -208,3 +208,10 @@ int pllstart(Freq cclk_mhz){
     return -1;
 }
 
+void inline SET_PCLK(pclk_peripheral peripheral, pclk_scale scale){
+    if((peripheral & PCLK_REGISTER_MASK) == PCLK_REG_1){
+        SET_PCLKSEL1_FIELD(peripheral, scale);
+    }else{
+        SET_PCLKSEL0_FIELD(peripheral, scale);
+    }
+}

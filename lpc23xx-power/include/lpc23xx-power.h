@@ -43,12 +43,8 @@ typedef enum{
     PCUSB   = (1<<31),
 } pconp_peripheral;
 #define PCONP_MASK ~(0x00078000)
-void inline POWER_ON(pconp_peripheral perf){
-    PCONP = (PCONP | perf) & PCONP_MASK;
-}
-void inline POWER_OFF(pconp_peripheral perf){
-    PCONP &= PCONP_MASK & ~(perf);
-}
+void inline POWER_ON(pconp_peripheral perf);
+void inline POWER_OFF(pconp_peripheral perf);
 
 //PCON Power Mode Control, 4-8.6, p65 LPC23xx user manual
 #define PCON_MASK       ~(0x60)
@@ -72,13 +68,9 @@ typedef enum{
 } intwake_bits;
 #define INTWAKE_MASK    ~(0x3E00)
 
-void inline ENABLE_WAKE_ON(intwake_bits module){
-    INTWAKE = (INTWAKE | module) & INTWAKE_MASK;
-}
+void inline ENABLE_WAKE_ON(intwake_bits module);
 
-void inline DISABLE_WAKE_ON(intwake_bits module){
-    INTWAKE &= ~(module) & INTWAKE_MASK;
-}
+void inline DISABLE_WAKE_ON(intwake_bits module);
 
 void safe_sleep(unsigned int intwake);
 

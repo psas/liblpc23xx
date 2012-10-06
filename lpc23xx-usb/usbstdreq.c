@@ -103,7 +103,7 @@ void USBRegisterDescriptors(const uint8_t *pabDescriptors)
 
 	@return TRUE if the descriptor was found, FALSE otherwise
  */
-BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData)
+bool USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData)
 {
 	uint8_t	bType, bIndex;
 	uint8_t	*pab;
@@ -157,7 +157,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 
 	@return TRUE if successfully configured, FALSE otherwise
  */
-static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
+static bool USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 {
 	uint8_t	*pab;
 	uint8_t	bCurConfig, bCurAltSetting;
@@ -226,7 +226,7 @@ static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
+static bool HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 {
 	uint8_t	*pbData = *ppbData;
 
@@ -295,7 +295,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+static bool HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
 {
 	uint8_t	*pbData = *ppbData;
 
@@ -345,7 +345,7 @@ static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **pp
 
 	@return TRUE if the request was handled successfully
  */
-static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+static bool HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
 {
 	uint8_t	*pbData = *ppbData;
 
@@ -399,7 +399,7 @@ static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppb
 
 	@return TRUE if the request was handled successfully
  */
-BOOL USBHandleStandardRequest(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
+bool USBHandleStandardRequest(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbData)
 {
 	// try the custom request handler first
 	if ((pfnHandleCustomReq != NULL) && pfnHandleCustomReq(pSetup, piLen, ppbData)) {

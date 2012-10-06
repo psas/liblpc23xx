@@ -50,22 +50,14 @@ typedef enum{
 } vic_interrupts;
 
 //6-5.4, p 89 lpc23xx manual
-void inline ENABLE_INT(vic_interrupts interrupt){
-    VICIntEnable = interrupt;
-}
+void inline ENABLE_INT(vic_interrupts interrupt);
 
 //6-5.5, p 89 lpc23xx manual
-void inline DISABLE_INT(vic_interrupts interrupt){
-    VICIntEnClr = interrupt;
-}
+void inline DISABLE_INT(vic_interrupts interrupt);
 
-void inline SET_IRQ(vic_interrupts interrupt){
-    VICIntSelect &= ~(interrupt);
-}
+void inline SET_IRQ(vic_interrupts interrupt);
 
-void inline SET_FIQ(vic_interrupts interrupt){
-    VICIntSelect |= interrupt;
-}
+void inline SET_FIQ(vic_interrupts interrupt);
 //todo:
 //void inline SET_HANDLER(vic_interrupts interrupt, void * name){
 //    (*(volatile unsigned int *)(VIC_BASE_ADDR + 0x100 +interrupt>>?*4)) =
@@ -137,12 +129,9 @@ void inline SET_FIQ(vic_interrupts interrupt){
 #define VIC_SET_I2C2_PRIORITY(pri)       (VICVectPriority30 = (unsigned int)(pri))
 #define VIC_SET_I2S_PRIORITY(pri)        (VICVectPriority31 = (unsigned int)(pri))
 
-void inline RAISE_INT(vic_interrupts interrupt){
-    VICSoftInt = interrupt;
-}
-void inline CLR_SW_INT(vic_interrupts interrupt){
-    VICSoftIntClr = interrupt;
-}
+void inline RAISE_INT(vic_interrupts interrupt);
+
+void inline CLR_SW_INT(vic_interrupts interrupt);
 
 // p 91 LPC23xx_UM
 #define EXIT_INTERRUPT  VICAddress=0x0

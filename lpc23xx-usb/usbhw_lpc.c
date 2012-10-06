@@ -168,7 +168,7 @@ static void USBHwEPRealize(int idx, uint16_t wMaxPSize)
     @param [in] idx     Endpoint index
     @param [in] fEnable TRUE to enable, FALSE to disable
  */
-static void USBHwEPEnable(int idx, BOOL fEnable)
+static void USBHwEPEnable(int idx, bool fEnable)
 {
     USBHwCmdWrite(CMD_EP_SET_STATUS | idx, fEnable ? 0 : EP_DA);
 }
@@ -267,7 +267,7 @@ void USBHwSetAddress(uint8_t bAddr)
 
     @param [in] fConnect    If TRUE, connect, otherwise disconnect
  */
-void USBHwConnect(BOOL fConnect) {
+void USBHwConnect(bool fConnect) {
 #ifndef LPC2378_PORTB
     #ifdef GFE_LPC2368  // Circuit error on GFE has D+ and D- effectively reversed
         if(fConnect)
@@ -331,7 +331,7 @@ uint8_t  USBHwEPGetStatus(uint8_t bEP)
     @param [in] bEP     Endpoint number
     @param [in] fStall  TRUE to stall, FALSE to unstall
  */
-void USBHwEPStall(uint8_t bEP, BOOL fStall)
+void USBHwEPStall(uint8_t bEP, bool fStall)
 {
     int idx = EP2IDX(bEP);
 
@@ -496,7 +496,7 @@ int USBHwISOCEPRead(const uint8_t bEP, uint8_t *pbBuf, const int iMaxLen)
 
     @param [in] fConfigured If TRUE, configure device, else unconfigure
  */
-void USBHwConfigDevice(BOOL fConfigured)
+void USBHwConfigDevice(bool fConfigured)
 {
     // set configured bit
     USBHwCmdWrite(CMD_DEV_CONFIG, fConfigured ? CONF_DEVICE : 0);
@@ -603,7 +603,7 @@ DEBUG_LED_OFF(9);
 
     @return TRUE if the hardware was successfully initialised
  */
-BOOL USBHwInit(void)
+bool USBHwInit(void)
 {
 #ifdef LPC214x
 

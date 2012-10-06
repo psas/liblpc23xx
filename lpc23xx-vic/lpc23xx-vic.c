@@ -99,5 +99,31 @@ uint32_t vic_enableFIQ(void) {
     return _cpsr;
 }
 
+//6-5.4, p 89 lpc23xx manual
+void inline ENABLE_INT(vic_interrupts interrupt){
+    VICIntEnable = interrupt;
+}
+
+//6-5.5, p 89 lpc23xx manual
+void inline DISABLE_INT(vic_interrupts interrupt){
+    VICIntEnClr = interrupt;
+}
+
+void inline SET_IRQ(vic_interrupts interrupt){
+    VICIntSelect &= ~(interrupt);
+}
+
+void inline SET_FIQ(vic_interrupts interrupt){
+    VICIntSelect |= interrupt;
+}
+
+void inline RAISE_INT(vic_interrupts interrupt){
+    VICSoftInt = interrupt;
+}
+void inline CLR_SW_INT(vic_interrupts interrupt){
+    VICSoftIntClr = interrupt;
+}
+
+
 //! @}
 

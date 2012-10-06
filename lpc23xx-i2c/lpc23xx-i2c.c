@@ -104,6 +104,23 @@ void i2c_init_state( i2c_master_xact_t* s) {
 }
 
 /*
+ * i2c_get_state
+ */
+
+i2c_state i2c_get_state(i2c_iface chan){
+    switch(chan){
+    case I2C0:
+        return i2c0_s_g->state;
+    case I2C1:
+        return i2c1_s_g->state;
+    case I2C2:
+        return i2c2_s_g->state;
+    default:
+        return I2C_NOT_INITIALIZED;
+    }
+}
+
+/*
  * I2Cinit
  *
  * 0. Init xaction structure.

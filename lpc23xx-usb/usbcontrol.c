@@ -59,8 +59,8 @@
 
 
 
-#define	MAX_CONTROL_SIZE	128	/**< maximum total size of control transfer data */
-#define	MAX_REQ_HANDLERS	4	/**< standard, class, vendor, reserved */
+#define MAX_CONTROL_SIZE	128	/**< maximum total size of control transfer data */
+#define MAX_REQ_HANDLERS	4	/**< standard, class, vendor, reserved */
 
 static TSetupPacket		Setup;	/**< setup packet */
 
@@ -87,7 +87,7 @@ static uint8_t				*apbDataStore[4] = {NULL, NULL, NULL, NULL};
 
 	@return TRUE if the request was handles successfully
  */
-static BOOL _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
+static bool _HandleRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData)
 {
 	TFnHandleRequest *pfnHandler;
 	int iType;

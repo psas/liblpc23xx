@@ -37,6 +37,7 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "lpc23xx-binsem.h"
 
@@ -132,8 +133,8 @@ typedef enum { I2C0=0, I2C1, I2C2} i2c_iface;
 typedef enum { DEFAULT=0, I2C0_ALTPIN, I2C1_ALTPIN, I2C2_ALTPIN} i2c_pinsel;
 
 typedef enum { 
-	//todo: I2C_NOT_INITIALIZED
-    I2C_IDLE = 0, 
+	I2C_NOT_INITIALIZED = 0,
+    I2C_IDLE,
     I2C_START,
     I2C_RESTART,
     I2C_REPEATED_START,

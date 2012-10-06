@@ -134,9 +134,9 @@
 
 
 /** USBHw functions only used internally */
-BOOL USBHwInit			(void);
+bool USBHwInit			(void);
 void USBHwSetAddress	(uint8_t bAddr);
-void USBHwConfigDevice	(BOOL fConfigured);
+void USBHwConfigDevice	(bool fConfigured);
 void USBHwEPConfig		(uint8_t bEP, uint16_t wMaxPacketSize);
 uint8_t   USBHwEPGetStatus	(uint8_t bEP);
 

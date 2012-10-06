@@ -66,12 +66,12 @@
 
 void USBHwISR			(void);
 void USBHwNakIntEnable	(uint8_t bIntBits);
-void USBHwConnect		(BOOL fConnect);
+void USBHwConnect		(bool fConnect);
 
 // endpoint operations
 int  USBHwEPRead		(uint8_t bEP, uint8_t *pbBuf, int iMaxLen);
 int	 USBHwEPWrite		(uint8_t bEP, uint8_t *pbBuf, int iLen);
-void USBHwEPStall		(uint8_t bEP, BOOL fStall);
+void USBHwEPStall		(uint8_t bEP, bool fStall);
 int  USBHwISOCEPRead    (const uint8_t bEP, uint8_t *pbBuf, const int iMaxLen);
 
 /** Endpoint interrupt handler callback */
@@ -92,25 +92,25 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler);
 **************************************************************************/
 
 // initialise the complete stack, including HW
-BOOL USBInit(void);
+bool USBInit(void);
 
 /** Request handler callback (standard, vendor, class) */
-typedef BOOL (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
+typedef bool (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
 void USBRegisterRequestHandler(int iType, TFnHandleRequest *pfnHandler, uint8_t *pbDataStore);
 void USBRegisterCustomReqHandler(TFnHandleRequest *pfnHandler);
 
 /** Descriptor handler callback */
-typedef BOOL (TFnGetDescriptor)(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
+typedef bool (TFnGetDescriptor)(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
 
 /** Default standard request handler */
-BOOL USBHandleStandardRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
+bool USBHandleStandardRequest(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
 
 /** Default EP0 handler */
 void USBHandleControlTransfer(uint8_t bEP, uint8_t bEPStat);
 
 /** Descriptor handling */
 void USBRegisterDescriptors(const uint8_t *pabDescriptors);
-BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
+bool USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData);
 
 
 

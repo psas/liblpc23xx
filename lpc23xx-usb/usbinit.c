@@ -62,7 +62,7 @@ static void HandleUsbReset(uint8_t bDevStatus)
 
 	@return TRUE if initialization was successful
  */
-BOOL USBInit(void)
+bool USBInit(void)
 {
 	// init hardware
 	USBHwInit();
