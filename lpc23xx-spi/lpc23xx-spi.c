@@ -46,15 +46,15 @@
 
 #include "lpc23xx-spi.h"
 
-static SPI_XACT_FnCallback   _spi_FnCallback_g = NULL;
+static SPI_XACT_FnCallback        _spi_FnCallback_g = NULL;
 
-bin_semaphore                spi_binsem_g;
+bin_semaphore                     spi_binsem_g;
 
-spi_xact_status              spi_status_g;
+spi_xact_status                   spi_status_g;
 
 spi_master_xact_data              spi_xact_g;
 spi_master_xact_data*             spi_caller_xact_g;
-
+static bool                       spi_rel_binsem_g = false;
 /*!
  */
 inline bool spi_abrt(uint8_t spi_status) {
@@ -126,6 +126,8 @@ static void spi_copy_spi_xact(spi_master_xact_data *to, spi_master_xact_data* fr
 	to->id                  = from->id;
 	to->read_numbytes       = from->read_numbytes;
 	to->write_numbytes      = from->write_numbytes;
+	to->cb_data             = from->cb_data;
+	to->success             = from->success;
 
 	for (i=0; i< (to->write_numbytes); ++i) {
 		to->writebuf[i] = from->writebuf[i];
@@ -152,6 +154,8 @@ void spi_init_master_xact_data(spi_master_xact_data* s) {
 	s->id                  = 0xff;
 	s->read_numbytes       = 0;
 	s->write_numbytes      = 0;
+	s->cb_data             = NULL;
+	s->success             = true;
 
 	for (i=0; i< SPI_MAX_BUFFER; ++i) {
 		s->writebuf[i] = 0;
@@ -289,6 +293,8 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 		if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
 			DISABLE_SPI_INT;
 
+			spi_rel_binsem_g = false;
+
 			spi_copy_spi_xact(&spi_xact_g, s);
 
 			spi_caller_xact_g             = s;
@@ -354,7 +360,7 @@ void spi_isr(void) {
 			if(spi_status_g.write_index < SPI_MAX_BUFFER) {
 				spi_status_g.xact_state   = SPI_WRITE_ST;
 				spi_status_g.write_index += 1;
-				S0SPDR                 = spi_xact_g.writebuf[spi_status_g.write_index] ;
+				S0SPDR                    = spi_xact_g.writebuf[spi_status_g.write_index] ;
 			} else {
 				spi_status_g.xact_state   = SPI_ERROR_ST;
 				data_reg                  = S0SPDR;
@@ -364,8 +370,8 @@ void spi_isr(void) {
 			spi_status_g.read_index                     += 1;
 			spi_status_g.xact_state                     = SPI_READ_ST;
 		} else {
-			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g);
-			//( FIO1SET = (1 << 25) );
+			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
+
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
 			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
@@ -373,8 +379,9 @@ void spi_isr(void) {
 
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR;
-
 			SSEL_HIGH;
+			spi_xact_g.success          = true;
+			spi_rel_binsem_g            = true;
 		}
 		break;
 	case SPI_READ_ST:
@@ -389,7 +396,7 @@ void spi_isr(void) {
 				data_reg                             = S0SPDR;
 			}
 		} else {
-			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g);
+			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
 
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
@@ -399,23 +406,32 @@ void spi_isr(void) {
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR; // access data_reg to clear S0SPSR SPIF
 			SSEL_HIGH;
+			spi_xact_g.success          = true;
+			spi_rel_binsem_g            = true;
 		}
 		break;
-	case SPI_ERROR_ST:
+	case SPI_ERROR_ST:  // must rerun init spi
 		spi_status_g.read_index     = 0;
 		spi_status_g.write_index    = 0;
 		spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
 		spi_status_g.xact_state     = SPI_ERROR_ST;
+		spi_xact_g.success          = false;
+		spi_rel_binsem_g            = true;
 		break;
-	default:
+	default:  // this should never really happen.
 		spi_status_g.read_index     = 0;
 		spi_status_g.write_index    = 0;
 		spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
 		spi_status_g.xact_state     = SPI_IDLE_ST;
+		spi_xact_g.success          = false;
+		spi_rel_binsem_g            = true;
 		break;
 	}
 	S0SPINT       = (0x1 << SPI_IR_IF);   // clear int flag in INT register.
 	VICAddress    = 0x0;
+	if(spi_rel_binsem_g) {
+		release_binsem(&spi_binsem_g);
+	}
 }
 
 
