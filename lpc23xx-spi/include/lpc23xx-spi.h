@@ -179,6 +179,8 @@ typedef struct _spi_master_xact {
     uint8_t           writebuf[SPI_MAX_BUFFER];
     uint8_t           readbuf[SPI_MAX_BUFFER];
     spi_xact_id       id;
+    void*             cb_data;
+    bool              success;
 } spi_master_xact_data;
 
 //! Use this to track a SPI transfer
@@ -190,7 +192,7 @@ typedef struct _spi_xact_status {
     spi_xact_id       xact_id;
 } spi_xact_status;
 
-typedef void (*SPI_XACT_FnCallback) (spi_master_xact_data* caller, spi_master_xact_data* spi_return);
+typedef void (*SPI_XACT_FnCallback) (spi_master_xact_data* caller, spi_master_xact_data* spi_return, void * data);
 
 void       spi_isr(void) __attribute__ ((interrupt("IRQ"), optimize("00") ));
 
