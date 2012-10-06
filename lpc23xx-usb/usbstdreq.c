@@ -1,5 +1,5 @@
 /*
-	LPCUSB, an USB device driver for LPC microcontrollers	
+	LPCUSB, an USB device driver for LPC microcontrollers
 	Copyright (C) 2006 Bertrik Sikken (bertrik@sikken.nl)
 
 	Redistribution and use in source and binary forms, with or without
@@ -16,7 +16,7 @@
 	THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
 	IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 	OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, 
+	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
 	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
 	NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -28,11 +28,11 @@
 
 /** @file
 	Standard request handler.
-	
+
 	This modules handles the 'chapter 9' processing, specifically the
 	standard device requests in table 9-3 from the universal serial bus
 	specification revision 2.0
-	
+
 	Specific types of devices may specify additional requests (for example
 	HID devices add a GET_DESCRIPTOR request for interfaces), but they
 	will not be part of this module.
@@ -40,7 +40,7 @@
 	@todo some requests have to return a request error if device not configured:
 	@todo GET_INTERFACE, GET_STATUS, SET_INTERFACE, SYNCH_FRAME
 	@todo this applies to the following if endpoint != 0:
-	@todo SET_FEATURE, GET_FEATURE 
+	@todo SET_FEATURE, GET_FEATURE
 */
 
 #include "lpc23xx-types.h"
@@ -57,11 +57,11 @@
 
 /* general descriptor field offsets */
 #define DESC_bLength					0	/**< length offset */
-#define DESC_bDescriptorType			1	/**< descriptor type offset */	
+#define DESC_bDescriptorType			1	/**< descriptor type offset */
 
 /* config descriptor field offsets */
 #define CONF_DESC_wTotalLength			2	/**< total length offset */
-#define CONF_DESC_bConfigurationValue	5	/**< configuration value offset */	
+#define CONF_DESC_bConfigurationValue	5	/**< configuration value offset */
 #define CONF_DESC_bmAttributes			7	/**< configuration characteristics */
 
 /* interface descriptor field offsets */
@@ -95,12 +95,12 @@ void USBRegisterDescriptors(const uint8_t *pabDescriptors)
 /**
 	Parses the list of installed USB descriptors and attempts to find
 	the specified USB descriptor.
-		
+
 	@param [in]		wTypeIndex	Type and index of the descriptor
 	@param [in]		wLangID		Language ID of the descriptor (currently unused)
 	@param [out]	*piLen		Descriptor length
 	@param [out]	*ppbData	Descriptor data
-	
+
 	@return TRUE if the descriptor was found, FALSE otherwise
  */
 BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t **ppbData)
@@ -108,15 +108,15 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 	uint8_t	bType, bIndex;
 	uint8_t	*pab;
 	int iCurIndex;
-	
+
 	ASSERT(pabDescrip != NULL);
 
 	bType = GET_DESC_TYPE(wTypeIndex);
 	bIndex = GET_DESC_INDEX(wTypeIndex);
-	
+
 	pab = (uint8_t *)pabDescrip;
 	iCurIndex = 0;
-	
+
 	while (pab[DESC_bLength] != 0) {
 		if (pab[DESC_bDescriptorType] == bType) {
 			if (iCurIndex == bIndex) {
@@ -132,7 +132,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 					// normally length is at offset 0
 					*piLen = pab[DESC_bLength];
 				}
-				return TRUE;
+				return true;
 			}
 			iCurIndex++;
 		}
@@ -141,7 +141,7 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 	}
 	// nothing found
 	DBG(UART0,"Desc %x not found!\n", wTypeIndex);
-	return FALSE;
+	return false;
 }
 
 
@@ -149,12 +149,12 @@ BOOL USBGetDescriptor(uint16_t wTypeIndex, uint16_t wLangID, int *piLen, uint8_t
 	Configures the device according to the specified configuration index and
 	alternate setting by parsing the installed USB descriptor list.
 	A configuration index of 0 unconfigures the device.
-		
+
 	@param [in]		bConfigIndex	Configuration index
 	@param [in]		bAltSetting		Alternate setting number
-	
+
 	@todo function always returns TRUE, add stricter checking?
-	
+
 	@return TRUE if successfully configured, FALSE otherwise
  */
 static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
@@ -163,12 +163,12 @@ static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 	uint8_t	bCurConfig, bCurAltSetting;
 	uint8_t	bEP;
 	uint16_t	wMaxPktSize;
-	
+
 	ASSERT(pabDescrip != NULL);
 
 	if (bConfigIndex == 0) {
 		// unconfigure device
-		USBHwConfigDevice(FALSE);
+		USBHwConfigDevice(false);
 	}
 	else {
 		// configure endpoints for this configuration/altsetting
@@ -208,18 +208,18 @@ static BOOL USBSetConfiguration(uint8_t bConfigIndex, uint8_t bAltSetting)
 			// skip to next descriptor
 			pab += pab[DESC_bLength];
 		}
-		
+
 		// configure device
-		USBHwConfigDevice(TRUE);
+		USBHwConfigDevice(true);
 	}
 
-	return TRUE;
+	return true;
 }
 
 
 /**
 	Local function to handle a standard device request
-		
+
 	@param [in]		pSetup		The setup packet
 	@param [in,out]	*piLen		Pointer to data length
 	@param [in,out]	ppbData		Data buffer.
@@ -231,7 +231,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 	uint8_t	*pbData = *ppbData;
 
 	switch (pSetup->bRequest) {
-	
+
 	case REQ_GET_STATUS:
 		// bit 0: self-powered
 		// bit 1: remote wakeup = not supported
@@ -239,7 +239,7 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		pbData[1] = 0;
 		*piLen = 2;
 		break;
-		
+
 	case REQ_SET_ADDRESS:
 		USBHwSetAddress(pSetup->wValue);
 		break;
@@ -257,10 +257,10 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 	case REQ_SET_CONFIGURATION:
 		if (!USBSetConfiguration(pSetup->wValue & 0xFF, 0)) {
 			DBG(UART0,"USBSetConfiguration failed!\n");
-			return FALSE;
+			return false;
 		}
 		// configuration successful, update current configuration
-		bConfiguration = pSetup->wValue & 0xFF;	
+		bConfiguration = pSetup->wValue & 0xFF;
 		break;
 
 	case REQ_CLEAR_FEATURE:
@@ -271,24 +271,24 @@ static BOOL HandleStdDeviceReq(TSetupPacket *pSetup, int *piLen, uint8_t **ppbDa
 		if (pSetup->wValue == FEA_TEST_MODE) {
 			// put TEST_MODE code here
 		}
-		return FALSE;
+		return false;
 
 	case REQ_SET_DESCRIPTOR:
 		DBG(UART0,"Device req %d not implemented\n", pSetup->bRequest);
-		return FALSE;
+		return false;
 
 	default:
 		DBG(UART0,"Illegal device req %d\n", pSetup->bRequest);
-		return FALSE;
+		return false;
 	}
-	
-	return TRUE;
+
+	return true;
 }
 
 
 /**
 	Local function to handle a standard interface request
-		
+
 	@param [in]		pSetup		The setup packet
 	@param [in,out]	*piLen		Pointer to data length
 	@param [in]		ppbData		Data buffer.
@@ -311,34 +311,34 @@ static BOOL HandleStdInterfaceReq(TSetupPacket	*pSetup, int *piLen, uint8_t **pp
 	case REQ_CLEAR_FEATURE:
 	case REQ_SET_FEATURE:
 		// not defined for interface
-		return FALSE;
-	
+		return false;
+
 	case REQ_GET_INTERFACE:	// TODO use bNumInterfaces
         // there is only one interface, return n-1 (= 0)
 		pbData[0] = 0;
 		*piLen = 1;
 		break;
-	
+
 	case REQ_SET_INTERFACE:	// TODO use bNumInterfaces
 		// there is only one interface (= 0)
 		if (pSetup->wValue != 0) {
-			return FALSE;
+			return false;
 		}
 		*piLen = 0;
 		break;
 
 	default:
 		DBG(UART0,"Illegal interface req %d\n", pSetup->bRequest);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 
 /**
 	Local function to handle a standard endpoint request
-		
+
 	@param [in]		pSetup		The setup packet
 	@param [in,out]	*piLen		Pointer to data length
 	@param [in]		ppbData		Data buffer.
@@ -356,43 +356,43 @@ static BOOL HandleStdEndPointReq(TSetupPacket	*pSetup, int *piLen, uint8_t **ppb
 		pbData[1] = 0;
 		*piLen = 2;
 		break;
-		
+
 	case REQ_CLEAR_FEATURE:
 		if (pSetup->wValue == FEA_ENDPOINT_HALT) {
 			// clear HALT by unstalling
-			USBHwEPStall(pSetup->wIndex, FALSE);
+			USBHwEPStall(pSetup->wIndex, false);
 			break;
 		}
 		// only ENDPOINT_HALT defined for endpoints
-		return FALSE;
-	
+		return false;
+
 	case REQ_SET_FEATURE:
 		if (pSetup->wValue == FEA_ENDPOINT_HALT) {
 			// set HALT by stalling
-			USBHwEPStall(pSetup->wIndex, TRUE);
+			USBHwEPStall(pSetup->wIndex, true);
 			break;
 		}
 		// only ENDPOINT_HALT defined for endpoints
-		return FALSE;
+		return false;
 
 	case REQ_SYNCH_FRAME:
 		DBG(UART0,"EP req %d not implemented\n", pSetup->bRequest);
-		return FALSE;
+		return false;
 
 	default:
 		DBG(UART0,"Illegal EP req %d\n", pSetup->bRequest);
-		return FALSE;
+		return false;
 	}
-	
-	return TRUE;
+
+	return true;
 }
 
 
 /**
 	Default handler for standard ('chapter 9') requests
-	
+
 	If a custom request handler was installed, this handler is called first.
-		
+
 	@param [in]		pSetup		The setup packet
 	@param [in,out]	*piLen		Pointer to data length
 	@param [in]		ppbData		Data buffer.
@@ -403,29 +403,29 @@ BOOL USBHandleStandardRequest(TSetupPacket	*pSetup, int *piLen, uint8_t **ppbDat
 {
 	// try the custom request handler first
 	if ((pfnHandleCustomReq != NULL) && pfnHandleCustomReq(pSetup, piLen, ppbData)) {
-		return TRUE;
+		return true;
 	}
-	
+
 	switch (REQTYPE_GET_RECIP(pSetup->bmRequestType)) {
 	case REQTYPE_RECIP_DEVICE:		return HandleStdDeviceReq(pSetup, piLen, ppbData);
 	case REQTYPE_RECIP_INTERFACE:	return HandleStdInterfaceReq(pSetup, piLen, ppbData);
 	case REQTYPE_RECIP_ENDPOINT: 	return HandleStdEndPointReq(pSetup, piLen, ppbData);
-	default: 						return FALSE;
+	default: 						return false;
 	}
 }
 
 
 /**
 	Registers a callback for custom device requests
-	
+
 	In USBHandleStandardRequest, the custom request handler gets a first
 	chance at handling the request before it is handed over to the 'chapter 9'
 	request handler.
-	
+
 	This can be used for example in HID devices, where a REQ_GET_DESCRIPTOR
 	request is sent to an interface, which is not covered by the 'chapter 9'
 	specification.
-		
+
 	@param [in]	pfnHandler	Callback function pointer
  */
 void USBRegisterCustomReqHandler(TFnHandleRequest *pfnHandler)

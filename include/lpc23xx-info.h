@@ -1,0 +1,1 @@
+../lpc23xx-info/include/lpc23xx-info.h

@@ -1,4 +1,6 @@
 
+/*! \file lpc23xx-util.c
+ */
 /* Copyright (C) 2011 Keith Wilson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +27,8 @@
  */
 
 
-/*! \file lpc23xx-util.c
+/*! \defgroup lpc23xx-util Utilities for liblpc23xx
+ * @{
  */
 
 #include <stdint.h>
@@ -325,4 +328,4 @@ void util_wait_usecs(uint32_t usecs) {
 	util_waitticks(ticks / scale);
 
 }
-
+//! @}

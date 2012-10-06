@@ -25,17 +25,27 @@
  */
 
 
-/*
- * lpc23xx-util.h
+/*! \file lpc23xx-util.h
  */
 
 #ifndef _LPC23XX_UTIL_H
 #define _LPC23XX_UTIL_H
 
+/*! \ingroup lpc23xx-spi
+ *
+ * @{
+ */
+
+#include <stdio.h>
+#include <stdint.h>
+
 #include "lpc23xx.h"
 #include "lpc23xx-uart.h"
 #include "ringbuffer.h"
 
+#define P0_PULLUP_MODE       0b00
+#define P0_NOPULL_MODE       0b10
+#define P0_PULLDOWN_MODE     0b11
 
 // Use typeof to avoid side effects from MAX(i++,j++) type of call.
 //  (only evaluate each variable once.)
@@ -143,4 +153,5 @@ void            util_waitticks(uint32_t ticks) ;
 void            util_wait_msecs(uint32_t msecs) ;
 void            util_wait_usecs(uint32_t usecs) ;
 
+// @}
 #endif

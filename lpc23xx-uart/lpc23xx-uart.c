@@ -213,6 +213,8 @@ void uart0_init_115200(void) {
 
     uart0_status_g.baudrate = ZERO_H_B;
 
+    uart0_init_rb();
+
     // Enable GPIO for TXD/RXD
     SET_RXD0_TXD0;
 
@@ -259,8 +261,10 @@ void uart0_init_115200(void) {
     CLEAR_DLAB0;
 
     uart0_status_g.baudrate = ONE_FIFTEEN_TWO_H_B;
+    uart_enable_interrupt(UART0);
 
 }
+
 /*! \brief initialize the ringbuffer structure
  *
  */
@@ -331,7 +335,7 @@ void uart0_interrupt_service() {
             case UART_THRE:            // Transmit Holding Register Empty interrupt
                 if(!rb_is_empty(&uart0_tx_rb_g)) {
                     success = rb_get_elem(&ch, &uart0_tx_rb_g);
-                    if(!success) ch = '@';
+                    // if(!success) ch = ;
                     U0THR = ch;
                     uart0_kick_thr_int_g=false;
                 } else {
