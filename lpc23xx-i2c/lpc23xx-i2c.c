@@ -110,11 +110,11 @@ void i2c_init_state( i2c_master_xact_t* s) {
 i2c_state i2c_get_state(i2c_iface chan){
     switch(chan){
     case I2C0:
-        return i2c0_s_g->state;
+        return i2c0_s_g.state;
     case I2C1:
-        return i2c1_s_g->state;
+        return i2c1_s_g.state;
     case I2C2:
-        return i2c2_s_g->state;
+        return i2c2_s_g.state;
     default:
         return I2C_NOT_INITIALIZED;
     }
@@ -134,100 +134,76 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
     switch(channel) {
         case I2C0:
             init_binsem( &i2c0_binsem_g );
-
             i2c_init_state( &i2c0_s_g );
 
             POWER_ON(PCI2C0);
-
-            I2C0CONCLR = 0x7C;
-            I2C0CONSET = (I2C_I2EN | I2C_AA); // master mode
-
-            // I2C clock
             SET_PCLK(PCLK_I2C0, CCLK_DIV1);
+            // I2C default speed 100khz
             I2C0SCLL   = I2SCLLOW;
             I2C0SCLH   = I2SCLHIGH;
 
             I2C0_ENABLE_SDA0_PIN;
             I2C0_ENABLE_SCL0_PIN;
-
             // pinmode:   I2C0 pins permanent open drain (pullup)
             // reference: lpc23xx usermanual p158 table 107 footnote 2
 
-            // vic
             // set up VIC p93 table 86 lpc23xx user manual
+            VIC_SET_I2C0_HANDLER(i2c0_isr);
+
+            I2C0CONCLR = I2C_AAC | I2C_SIC | I2C_STAC | I2C_I2ENC;
+            I2C0CONSET = (I2C_I2EN | I2C_AA); // master mode
             ENABLE_INT(I2C0);
-
-            VICVectAddr9 = (unsigned int) i2c0_isr;
-            VICAddress = 0x0;      // clear VIC address
-
-            I2C0CONCLR   = I2C_SIC;
-
             break;
 
         case I2C1:
-
         	init_binsem(&i2c1_binsem_g);
-
             i2c_init_state( &i2c1_s_g );
 
             POWER_ON(PCI2C1);
-
-            I2C1CONCLR = 0x7C;
-            I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
-
             SET_PCLK(PCLK_I2C1, CCLK_DIV1);
+            // I2C default speed 100khz
             I2C1SCLL   = I2SCLLOW;
             I2C1SCLH   = I2SCLHIGH;
             if(pin == I2C1_ALTPIN){
             	I2C1_ENABLE_SDA1_ALT_PIN;
             	I2C1_ENABLE_SCL1_ALT_PIN;
-
 				// reference: lpc23xx usermanual p158 table 107 footnote 2
 				I2C1_SDA1_ALT_PULLUP;
             }
             else{
             	I2C1_ENABLE_SDA1_PIN;
 				I2C1_ENABLE_SCL1_PIN;
-
 				// reference: lpc23xx usermanual p158 table 107 footnote 2
 				I2C1_SDA1_PULLUP;
             }
-
-            // vic
             // set up VIC p93 table 86 lpc23xx user manual
-            ENABLE_INT(VIC_I2C1);
-            VICVectAddr19 = (unsigned int) i2c1_isr;
+            VIC_SET_I2C1_HANDLER(i2c1_isr);
 
-            I2C1CONCLR    = I2C_SIC;
+            I2C1CONCLR = I2C_AAC | I2C_SIC | I2C_STAC | I2C_I2ENC;
+            I2C1CONSET = (I2C_I2EN | I2C_AA); // master mode
+            ENABLE_INT(VIC_I2C1);
             break;
 
         case I2C2:
             init_binsem(&i2c2_binsem_g);
-
             i2c_init_state( &i2c2_s_g );
 
             POWER_ON(PCI2C2);
-
-            I2C2CONCLR = 0x7C;
-            I2C2CONSET = (I2C_I2EN | I2C_AA); // master mode
-
-            // I2C clock
             SET_PCLK(PCLK_I2C2, CCLK_DIV1);
+            // I2C default speed 100khz
             I2C2SCLL   = I2SCLLOW;
             I2C2SCLH   = I2SCLHIGH;
 
             I2C2_ENABLE_SDA2_PIN;
             I2C2_ENABLE_SCL2_PIN;
-
             // reference: lpc23xx usermanual p158 table 107 footnote 2
             I2C2_SDA2_PULLUP;
 
-            // vic
             // set up VIC p93 table 86 lpc23xx user manual
-            VICVectAddr30 = (unsigned int) i2c2_isr;
+            VIC_SET_I2C2_HANDLER(i2c2_isr);
+            I2C2CONCLR = I2C_AAC | I2C_SIC | I2C_STAC | I2C_I2ENC;
+            I2C2CONSET = (I2C_I2EN | I2C_AA); // master mode
             ENABLE_INT(VIC_I2C2);
-
-            I2C2CONCLR    = I2C_SIC;
             break;
 
         default:
