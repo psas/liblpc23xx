@@ -1,8 +1,7 @@
 /*
  * BQ24725.h
  *
- *  Created on: Sep 28, 2012
- *      Author: theo
+ * liblpc23xx based API for the BQ24725 battery charge controller
  */
 
 #ifndef BQ24725_H_
@@ -17,7 +16,6 @@
 #define INPUT_CURRENT   0x3F
 #define CHARGE_OPTION   0x12
 
-
 #define CHARGE_CURRENT_MASK 0x1FC0
 #define CHARGE_VOLTAGE_MASK 0x7FF0
 #define INPUT_CURRENT_MASK  0x1F80
@@ -25,23 +23,41 @@
 #define HIGHDATA_BYTE(data) (((data) & 0xFF00) >> 8)
 #define DATA_FROM_BYTES(low, high) (((low) & 0xFF) | ((high) &0xFF) << 8)
 
-//todo: define masks for each enum
 typedef enum {t150ms=0, t1300ms=0x8000}  BQ24725_ACOK_deglitch_time;
+#define BQ24725_ACOK_deglitch_time_MASK 0x80000
+
 typedef enum {disabled=0, t44s=0x2000, t88s=0x4000, t175s=0x6000}
 	BQ24725_WATCHDOG_timer;
+#define BQ24725_WATCHDOG_timer_MASK 0x6000
+
 typedef enum {FT59_19pct=0, FT62_65pct=0x800, FT66_55pct=0x1000,
-	FT70_97pct=0x1800}  BQ24725_BAT_depletion_threshold; //todo: percent abbreviation
+	FT70_97pct=0x1800}  BQ24725_BAT_depletion_threshold;
+#define BQ24725_BAT_depletion_threshold_MASK 0x1800
+
 typedef enum {inc18pct=0, dec18pct=0x400}  BQ24725_EMI_sw_freq_adj;
+#define BQ24725_EMI_sw_freq_adj_MASK 0x400
+
 typedef enum {disable=0, enable= 0x200}  BQ24725_EMI_sw_freq_adj_en;
+#define BQ24725_EMI_sw_freq_adj_en_MASK 0x200
+
 typedef enum {l300mV=0, l500mV=0x80, l700mV=0x100, l900mV=0x180}
 	BQ24725_IFAULT_HI_threshold;
+#define BQ24725_IFAULT_HI_threshold_MASK 0x180
+
 typedef enum {disable=0, enable=0x40} BQ24725_LEARN_en;
+#define BQ24725_LEARN_en_MASK 0x40
+
 typedef enum {adapter_current=0, charge_current=0x20} BQ24725_IOUT;
+#define BQ24725_IOUT_MASK 0x20
+
 typedef enum {disable=0, l1_33X=0x2, l1_66X=0x4, l2_22X=0x6}
 	BQ24725_ACOC_threshold;
-typedef enum {enable=0, inhibit=1} BQ24725_charge_inhibit;
+#define BQ24725_ACOC_threshold_MASK 0x6
 
-typedef struct BQ24725_charge_options{ //todo: default values
+typedef enum {enable=0, inhibit=1} BQ24725_charge_inhibit;
+#define BQ24725_charge_inhibit_MASK 0x1
+
+typedef struct BQ24725_charge_options{
 	BQ24725_ACOK_deglitch_time ACOK_deglitch_time;
 	BQ24725_WATCHDOG_timer WATCHDOG_timer;
 	BQ24725_BAT_depletion_threshold BAT_depletion_threshold;
@@ -54,10 +70,34 @@ typedef struct BQ24725_charge_options{ //todo: default values
 	BQ24725_charge_inhibit charge_inhibit;
 } BQ24725_charge_options;
 
-#define FORM_OPTIONS_DATA(opts) (opts).ACOK_deglitch_time |\
-	(opts).WATCHDOG_timer | (opts).BAT_depletion_threshold |\
-	(opts).EMI_sw_freq_adj | (opts).EMI_sw_freq_adj_en |\
-	(opts).IFAULT_HI_threshold | (opts).LEARN_en | (opts).IOUT |\
-	(opts).ACOC_threshold | (opts).charge_inhibit
+const BQ24725_charge_options BQ24725_charge_options_POR_default = {
+    .ACOK_deglitch_time = t150ms,
+    .WATCHDOG_timer = t175s,
+    .BAT_depletion_threshold = FT70_97pct,
+    .EMI_sw_freq_adj = dec18pct,
+    .EMI_sw_freq_adj_en = disable,
+    .IFAULT_HI_threshold = l700mV,
+    .LEARN_en = disable,
+    .IOUT = adapter_current,
+    .ACOC_threshold = l1_66X,
+    .charge_inhibit = enable
+};
+
+uint16_t inline form_options_data(BQ24725_charge_options opts);
+void inline form_options_struct(uint16_t data, BQ24725_charge_options* opt);
+
+typedef void (BQ24725_callback) (uint16_t data); //todo: void* arg?
+
+void BQ24725_init(i2c_iface channel, i2c_pinsel pin);
+void BQ24725_GetDeviceID(BQ24725_callback* callback);
+void BQ24725_GetManufactureID(BQ24725_callback* callback);
+void BQ24725_GetChargeCurrent(BQ24725_callback* callback);
+void BQ24725_SetChargeCurrent(unsigned int mA);
+void BQ24725_GetChargeVoltage(BQ24725_callback* callback);
+void BQ24725_SetChargeVoltage(unsigned int mV);
+void BQ24725_GetInputCurrent(BQ24725_callback* callback);
+void BQ24725_SetInputCurrent(unsigned int mA);
+void BQ24725_GetChargeOption(BQ24725_callback* callback);
+void BQ24725_SetChargeOption(BQ24725_charge_options * option);
 
 #endif /* BQ24725_H_ */
