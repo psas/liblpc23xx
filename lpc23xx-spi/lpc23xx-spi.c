@@ -182,29 +182,26 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
 
 	mam_enable();
 
-	SPI_PWR_ON;
+	POWER_ON(PCSPI);
 
 	init_binsem( &spi_binsem_g );
 	spi_init_xact_status( &spi_status_g );
 
+	SET_PCLK(PCLK_SPI, CCLK_DIV1);
 	// cclk value
 	cclk = pllquery_cclk_mhz();
 
 	switch(scale) {
 	case CCLK_DIV1:
-		SPI_CLK_IS_CCLK_DIV1;
 		spi_pclk = cclk;
 		break;
 	case CCLK_DIV2:
-		SPI_CLK_IS_CCLK_DIV2;
 		spi_pclk = cclk/2;
 		break;
 	case CCLK_DIV4:
-		SPI_CLK_IS_CCLK_DIV4;
 		spi_pclk = cclk/4;
 		break;
 	case CCLK_DIV8:
-		SPI_CLK_IS_CCLK_DIV8;
 		spi_pclk = cclk/8;
 		break;
 	default:
