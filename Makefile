@@ -15,6 +15,7 @@ LPC23XX_PART   ?= -DGFE_LPC2368
 # this is the default, make LPC2378_PORT= will overwrite
 #LPC2378_PORT    = -DLPC2378_PORTB
 
+GCC_VERSION     := 4.5.2
 CROSSCMP        := /opt/cross
 CROSSNAME       ?= arm-elf
 
@@ -67,9 +68,15 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
+ifeq ($(GCC_VERSION),4.6)
 CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
                   -Wall -Werror -Wno-error=unused-but-set-variable -g3 \
                   -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+else
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
+                  -Wall -Werror -g3 \
+                  -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+endif
 
 ARCHIVEFLAGS    = rs
 
