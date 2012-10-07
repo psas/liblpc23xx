@@ -134,7 +134,7 @@ void inline RAISE_INT(vic_interrupts interrupt);
 void inline CLR_SW_INT(vic_interrupts interrupt);
 
 // p 91 LPC23xx_UM
-#define EXIT_INTERRUPT  VICAddress=0x0
+#define EXIT_INTERRUPT  VICAddress=0x0; return
 
 /*
  *

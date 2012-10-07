@@ -45,6 +45,7 @@ uart_status         uart0_status_g;
 
 Ringbuffer          uart0_rb_rx_g;
 Ringbuffer          uart0_tx_rb_g;
+uart_getstring_cb *   uart0_getstring_cb;
 
 bool                uart0_kick_thr_int_g     = true;
 
@@ -265,6 +266,7 @@ void uart0_init_115200(void) {
 
 }
 
+
 /*! \brief initialize the ringbuffer structure
  *
  */
@@ -331,6 +333,9 @@ void uart0_interrupt_service() {
                 } else {
                     // error...char is lost.
                 }
+                if(ch == '\n' && uart0_getstring_cb != NULL){
+                    uart0_getstring_cb(uart0_getstring_intr());
+                }
                 break;
             case UART_THRE:            // Transmit Holding Register Empty interrupt
                 if(!rb_is_empty(&uart0_tx_rb_g)) {
@@ -347,7 +352,7 @@ void uart0_interrupt_service() {
         }
         u0iir_value = U0IIR;
     }
-    VICAddress = 0x0 ;
+    EXIT_INTERRUPT;
 }
 
 /*! \brief use interrupt based uart
@@ -492,4 +497,7 @@ char* uart0_getstring_intr (void) {
     return(uart0_linebuffer);
 }
 
+void uart0_set_getstring_cb(uart_getstring_cb cb){
+    uart0_getstring_cb = cb;
+}
 

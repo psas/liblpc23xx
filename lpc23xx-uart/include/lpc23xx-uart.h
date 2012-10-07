@@ -124,6 +124,7 @@ typedef enum Baudtype {
     ONE_FIFTEEN_TWO_H_B   = 115200
 } Baud;
 
+typedef void (uart_getstring_cb)(char* line);
 
 typedef enum {UART0=0, UART1, UART2, UART3} uartport;
 
@@ -184,6 +185,7 @@ char           uart0_getchar_intr(void);
 char           uart0_getchar (void) ;
 
 char*          uart0_getstring (void) ;
+char*          uart0_getstring_intr (void) ;
 
 #endif
 
