@@ -187,5 +187,6 @@ char           uart0_getchar (void) ;
 char*          uart0_getstring (void) ;
 char*          uart0_getstring_intr (void) ;
 
+void           uart0_set_getstring_cb(uart_getstring_cb cb);
 #endif
 
