@@ -60,31 +60,31 @@
 #define         P0_RXD0_TXD0_ENABLE       0x50
 
 #define         SET_RXD0_TXD0             ( PINSEL0 = ( ( PINSEL0 & P0_RXD0_TXD0_MASK ) | P0_RXD0_TXD0_ENABLE ) )
-#define         CLEAR_RXD0_TXD0           ( PINSEL0 = ( ( PINSEL0 & P0_RXD0_TXD0_MASK ) )
+#define         CLEAR_RXD0_TXD0           ( PINSEL0 &= P0_RXD0_TXD0_MASK )
 
 #define         P0_RXD2_TXD2_MASK         (~(0xF00000))
 #define         P0_RXD2_TXD2_ENABLE       0x500000
 
 #define         SET_RXD2_TXD2             ( PINSEL0 = ( ( PINSEL0 & P0_RXD2_TXD2_MASK ) | P0_RXD2_TXD2_ENABLE ) )
-#define         CLEAR_RXD2_TXD2           ( PINSEL0 = ( ( PINSEL0 & P0_RXD2_TXD2_MASK ) )
+#define         CLEAR_RXD2_TXD2           ( PINSEL0 &= P0_RXD2_TXD2_MASK )
 
 #define         P0_RXD3_TXD3_MASK         (~(0xF))
 #define         P0_RXD3_TXD3_ENABLE       0xA
 
 #define         SET_RXD3_TXD3             ( PINSEL0 = ( ( PINSEL0 & P0_RXD3_TXD3_MASK ) | P0_RXD3_TXD3_ENABLE ) )
-#define         CLEAR_RXD3_TXD3           ( PINSEL0 = ( ( PINSEL0 & P0_RXD3_TXD3_MASK ) )
+#define         CLEAR_RXD3_TXD3           ( PINSEL0 &= P0_RXD3_TXD3_MASK )
 
 #define         P0_TXD1_MASK              (~(0xC000))
 #define         P0_TXD1_ENABLE            0x40000000
 
 #define         SET_TXD1                  ( PINSEL0 = ( ( PINSEL0 & P0_TXD1_MASK ) | P0_TXD1_ENABLE ) )
-#define         CLEAR_TXD1                ( PINSEL0 = ( ( PINSEL0 & P0_TXD1_MASK ) )
+#define         CLEAR_TXD1                ( PINSEL0 &= P0_TXD1_MASK )
 
 #define         P1_RXD1_MASK              (~(0x3))
 #define         P1_RXD1_ENABLE            0x1
 
 #define         SET_RXD1                  ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) | P1_RXD1_ENABLE ) )
-#define         CLEAR_RXD1                ( PINSEL1 = ( ( PINSEL1 & P1_RXD1_MASK ) )
+#define         CLEAR_RXD1                ( PINSEL1 &= P1_RXD1_MASK )
 
 #define         DLAB_MASK                 ( ~((0x1)<<7) )
 #define         SET_DLAB0                 ( U0LCR = ( U0LCR  | (0x1<<7) ) )
