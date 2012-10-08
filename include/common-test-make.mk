@@ -6,7 +6,6 @@
 # make syntax->  include $(LIBDIR)/include/common-test-make.mk
 
 CROSS           ?= /opt/cross
-GCC_VERSION     ?= 4.5.2
 
 #########
 # this is the default, make LPC23XX_PART=LPC2368 will over-ride
@@ -19,6 +18,8 @@ AR              := $(CROSS)/bin/arm-elf-ar
 AS              := $(CROSS)/bin/arm-elf-as
 CP              := $(CROSS)/bin/arm-elf-objcopy
 OD              := $(CROSS)/bin/arm-elf-objdump
+
+GCC_VERSION     := $(shell $(CC) --version | grep ^$(CROSSNAME)-gcc | sed 's/^.* //g')
 
 TYPE            := lpc23xx
 
