@@ -167,6 +167,12 @@ typedef enum {
 typedef uint8_t       spi_xact_id;
 typedef uint8_t       spi_pending_count;
 
+typedef struct _spi_ctl {
+	spi_cpha          spi_cpha_val;
+	spi_cpol          spi_cpol_val;
+	spi_lsbf          spi_lsbf_val;
+} spi_ctl;
+
 //! Use this to set up a SPI transfer
 typedef struct _spi_master_xact {
 	spi_cpha          spi_cpha_val;
@@ -201,7 +207,7 @@ void       spi_transact(uint16_t data, spi_xfernumbits bits);
 
 void       spi_init_master_xact_data(spi_master_xact_data* s) ;
 
-void       spi_init_master_intr(pclk_scale scale, spi_freq spifreq) ;
+void       spi_init_master_intr(pclk_scale scale, spi_freq spifreq, spi_ctl* ctl) ;
 void       spi_init_master_MSB_16(pclk_scale scale, spi_freq spifreq);
 
 bool       start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xact_fn) ;

@@ -35,6 +35,7 @@
 #include "ringbuffer.h"
 #include "lpc23xx-uart.h"
 
+#define I_WAS_CALLED    (printf_lpc(UART0,"%s: Called\r\n", __func__))
 
 /*! \ingroup printf-lpc
  *

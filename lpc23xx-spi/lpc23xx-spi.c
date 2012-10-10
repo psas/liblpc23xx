@@ -171,16 +171,35 @@ void spi_init_master_xact_data(spi_master_xact_data* s) {
  * @param scale
  * @param spifreq
  */
-void spi_init_master_intr(pclk_scale scale, spi_freq spifreq) {
+void spi_init_master_intr(pclk_scale scale, spi_freq spifreq, spi_ctl* ctl ) {
 	Freq                cclk;
 	uint32_t            spi_pclk = 0;
 	uint32_t            ccount;
 
-    printf_lpc(UART0, "%s: Called\r\n", __func__);
-
 	FIO_ENABLE;
 
 	mam_enable();
+
+    FIO_SCK_0;
+	SCK_HIGH;
+
+	PINSEL_SPI_SCK ;
+	PINMODE_SPI_SCK_PULLUP;
+
+	PINSEL_SPI_MISO ;
+	PINMODE_SPI_MISO_PULLUP ;
+
+	PINSEL_SPI_MOSI ;
+	PINMODE_SPI_MOSI_NOPULL ;
+
+	// SSEL for master mode.
+	PINSEL_SPI_MASTERM_SSEL_0 ;
+	PINMODE_SPI_SSEL_PULLUP ;
+	FIO_SPI_SSEL;
+
+	SSEL_HIGH;
+	SCK_HIGH;
+	MOSI_HIGH;
 
 	POWER_ON(PCSPI);
 
@@ -211,32 +230,22 @@ printf_lpc(UART0,"Bad choice for scale value.\n");
 break;
 	}
 
-	PINSEL_SPI_SCK ;
-	PINMODE_SPI_SCK_NOPULL;
-
-	PINSEL_SPI_MISO ;
-	PINMODE_SPI_MISO_PULLUP ;
-
-	PINSEL_SPI_MOSI ;
-	PINMODE_SPI_MOSI_NOPULL ;
-
-	// SSEL for master mode.
-	PINSEL_SPI_MASTERM_SSEL_0 ;
-	PINMODE_SPI_SSEL_PULLUP ;
-	FIO_SPI_SSEL;
-
-	SSEL_HIGH;
-	SCK_HIGH;
-	MOSI_HIGH;
+	// SPI control register setup
 
 	// no second device pin initialized.
 	// PINSEL_SPI_MASTERM_SSEL_1         // P1.0
 	// PINMODE_SPI_MASTERM_SSEL_1_NOPULL //
 	// FIO_SPI_SSEL_1;
 	// SSEL_1_HIGH;
-
+	//S0SPCR = 0;
+	S0SPCR = ((0x0             << SPI_CR_BITENABLE) |
+			(ctl->spi_cpha_val << SPI_CR_CPHA)      |
+			(ctl->spi_cpol_val << SPI_CR_CPOL)      |
+			(0x1               << SPI_CR_MSTR)      |
+			(ctl->spi_lsbf_val << SPI_CR_LSBF)      |
+			(0x1               << SPI_CR_SPIE));
 	// master mode, MSB first, 16 bits per transfer
-	S0SPCR = (0x1 << SPI_CR_MSTR) ;
+//	S0SPCR = (0x1 << SPI_CR_MSTR) ;
 
 	ccount  = spi_pclk/spifreq;
 #ifdef DEBUG_SPI
@@ -279,6 +288,7 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 	uint8_t  status_reg;
 
 	_spi_FnCallback_g        = xact_fn;
+	// Start the transaction
 
 	if(s!=NULL) {
 		// bounds check on transaction
@@ -290,6 +300,8 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 		// wait to see if it becomes free.
 		if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
 			DISABLE_SPI_INT;
+			SSEL_LOW;
+			util_wait_msecs(6);
 
 			spi_rel_binsem_g = false;
 
@@ -307,12 +319,10 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 					(spi_xact_g.spi_lsbf_val << SPI_CR_LSBF)      |
 					(0x1                     << SPI_CR_SPIE));
 
-			// Start the transaction
-			SSEL_LOW;
-
 			// read SPIF then write Data register to clear IF
 			status_reg                = S0SPSR;
 			S0SPDR                    = spi_xact_g.writebuf[0];
+		//	printf_lpc(UART0, "%s: data is: 0x%x\r\n", __func__, spi_xact_g.writebuf[0]);
 		} else {
 			return false;
 			//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
@@ -335,7 +345,7 @@ void spi_isr(void) {
 
 	uint8_t  status_reg = 0;
 	uint8_t  data_reg   = 0;
-
+	FIO1SET = (1 << 22);
 	// read status  to clear IF
 	status_reg = spi_readstatus();
 
@@ -354,6 +364,7 @@ void spi_isr(void) {
 		}
 		break;
 	case SPI_WRITE_ST:
+
 		if(spi_status_g.write_index < spi_xact_g.write_numbytes) {
 			if(spi_status_g.write_index < SPI_MAX_BUFFER) {
 				spi_status_g.xact_state   = SPI_WRITE_ST;
@@ -364,9 +375,11 @@ void spi_isr(void) {
 				data_reg                  = S0SPDR;
 			}
 		} else if (spi_status_g.read_index < spi_xact_g.read_numbytes) {      // get the first read byte.
+
 			spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
 			spi_status_g.read_index                     += 1;
 			spi_status_g.xact_state                     = SPI_READ_ST;
+			S0SPDR                                      = spi_xact_g.dummy_value;
 		} else {
 			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
 
@@ -378,11 +391,13 @@ void spi_isr(void) {
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR;
 			SSEL_HIGH;
+			util_wait_msecs(5);
 			spi_xact_g.success          = true;
 			spi_rel_binsem_g            = true;
 		}
 		break;
 	case SPI_READ_ST:
+	//	FIO1SET = (1 << 19);
 		spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
 		spi_status_g.read_index                     += 1;
 		if( spi_status_g.read_index < spi_xact_g.read_numbytes) {
@@ -404,6 +419,7 @@ void spi_isr(void) {
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR; // access data_reg to clear S0SPSR SPIF
 			SSEL_HIGH;
+			util_wait_msecs(5);
 			spi_xact_g.success          = true;
 			spi_rel_binsem_g            = true;
 		}
