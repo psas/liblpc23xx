@@ -234,6 +234,7 @@ void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 
 uint8_t i2c_create_read_address(uint8_t addr) ;
 uint8_t i2c_create_write_address(uint8_t addr) ;
+i2c_state i2c_get_state(i2c_iface chan) ;
 void    i2c_init_state( i2c_master_xact_t* s) ;
 void    i2c_init(i2c_iface channel, i2c_pinsel pin) ;
 void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;

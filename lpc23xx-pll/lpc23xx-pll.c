@@ -85,9 +85,10 @@ void pllstop(void) {
     if(PLLC != 0) {
         CLEAR_PLLC; 
         pllfeed();
-        CLEAR_PLLE; 
-        pllfeed();
     }
+    CLEAR_PLLE;
+    pllfeed();
+
 }
 
 /*! 

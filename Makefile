@@ -15,8 +15,9 @@ LPC23XX_PART   ?= -DGFE_LPC2368
 # this is the default, make LPC2378_PORT= will overwrite
 #LPC2378_PORT    = -DLPC2378_PORTB
 
+
 CROSSCMP        := /opt/cross
-CROSSNAME       := arm-elf
+CROSSNAME       ?= arm-elf
 
 CC              := $(CROSSCMP)/bin/$(CROSSNAME)-gcc
 LD              := $(CROSSCMP)/bin/$(CROSSNAME)-ld
@@ -25,9 +26,11 @@ AS              := $(CROSSCMP)/bin/$(CROSSNAME)-as
 CP              := $(CROSSCMP)/bin/$(CROSSNAME)-objcopy
 OD              := $(CROSSCMP)/bin/$(CROSSNAME)-objdump
 
-DEBUG           ?= -g
+GCC_VERSION     := $(shell $(CC) --version | grep ^$(CROSSNAME)-gcc | sed 's/^.* //g')
+GCC_VERSION_GE_46 := $(shell $(CC) -dumpversion | gawk '{print $$1>=4.6?"1":"0"}')
+
 #DEBUG           ?= -DDEBUG_ADC
-#DEBUG           = -DDEBUG_USB
+#DEBUG           = -DDEBUG_UTIL
  
 INCLUDE         := -I.\
                    -I./include\
@@ -42,7 +45,8 @@ INCLUDE         := -I.\
                    -I./lpc23xx-vic/include\
                    -I./lpc23xx-binsem/include\
                    -I./lpc23xx-timer/include\
-                   -I./lpc23xx-usb/include
+                   -I./lpc23xx-usb/include\
+                   -I./lpc23xx-power/include
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-*/include/*.h)
@@ -67,7 +71,15 @@ COBJS           = $(CSRCS:.c=.o)
 
 AOBJS           = $(ASRCS:.s=.o)
                   
-CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c -Wall -Werror -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+ifeq ($(GCC_VERSION_GE_46),1)
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
+                  -Wall -Werror -Wno-error=unused-but-set-variable -g3 \
+                  -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+else
+CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
+                  -Wall -Werror -g3 \
+                  -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
+endif
 
 ARCHIVEFLAGS    = rs
 

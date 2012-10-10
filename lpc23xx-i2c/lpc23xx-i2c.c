@@ -40,6 +40,7 @@
 #include "lpc23xx-uart.h"
 #include "lpc23xx-util.h"
 #include "lpc23xx-vic.h"
+#include "printf-lpc.h"
 
 #include "lpc23xx-i2c.h"
 
@@ -203,6 +204,7 @@ void i2c_init(i2c_iface channel, i2c_pinsel pin) {
 
             // reference: lpc23xx usermanual p158 table 107 footnote 2
             I2C2_SDA2_PULLUP;
+            I2C2_SCL2_PULLUP;
 
             // vic
             // set up VIC p93 table 86 lpc23xx user manual
@@ -797,7 +799,7 @@ void i2c2_isr(void) {
     xact_exit                = 0;
 
     status                   = I2C2STAT;
-
+    printf_lpc(UART0, "Stat: %x\n", status);
     //Read the I2C state from the correct I2STA register and then branch to
     //the corresponding state routine.
     switch(status) {
