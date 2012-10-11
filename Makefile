@@ -44,7 +44,8 @@ INCLUDE         := -I.\
                    -I./lpc23xx-binsem/include\
                    -I./lpc23xx-timer/include\
                    -I./lpc23xx-usb/include\
-                   -I./lpc23xx-power/include
+                   -I./lpc23xx-power/include\
+                   -I./external-devices/include
 
 HS              :=  $(wildcard ./include/*.h)\
                     $(wildcard ./lpc23xx-*/include/*.h)

@@ -6,23 +6,25 @@
 # make syntax->  include $(LIBDIR)/include/common-test-make.mk
 
 CROSS           ?= /opt/cross
+CROSSNAME       ?= arm-elf
 
 #########
 # this is the default, make LPC23XX_PART=LPC2368 will over-ride
 #LPC23XX_PART    ?= LPC2378
 LPC23XX_PART   ?= -DGFE_LPC2368
 
-CC              := $(CROSS)/bin/arm-elf-gcc
-LD              := $(CROSS)/bin/arm-elf-ld
-AR              := $(CROSS)/bin/arm-elf-ar
-AS              := $(CROSS)/bin/arm-elf-as
-CP              := $(CROSS)/bin/arm-elf-objcopy
-OD              := $(CROSS)/bin/arm-elf-objdump
+CC              := $(CROSS)/bin/$(CROSSNAME)-gcc
+LD              := $(CROSS)/bin/$(CROSSNAME)-ld
+AR              := $(CROSS)/bin/$(CROSSNAME)-ar
+AS              := $(CROSS)/bin/$(CROSSNAME)-as
+CP              := $(CROSS)/bin/$(CROSSNAME)-objcopy
+OD              := $(CROSS)/bin/$(CROSSNAME)-objdump
 
 GCC_VERSION     := $(shell $(CC) --version | grep ^$(CROSSNAME)-gcc | sed 's/^.* //g')
 
 TYPE            := lpc23xx
 
+DEBUG           ?= -g
 #DEBUG           = -DDEBUG
 
 #CFLAGS          = $(INCLUDE) $(DEBUG) -g -c -Wall -flto -fno-common -O0 -mcpu=arm7tdmi-s
@@ -70,7 +72,7 @@ $(EXLIBS):
 
 $(PROGS): $(AOBJS) $(COBJS) $(EXLIBS)
 	@echo "--------- LINKING $@ "
-	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/arm-elf/lib -lc -lm  -lgcc -L$(CROSS)/lib/gcc/arm-elf/$(GCC_VERSION)
+	@$(LD) $(LDFLAGS) -o $@ $(AOBJS) $(COBJS) $(EXLIBS) -L$(CROSS)/$(CROSSNAME)/lib -lc -lm -L$(CROSS)/lib/gcc/$(CROSSNAME)/$(GCC_VERSION) -lgcc
 
 $(NAME).sdump: $(NAME).c
 	@echo "--------- Combined Assembler and Source for $< "

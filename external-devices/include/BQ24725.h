@@ -7,6 +7,8 @@
 #ifndef BQ24725_H_
 #define BQ24725_H_
 
+#include "lpc23xx-i2c.h"
+
 #define BQ24725_ADDR      0b0001001
 
 #define DEVICE_ID       0xFF
@@ -24,7 +26,7 @@
 #define DATA_FROM_BYTES(low, high) (((low) & 0xFF) | ((high) &0xFF) << 8)
 
 typedef enum {t150ms=0, t1300ms=0x8000}  BQ24725_ACOK_deglitch_time;
-#define BQ24725_ACOK_deglitch_time_MASK 0x80000
+#define BQ24725_ACOK_deglitch_time_MASK 0x8000
 
 typedef enum {disabled=0, t44s=0x2000, t88s=0x4000, t175s=0x6000}
 	BQ24725_WATCHDOG_timer;
@@ -37,24 +39,25 @@ typedef enum {FT59_19pct=0, FT62_65pct=0x800, FT66_55pct=0x1000,
 typedef enum {inc18pct=0, dec18pct=0x400}  BQ24725_EMI_sw_freq_adj;
 #define BQ24725_EMI_sw_freq_adj_MASK 0x400
 
-typedef enum {disable=0, enable= 0x200}  BQ24725_EMI_sw_freq_adj_en;
+typedef enum {sw_freq_adj_disable=0, sw_freq_adj_enable= 0x200}
+    BQ24725_EMI_sw_freq_adj_en;
 #define BQ24725_EMI_sw_freq_adj_en_MASK 0x200
 
 typedef enum {l300mV=0, l500mV=0x80, l700mV=0x100, l900mV=0x180}
 	BQ24725_IFAULT_HI_threshold;
 #define BQ24725_IFAULT_HI_threshold_MASK 0x180
 
-typedef enum {disable=0, enable=0x40} BQ24725_LEARN_en;
+typedef enum {LEARN_disable=0, LEARN_enable=0x40} BQ24725_LEARN_en;
 #define BQ24725_LEARN_en_MASK 0x40
 
 typedef enum {adapter_current=0, charge_current=0x20} BQ24725_IOUT;
 #define BQ24725_IOUT_MASK 0x20
 
-typedef enum {disable=0, l1_33X=0x2, l1_66X=0x4, l2_22X=0x6}
+typedef enum {ACOC_disable=0, l1_33X=0x2, l1_66X=0x4, l2_22X=0x6}
 	BQ24725_ACOC_threshold;
 #define BQ24725_ACOC_threshold_MASK 0x6
 
-typedef enum {enable=0, inhibit=1} BQ24725_charge_inhibit;
+typedef enum {charge_enable=0, charge_inhibit=1} BQ24725_charge_inhibit;
 #define BQ24725_charge_inhibit_MASK 0x1
 
 typedef struct BQ24725_charge_options{
@@ -70,18 +73,7 @@ typedef struct BQ24725_charge_options{
 	BQ24725_charge_inhibit charge_inhibit;
 } BQ24725_charge_options;
 
-const BQ24725_charge_options BQ24725_charge_options_POR_default = {
-    .ACOK_deglitch_time = t150ms,
-    .WATCHDOG_timer = t175s,
-    .BAT_depletion_threshold = FT70_97pct,
-    .EMI_sw_freq_adj = dec18pct,
-    .EMI_sw_freq_adj_en = disable,
-    .IFAULT_HI_threshold = l700mV,
-    .LEARN_en = disable,
-    .IOUT = adapter_current,
-    .ACOC_threshold = l1_66X,
-    .charge_inhibit = enable
-};
+extern const BQ24725_charge_options BQ24725_charge_options_POR_default;
 
 uint16_t inline form_options_data(BQ24725_charge_options opts);
 void inline form_options_struct(uint16_t data, BQ24725_charge_options* opt);

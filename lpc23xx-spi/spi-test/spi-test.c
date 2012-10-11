@@ -18,7 +18,7 @@
 int main (void) {
 
     pllstart_seventytwomhz() ;
-    pllstart_sixtymhz() ;
+    // pllstart_sixtymhz() ;
     // pllstart_fourtyeightmhz() ;
 
     uart0_init_115200() ;
