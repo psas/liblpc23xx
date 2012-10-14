@@ -32,6 +32,7 @@
 
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
+#include "lpc23xx-vic.h"
 #include "printf-lpc.h"
 
 
@@ -81,6 +82,8 @@ bool USBInit(void)
 	// register standard request handler
 	USBRegisterRequestHandler(REQTYPE_TYPE_STANDARD, USBHandleStandardRequest, abStdReqData);
 
+	VIC_SET_USB_HANDLER(USBHwISR);
+	ENABLE_INT(VIC_USB);
 	return true;
 }
 

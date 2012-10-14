@@ -36,6 +36,7 @@
 
 #include "lpc23xx-types.h"
 #include "lpc23xx-debug.h"
+#include "lpc23xx-vic.h"
 #include "printf-lpc.h"
 
 #include "usbhw_lpc.h"
@@ -586,6 +587,7 @@ DEBUG_LED_OFF(10);
     }
 
 DEBUG_LED_OFF(9);
+    EXIT_INTERRUPT;
 }
 
 
