@@ -180,7 +180,7 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq, spi_ctl* ctl ) {
 
 	mam_enable();
 
-    FIO_SCK_0;
+    //FIO_SCK_0;
 	SCK_HIGH;
 
 	PINSEL_SPI_SCK ;

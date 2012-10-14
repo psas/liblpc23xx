@@ -63,7 +63,7 @@ static void HandleUsbReset(uint8_t bDevStatus)
 
 	@return TRUE if initialization was successful
  */
-bool USBInit(void)
+bool USBInit(const uint8_t * abDescriptors)
 {
 	// init hardware
 	USBHwInit();
@@ -78,9 +78,11 @@ bool USBInit(void)
 	// setup control endpoints
 	USBHwEPConfig(0x00, MAX_PACKET_SIZE0);
 	USBHwEPConfig(0x80, MAX_PACKET_SIZE0);
-
+	// register USB device descriptor
+	USBRegisterDescriptors(abDescriptors);
 	// register standard request handler
 	USBRegisterRequestHandler(REQTYPE_TYPE_STANDARD, USBHandleStandardRequest, abStdReqData);
+
 
 	VIC_SET_USB_HANDLER(USBHwISR);
 	ENABLE_INT(VIC_USB);

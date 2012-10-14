@@ -92,7 +92,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler);
 **************************************************************************/
 
 // initialise the complete stack, including HW
-bool USBInit(void);
+bool USBInit(const uint8_t * abDescriptors);
 
 /** Request handler callback (standard, vendor, class) */
 typedef bool (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
