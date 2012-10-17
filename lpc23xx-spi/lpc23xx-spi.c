@@ -180,9 +180,6 @@ void spi_init_master_intr(pclk_scale scale, spi_freq spifreq, spi_ctl* ctl ) {
 
 	mam_enable();
 
-    FIO_SCK_0;
-	SCK_HIGH;
-
 	PINSEL_SPI_SCK ;
 	PINMODE_SPI_SCK_PULLUP;
 
@@ -272,7 +269,7 @@ break;
 	printf_lpc(UART0, "S0SPCCR is  %u  for %u HZ\n", S0SPCCR, (spi_pclk/S0SPCCR));
 #endif
 
-	VICVectPriority10 = 0x5;
+	VICVectPriority10 = 0x1;
 	VICVectAddr10     = (unsigned int) spi_isr;
 	VICAddress        = 0x0;
 	DISABLE_SPI_INT;
@@ -285,9 +282,6 @@ break;
  */
 bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xact_fn) {
 
-	uint8_t  status_reg;
-
-	_spi_FnCallback_g        = xact_fn;
 	// Start the transaction
 
 	if(s!=NULL) {
@@ -301,7 +295,10 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 		if( get_binsem( &spi_binsem_g, SPI_BINSEM_WAITTICKS ) == 1 ) {
 			DISABLE_SPI_INT;
 			SSEL_LOW;
-			util_wait_msecs(6);
+
+			uint8_t  status_reg;
+
+			_spi_FnCallback_g        = xact_fn;
 
 			spi_rel_binsem_g = false;
 
@@ -322,7 +319,6 @@ bool start_spi_master_xact_intr(spi_master_xact_data* s, SPI_XACT_FnCallback xac
 			// read SPIF then write Data register to clear IF
 			status_reg                = S0SPSR;
 			S0SPDR                    = spi_xact_g.writebuf[0];
-		//	printf_lpc(UART0, "%s: data is: 0x%x\r\n", __func__, spi_xact_g.writebuf[0]);
 		} else {
 			return false;
 			//  uart0_putstring_intr("*** SPI-ERROR ***: spi_master_xact, Timed out waiting for spi_binsem_g. Skipping Request.\n");
@@ -345,7 +341,7 @@ void spi_isr(void) {
 
 	uint8_t  status_reg = 0;
 	uint8_t  data_reg   = 0;
-	FIO1SET = (1 << 22);
+
 	// read status  to clear IF
 	status_reg = spi_readstatus();
 
@@ -381,8 +377,9 @@ void spi_isr(void) {
 			spi_status_g.xact_state                     = SPI_READ_ST;
 			S0SPDR                                      = spi_xact_g.dummy_value;
 		} else {
-			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
-
+			if(_spi_FnCallback_g != NULL) {
+				_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
+			}
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
 			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
@@ -391,7 +388,6 @@ void spi_isr(void) {
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR;
 			SSEL_HIGH;
-			util_wait_msecs(5);
 			spi_xact_g.success          = true;
 			spi_rel_binsem_g            = true;
 		}
@@ -409,8 +405,11 @@ void spi_isr(void) {
 				data_reg                             = S0SPDR;
 			}
 		} else {
-			_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
 
+			if(_spi_FnCallback_g != NULL) {
+				_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
+			}
+			FIO1SET = (1 << 22);
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
 			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
@@ -419,7 +418,7 @@ void spi_isr(void) {
 			spi_xact_g.dummy_value      = SPI_DEFAULT_DUMMY_DATA;
 			data_reg                    = S0SPDR; // access data_reg to clear S0SPSR SPIF
 			SSEL_HIGH;
-			util_wait_msecs(5);
+
 			spi_xact_g.success          = true;
 			spi_rel_binsem_g            = true;
 		}
@@ -441,6 +440,7 @@ void spi_isr(void) {
 		spi_rel_binsem_g            = true;
 		break;
 	}
+
 	S0SPINT       = (0x1 << SPI_IR_IF);   // clear int flag in INT register.
 	VICAddress    = 0x0;
 	if(spi_rel_binsem_g) {
