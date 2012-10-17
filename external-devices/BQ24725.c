@@ -7,10 +7,24 @@
 #include <stdlib.h> //for NULL
 
 #include "lpc23xx-i2c.h"
+#include "lpc23xx-uart.h"
 #include "BQ24725.h"
 
 static i2c_iface i2c_channel;
 static bool initialized = false;
+
+const BQ24725_charge_options BQ24725_charge_options_POR_default = {
+    .ACOK_deglitch_time = t150ms,
+    .WATCHDOG_timer = t175s,
+    .BAT_depletion_threshold = FT70_97pct,
+    .EMI_sw_freq_adj = dec18pct,
+    .EMI_sw_freq_adj_en = sw_freq_adj_disable,
+    .IFAULT_HI_threshold = l700mV,
+    .LEARN_en = LEARN_disable,
+    .IOUT = adapter_current,
+    .ACOC_threshold = l1_66X,
+    .charge_inhibit = charge_enable
+};
 
 static void empty_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c_s){
 	if(!(i2c_s->xact_success)){
@@ -22,7 +36,7 @@ static void empty_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c_s){
 
 static void BQ24725_i2c_callback(i2c_master_xact_t* caller, i2c_master_xact_t* i2c_s){
     if(caller->cb_data != NULL){
-        BQ24725_callback callback = (BQ24725_callback)caller->cb_data;
+        BQ24725_callback * callback = (BQ24725_callback*)caller->cb_data;
         uint16_t data = (((uint16_t)caller->i2c_rd_buffer[0])<<8) |
                          ((uint16_t)caller->i2c_rd_buffer[1]);
         callback(data);
@@ -53,7 +67,7 @@ void inline form_options_struct(uint16_t data, BQ24725_charge_options* opt){
 void BQ24725_init(i2c_iface channel, i2c_pinsel pin){
 	if(i2c_get_state(channel) == I2C_NOT_INITIALIZED){
 		i2c_init(channel, pin);
-		i2c_khz(400);
+		i2c_kHz(channel, 50);
 	}
 	i2c_channel = channel;
 	initialized = true;
@@ -200,7 +214,7 @@ void BQ24725_SetChargeOption(BQ24725_charge_options * option){
     if(initialized == false)
         return;
 	i2c_master_xact_t xact;
-	uint16_t option_data = FORM_OPTIONS_DATA(*option);
+	uint16_t option_data = form_options_data(*option);
 
 	xact.i2c_tx_buffer[0] = i2c_create_write_address(BQ24725_ADDR);
 	xact.i2c_tx_buffer[1] = CHARGE_OPTION;

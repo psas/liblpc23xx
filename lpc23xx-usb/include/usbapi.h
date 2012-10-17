@@ -64,7 +64,7 @@
 #define INACK_BI		(1<<5)			/**< interrupt on NACK for bulk in */
 #define INACK_BO		(1<<6)			/**< interrupt on NACK for bulk out */
 
-void USBHwISR			(void);
+void USBHwISR			(void)  __attribute__ ((interrupt("IRQ")));
 void USBHwNakIntEnable	(uint8_t bIntBits);
 void USBHwConnect		(bool fConnect);
 
@@ -92,7 +92,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler);
 **************************************************************************/
 
 // initialise the complete stack, including HW
-bool USBInit(void);
+bool USBInit(const uint8_t * abDescriptors);
 
 /** Request handler callback (standard, vendor, class) */
 typedef bool (TFnHandleRequest)(TSetupPacket *pSetup, int *piLen, uint8_t **ppbData);
