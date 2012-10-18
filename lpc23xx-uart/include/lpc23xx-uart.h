@@ -47,7 +47,7 @@
 #define         UART_THREIE_BIT           1
 #define         UART_RXLSIE_BIT           2
 
-#define         UART0_INTR_PRIORITY       3
+#define         UART0_INTR_PRIORITY       12
 #define         UART0_RBR_INT_ENABLE      ( U0IER = U0IER | (1<<UART_RBRIE_BIT ) )
 #define         UART0_THRE_INT_ENABLE     ( U0IER = U0IER | (1<<UART_THREIE_BIT) )
 #define         UART0_RXLS_INT_ENABLE     ( U0IER = U0IER | (1<<UART_RXLSIE_BIT) )
