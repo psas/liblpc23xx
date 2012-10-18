@@ -44,9 +44,6 @@
 // MAX values
 #define I2C_MAX_BUFFER      64
 
-
-
-
 // I2C CONSET and CONCLR Bits
 // SET
 #define I2C_AA              (1<<2)
@@ -63,11 +60,8 @@
 
 // I2C clock
 // Table 435 p496 lpc23xx
-//
 // ( i2c clock speed ref: lpc23xx user manual p516)
 // i2c standard clock speed goes to 100kHz
-
-
 // p516: Max rate is 400kHz according to lpc23xx manual.
 //#define I2SCLHIGH           90
 //#define I2SCLLOW            90
@@ -138,8 +132,10 @@ typedef enum {
     I2C_START,
     I2C_RESTART,
     I2C_REPEATED_START,
-    I2C_ACK,
-    I2C_NOTACK,
+    I2C_MASTER_ACK,
+    I2C_SLAVE_ACK,
+    I2C_MASTER_NOTACK,
+    I2C_SLAVE_NOTACK,
     I2C_ERROR
 } i2c_state;
 
@@ -148,73 +144,30 @@ typedef enum {
  */
 typedef struct i2c_master_xact {
      i2c_state state;
-
-     uint8_t   i2c_tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
-     uint8_t   i2c_rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
+     uint8_t   device_addr;
+     uint8_t   tx_buffer[I2C_MAX_BUFFER];  // Transmit data for transaction
+     uint8_t   rd_buffer[I2C_MAX_BUFFER];  // Receive  data for transaction
      uint32_t  write_length;
      uint32_t  read_length;
-     bool      xact_success;
-     void*     cb_data;
-
+     void *    cb_data;
 } i2c_master_xact_t;
 
-typedef void (XACT_FnCallback) (i2c_master_xact_t* caller, i2c_master_xact_t* i2c);
-
-// Use a binary semaphore for mutual exclusion on the i2c interface.
-extern volatile  bin_semaphore         i2c0_binsem_g;
-extern volatile  bin_semaphore         i2c1_binsem_g;
-extern volatile  bin_semaphore         i2c2_binsem_g;
-
-// One structure for each i2c channel
-extern i2c_master_xact_t     i2c0_s_g;
-extern i2c_master_xact_t     i2c1_s_g;
-extern i2c_master_xact_t     i2c2_s_g;
-
-extern volatile uint32_t     i2c0_wrindex_g;
-extern volatile uint32_t     i2c0_rdindex_g;
-
-extern volatile uint32_t     i2c1_wrindex_g;
-extern volatile uint32_t     i2c1_rdindex_g;
-
-extern volatile uint32_t     i2c2_wrindex_g;
-extern volatile uint32_t     i2c2_rdindex_g;
-
-extern XACT_FnCallback*      _i2c0_FnCallback_g;
-extern XACT_FnCallback*      _i2c1_FnCallback_g;
-extern XACT_FnCallback*      _i2c2_FnCallback_g;
-
-extern i2c_master_xact_t*    i2c0_s_caller_g;
-extern i2c_master_xact_t*    i2c1_s_caller_g;
-extern i2c_master_xact_t*    i2c2_s_caller_g;
+typedef void (i2c_callback) (i2c_master_xact_t* user_xact);
 
 void i2c0_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c1_isr(void) __attribute__ ((interrupt("IRQ")));
 void i2c2_isr(void) __attribute__ ((interrupt("IRQ")));
 
-// // still experimenting. gcc v4.5.2 may do the correct thing now.
-// void i2c0_isr(void) __attribute__ ((naked));  // use ISR_ENTRY/ISR_EXIT from lpc23xx-vic.h
-// void i2c1_isr(void) __attribute__ ((naked));
-// void i2c2_isr(void) __attribute__ ((naked));
-//
-// void i2cgeneral_call(i2c_iface channel);
+i2c_state i2c_get_state(i2c_iface chan);
+void i2c_init_state( i2c_master_xact_t* s);
+void i2c_init(i2c_iface channel, i2c_pinsel pin);
+void i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount);
+void i2c_kHz(i2c_iface channel, unsigned int freq);
+int start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s,
+        i2c_callback * xact_fn);
+void poll_wait(i2c_iface i2c_ch);
+bool i2c_active(i2c_iface ch);
 
-uint8_t i2c_create_read_address(uint8_t addr) ;
-uint8_t i2c_create_write_address(uint8_t addr) ;
-i2c_state i2c_get_state(i2c_iface chan) ;
-void    i2c_init_state( i2c_master_xact_t* s) ;
-void    i2c_init(i2c_iface channel, i2c_pinsel pin) ;
-void    i2c_freq(i2c_iface channel, uint16_t highcount, uint16_t lowcount) ;
-void    i2c_kHz(i2c_iface channel, uint32_t freq) ;
-void    i2c0_get_read_data(i2c_master_xact_t* s) ;
-
-void    start_i2c0_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
-void    start_i2c1_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
-void    start_i2c2_master_xact(i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
-void    start_i2c_master_xact(i2c_iface i2c_ch, i2c_master_xact_t* s, XACT_FnCallback* xact_fn) ;
-/*
-void I2C1_master_xact(i2c_master_xact_t&  s) ;
-void I2C2_master_xact(i2c_master_xact_t&  s) ;
-*/
 
 //! @}
 #endif
