@@ -72,7 +72,7 @@ AOBJS           = $(ASRCS:.s=.o)
                   
 ifeq ($(GCC_VERSION_GE_46),1)
 CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
-                  -Wall -Werror -Wno-error=unused-but-set-variable -g3 \
+                  -Wall -Werror -Wno-unused-but-set-variable -g3 \
                   -mfloat-abi=softfp -fno-common -O3 -mcpu=arm7tdmi-s
 else
 CFLAGS          = $(INCLUDE) $(DEBUG) $(LPC2378_PORT) $(LPC23XX_PART) -c \
