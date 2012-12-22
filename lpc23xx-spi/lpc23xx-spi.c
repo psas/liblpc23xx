@@ -396,10 +396,10 @@ void spi_isr(void) {
 		}
 		break;
 	case SPI_READ_ST:
-	//	FIO1SET = (1 << 19);
-		spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
-		spi_status_g.read_index                     += 1;
+		FIO1CLR = (1 << 22);
 		if( spi_status_g.read_index < spi_xact_g.read_numbytes) {
+			spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
+			spi_status_g.read_index                     += 1;
 			if(spi_status_g.read_index < SPI_MAX_BUFFER) {
 				spi_status_g.xact_state              = SPI_READ_ST;
 				S0SPDR                               = spi_xact_g.dummy_value;    // drive another byte out of slave dev.
