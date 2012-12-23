@@ -396,7 +396,6 @@ void spi_isr(void) {
 		}
 		break;
 	case SPI_READ_ST:
-		FIO1CLR = (1 << 22);
 		if( spi_status_g.read_index < spi_xact_g.read_numbytes) {
 			spi_xact_g.readbuf[spi_status_g.read_index] = S0SPDR;
 			spi_status_g.read_index                     += 1;
@@ -412,7 +411,6 @@ void spi_isr(void) {
 			if(_spi_FnCallback_g != NULL) {
 				_spi_FnCallback_g(spi_caller_xact_g, &spi_xact_g, NULL);
 			}
-			FIO1SET = (1 << 22);
 			spi_status_g.read_index     = 0;
 			spi_status_g.write_index    = 0;
 			spi_status_g.xact_id        = SPI_DEFAULT_XACT_ID;
