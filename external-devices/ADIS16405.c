@@ -145,17 +145,17 @@ void adis_read_cb(spi_master_xact_data* caller, spi_master_xact_data* spi_xact, 
 	regaddr = caller->writebuf[0];
 
 	switch(regaddr) {
-	case ADIS_PRODUCT_ID:
-		adis_data_cache.adis_prod_id.data_high   = caller->readbuf[1];
-		adis_data_cache.adis_prod_id.data_low    = caller->readbuf[2];
+		case ADIS_PRODUCT_ID:
+			adis_data_cache.adis_prod_id.data_high   = caller->readbuf[1];
+			adis_data_cache.adis_prod_id.data_low    = caller->readbuf[2];
 
-		break;
-	case ADIS_SMPL_PRD:
-		adis_data_cache.adis_sampl_per.data_high  = caller->readbuf[1];
-		adis_data_cache.adis_sampl_per.data_low   = caller->readbuf[2];
-		break;
-	default:
-		break;
+			break;
+		case ADIS_SMPL_PRD:
+			adis_data_cache.adis_sampl_per.data_high  = caller->readbuf[1];
+			adis_data_cache.adis_sampl_per.data_low   = caller->readbuf[2];
+			break;
+		default:
+			break;
 	}
 	if(!rb_is_full(&adis_spi_done_q)) {
 		rb_put_elem((char) regaddr, &adis_spi_done_q);
@@ -224,7 +224,7 @@ void adis_read_brst_mode(SPI_XACT_FnCallback cb) {
 	adis_read_brst_mode_xact.writebuf[0]     = adis_create_read_addr(ADIS_GLOB_CMD);
 	adis_read_brst_mode_xact.writebuf[1]     = 0x0;
 	adis_read_brst_mode_xact.write_numbytes  = 2;
-	adis_read_brst_mode_xact.read_numbytes   = (ADIS_NUM_DATAOUT_REGS * 2);
+	adis_read_brst_mode_xact.read_numbytes   = (ADIS_NUM_BURSTREAD_REGS * 2);
 	adis_read_brst_mode_xact.dummy_value     = 0x7f;
 
 	// Start the transaction

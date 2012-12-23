@@ -64,8 +64,8 @@
 
 #define     ADIS_RESET_MSECS                  500
 
-#define     ADIS_MAX_DATA_BUFFER              50
-#define     ADIS_NUM_DATAOUT_REGS             12
+#define     ADIS_MAX_DATA_BUFFER              64
+#define     ADIS_NUM_BURSTREAD_REGS           12
 
 // ADIS Registers
 typedef enum {
