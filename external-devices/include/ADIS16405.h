@@ -1,8 +1,8 @@
-/* \file adis.h
+/* \file ADIS16405.h
  */
 
-#ifndef _ADIS_H
-#define _ADIS_H
+#ifndef _ADIS16405_H
+#define _ADIS16405_H
 
 #include "lpc23xx-spi.h"
 #include "lpc23xx-util.h"

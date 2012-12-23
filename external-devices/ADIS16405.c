@@ -1,4 +1,4 @@
-/*! \file adis.c
+/*! \file ADIS16405.c
  *
  * API to support transactions through the SPI port to
  * the Analog Devices ADIS16405 series IMU.
@@ -10,7 +10,7 @@
 #include "printf-lpc.h"
 #include "gfe2368-util.h"
 
-#include "adis.h"
+#include "ADIS16405.h"
 
 Ringbuffer                adis_spi_done_q;
 
